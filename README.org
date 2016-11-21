@@ -1,3 +1,3 @@
 * Training data mining
-** ghtorrent?
-** script for classification
+** TODO ghtorrent?
+** TODO script for classification

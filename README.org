@@ -3,18 +3,18 @@
 ** TODO frontend
 - website
 - README
-- Dokumentation
-- 
+- Documentation
+** TODO documentation
+Tobi does it ;)
 ** TODO backend
    SCHEDULED: <2016-12-17 Sa>
 *** task
 **** classes
-DEV, HW, EDU, DOCS, WEB, DATA, OTHER
+     DEV, HW, EDU, DOCS, WEB, DATA, OTHER
 *** confidence output
-
 *** relvant data
 - file name
 **** readme (spam-filter)
 - bag of words
-**** 
+**** topics???
 * recommender system

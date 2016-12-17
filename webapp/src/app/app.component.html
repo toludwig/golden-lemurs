@@ -1,0 +1,17 @@
+<md-sidenav-layout>
+  <md-sidenav #sidenav mode='side'>
+    <md-nav-list>
+      <a md-list-item href="docs">Documentation</a>
+      <a md-list-item href="plots">Plots</a>
+      <a md-list-item href="network">Network</a>
+    </md-nav-list>
+  </md-sidenav>
+  <md-toolbar color="primary">
+    <button md-button (click)="sidenav.toggle()">
+        <md-icon>menu</md-icon>
+    </button>
+    <span style='position: relative; left: 0%;'> {{title}} </span>
+    <span style='position: absolute; right: 10%;'> {{subtitle}} </span>
+  </md-toolbar>
+  <router-outlet></router-outlet>
+</md-sidenav-layout>

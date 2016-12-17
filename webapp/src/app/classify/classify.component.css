@@ -1,0 +1,12 @@
+#repo {
+    width: 70%;
+}
+#submit {
+    width: 20%;
+}
+#main {
+    position: absolute;
+    width: 50%;
+    left: 25%;
+    top: 30%;
+}

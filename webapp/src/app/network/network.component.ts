@@ -62,10 +62,12 @@ export class NetworkComponent implements AfterViewInit {
     const networks = d3.select(elem)
       .selectAll('g.network').data(this.architecture)
       .enter().append('g')
-      .class('network')
+      .classed('network', true)
       .attr('transform', (network, i) => {
           return `translate(${networkCoordinates[i][0]}, ${networkCoordinates[i][1]})`;
       });
+    networks.selectAll('')
+
       // TODO: continue
       //networks.sel
   }

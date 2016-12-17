@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import sys
 import json
+import clipboard
 from optparse import OptionParser
 
 OUT_FILE="results.json"
@@ -20,21 +21,29 @@ def save():
         json.dump(RESULTS, f)
 
 def download_additional_fields():
-    # TODO put things
+    # TODO readme =
     # CUR_OBJ["Readme"] = readme
     pass
 
 def main():
     options()
+    url = ""
 
     while True:
         CUR_OBJ={}
-        url = input("\nURL: ")
+
+        print("\nURL: ")
+        while url == clipboard.paste():
+            pass # wait till user copied knew URL
+        url = clipboard.paste()
+        print(url)
         CUR_OBJ["URL"] = url
 
-        c = input("Ratings: [1] DEV [2] HW [3] EDU [4] DOCS [5] WEB [6] DATA [7] OTHER [Q]uit\n")
+        c = input("Ratings: [1] DEV [2] HW [3] EDU [4] DOCS [5] WEB [6] DATA [7] OTHER [S]kip [Q]uit\n")
         if c in ['1', '2', '3', '4', '5', '6', '7']:
             CUR_OBJ["Category"] = c
+        elif c in ['s', 'S']:
+            continue
         elif c in ['q', 'Q']:
             break
 

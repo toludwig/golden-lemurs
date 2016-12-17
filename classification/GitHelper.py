@@ -17,5 +17,5 @@ class Git(object):
         repo = self.api.search_repositories('%s user:%s fork:true' \
                                             % (title, user)).next().repository
         readme = repo.readme().decoded
-        text = BeautifulSoup(readme, "html.parser")
+        text = BeautifulSoup(readme, "html.parser").text
         return text

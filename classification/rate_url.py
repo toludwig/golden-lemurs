@@ -7,7 +7,6 @@ from .GitHelper import Git
 
 OUT_FILE="results.json"
 RESULTS=[]
-CUR_OBJ={}
 
 def options():
     parser = OptionParser()
@@ -24,15 +23,19 @@ def split_url(url):
     return (user, title)
 
 def save():
+    print(RESULTS)
     with open(OUT_FILE, "w") as f:
         json.dump(RESULTS, f)
 
 def download_additional_fields():
     user, title = split_url(CUR_OBJ["URL"])
-    readme = get_readme()
+    readme = Git().get_readme(user, title)
+    CUR_OBJ["User"] = user
+    CUR_OBJ["Title"] = title
     CUR_OBJ["Readme"] = readme
 
 def main():
+    global CUR_OBJ
     options()
     url = ""
 
@@ -57,7 +60,7 @@ def main():
         download_additional_fields()
         RESULTS.append(CUR_OBJ)
 
-    save()
+        save()
 
 if __name__ == '__main__':
     main()

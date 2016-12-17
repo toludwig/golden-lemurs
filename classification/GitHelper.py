@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from github3 import login
 from markdown import markdown
 from bs4 import BeautifulSoup

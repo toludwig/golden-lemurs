@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python3
 import sys
 import json
 from optparse import OptionParser

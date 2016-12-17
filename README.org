@@ -1,3 +1,20 @@
-* Training data mining
-** TODO ghtorrent?
-** TODO script for classification
+* repo classification
+** TODO Training data mining
+** TODO frontend
+- website
+- README
+- Documentation
+** TODO documentation
+Tobi does it ;)
+** TODO backend
+   SCHEDULED: <2016-12-17 Sa>
+*** task
+**** classes
+     DEV, HW, EDU, DOCS, WEB, DATA, OTHER
+*** confidence output
+*** relvant data
+- file name
+**** readme (spam-filter)
+- bag of words
+**** topics???
+* recommender system

@@ -27,40 +27,54 @@ def save():
     with open(OUT_FILE, "w") as f:
         json.dump(RESULTS, f)
 
-def download_additional_fields():
-    user, title = split_url(CUR_OBJ["URL"])
-    readme = Git().get_readme(user, title)
-    CUR_OBJ["User"] = user
-    CUR_OBJ["Title"] = title
-    CUR_OBJ["Readme"] = readme
+def download_fields(obj):
+    user, title = split_url(obj["URL"])
+    git = Git(user, title)
+    readme = git.get_readme()
+    obj["User"] = user
+    obj["Title"] = title
+    obj["Readme"] = readme
+    obj[""]
+    return obj
 
 def main():
-    global CUR_OBJ
     options()
     url = ""
 
     while True:
-        CUR_OBJ={}
+        cur_obj={}
 
         print("\nURL: ")
         while url == clipboard.paste():
             pass # wait till user copied knew URL
         url = clipboard.paste()
         print(url)
-        CUR_OBJ["URL"] = url
+        cur_obj["URL"] = url
 
         c = input("Ratings: [1] DEV [2] HW [3] EDU [4] DOCS [5] WEB [6] DATA [7] OTHER [S]kip [Q]uit\n")
         if c in ['1', '2', '3', '4', '5', '6', '7']:
-            CUR_OBJ["Category"] = c
+            cur_obj["Category"] = c
         elif c in ['s', 'S']:
             continue
         elif c in ['q', 'Q']:
-            break
+            return
 
-        download_additional_fields()
-        RESULTS.append(CUR_OBJ)
-
+        cur_obj = download_fields(cur_obj)
+        RESULTS.append(cur_obj)
         save()
 
+'''
+Function for adding the downloaded fields
+for classified JSON data with only URL and Category
+'''
+def extend_fields(in_file):
+    RESULTS = json.load(open(in_file, "r"))
+    # download fields for each object
+    i=0
+    for obj in RESULTS:
+        RESULTS[i] = download_fields(obj)
+        i += 1
+    save()
+
 if __name__ == '__main__':
-    main()
+    load("./classification/classified.json")

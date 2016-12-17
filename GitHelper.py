@@ -4,12 +4,6 @@ from bs4 import BeautifulSoup
 
 GITHUB_TOKEN = '9e484681cd48b198297bb0de032445f92a962282'
 
-def split_url(url):
-    split = url.split('/')
-    title = split[-1]
-    user = split[-2]
-    return (user, title)
-
 class Git(object):
     """docstring for Git."""
     def __init__(self):

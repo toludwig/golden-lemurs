@@ -45,6 +45,13 @@ def save():
     with open(OUT_FILE, "w") as f:
         json.dump(RESULTS, f)
 
+    # also the repos should be written
+    # to the IN_FILE again, to be able
+    # to work with it next time without
+    # having to begin from the start
+    with open(IN_FILE, "w") as f:
+        json.dump(REPOS, f)
+
 def next_dataset():
     global PROGRESS
     if PROGRESS == BATCH_SIZE - 1:
@@ -75,8 +82,7 @@ def main():
                 rate(int(c))
                 break
             elif c in ['d', 'D']:
-                #skip
-                break
+                pass
             elif c in ['m', 'M']:
                 pos = min(pos+step, len(data['Readme']))
                 print(data['Readme'][max(pos-step, 0):pos])
@@ -87,6 +93,8 @@ def main():
                 return
             else:
                 pass
+        # remove the sample from the REPOS to, because it's classified now
+        REPOS.remove(elem)
         data = next_dataset()
 
     save()

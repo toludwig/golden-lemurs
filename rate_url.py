@@ -3,6 +3,7 @@ import sys
 import json
 import clipboard
 from optparse import OptionParser
+from golden-lemurs.GitHelper import Git
 
 OUT_FILE="results.json"
 RESULTS=[]
@@ -16,14 +17,20 @@ def options():
     if params.out is not None:
         OUT_FILE = params.out
 
+def split_url(url):
+    split = url.split('/')
+    title = split[-1]
+    user = split[-2]
+    return (user, title)
+
 def save():
     with open(OUT_FILE, "w") as f:
         json.dump(RESULTS, f)
 
 def download_additional_fields():
-    # TODO readme =
-    # CUR_OBJ["Readme"] = readme
-    pass
+    user, title = split_url(CUR_OBJ["Url"])
+    readme = get_readme()
+    CUR_OBJ["Readme"] = readme
 
 def main():
     options()

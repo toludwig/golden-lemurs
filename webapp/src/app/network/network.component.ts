@@ -66,7 +66,7 @@ export class NetworkComponent implements AfterViewInit {
       .attr('transform', (network, i) => {
           return `translate(${networkCoordinates[i][0]}, ${networkCoordinates[i][1]})`;
       });
-    networks.selectAll('')
+    networks.selectAll('rect.layer'); // this is important
 
       // TODO: continue
       //networks.sel

@@ -23,8 +23,8 @@ class Git(object):
         return len(list(self.repo.iter_contributors()))
 
     def get_readme(self):
-        if(readme = self.repo.readme().decoded is not None):
-            text = BeautifulSoup(readme, "html.parser").text
+        if(readme = self.repo.readme() is not None):
+            text = BeautifulSoup(readme.decoded, "html.parser").text
             return text
         return ''
 

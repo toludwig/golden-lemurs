@@ -24,7 +24,7 @@ def split_url(url):
 
 def save():
     with open(OUT_FILE, "w") as f:
-        json.dump(RESULTS, f)
+        json.dump(RESULTS, f, sort_keys=True, indent="    ")
 
 def download_fields(obj):
     print(obj["URL"])
@@ -42,6 +42,7 @@ def download_fields(obj):
     return obj
 
 def main():
+    global RESULTS
     options()
     url = ""
 
@@ -72,6 +73,7 @@ Function for adding the downloaded fields
 for classified JSON data with only URL and Category
 '''
 def extend_fields(in_file):
+    global RESULTS
     RESULTS = json.load(open(in_file, "r"))
     # download fields for each object
     i=0
@@ -81,4 +83,4 @@ def extend_fields(in_file):
         save() # indent out
 
 if __name__ == '__main__':
-    extend_fields("./classification/classified.json")
+    extend_fields("./classification/trainingA.json")

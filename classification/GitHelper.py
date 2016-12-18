@@ -46,6 +46,6 @@ class Git(object):
                         , repo))
 
     def get_times(self):
-        created = self.repo.created_at
-        last = self.repo.updated_at
+        created = self.repo.created_at.timestamp()
+        last = self.repo.updated_at.timestamp()
         return (created, last)

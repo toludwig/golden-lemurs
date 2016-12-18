@@ -22,10 +22,6 @@ def split_url(url):
     user = split[3]
     return (user, title)
 
-def save():
-    with open(OUT_FILE, "w") as f:
-        json.dump(RESULTS, f, sort_keys=True, indent="    ")
-
 def download_fields(obj):
     print(obj["URL"])
     user, title = split_url(obj["URL"])
@@ -40,6 +36,10 @@ def download_fields(obj):
     obj["Issues"]               = git.get_issues()
     obj["Times"]                = git.get_times()
     return obj
+
+def save():
+    with open(OUT_FILE, "w") as f:
+        json.dump(RESULTS, f, sort_keys=True, indent="    ")
 
 def main():
     global RESULTS
@@ -83,4 +83,4 @@ def extend_fields(in_file):
         save() # indent out
 
 if __name__ == '__main__':
-    extend_fields("./classification/trainingA.json")
+    main()

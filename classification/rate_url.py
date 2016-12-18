@@ -23,18 +23,22 @@ def split_url(url):
     return (user, title)
 
 def save():
-    print(RESULTS)
     with open(OUT_FILE, "w") as f:
         json.dump(RESULTS, f)
 
 def download_fields(obj):
+    print(obj["URL"])
     user, title = split_url(obj["URL"])
     git = Git(user, title)
-    readme = git.get_readme()
-    obj["User"] = user
-    obj["Title"] = title
-    obj["Readme"] = readme
-    obj[""]
+    obj["User"]                 = user
+    obj["Title"]                = title
+    obj["Readme"]               = git.get_readme()
+    obj["NumberOfContributors"] = git.number_contributors()
+    obj["NumberCommits"]        = git.number_commits()
+    obj["Commits"]              = git.get_commits()
+    obj["NumberIssues"]         = git.number_issues()
+    obj["Issues"]               = git.get_issues()
+    obj["Times"]                = git.get_times()
     return obj
 
 def main():
@@ -74,7 +78,7 @@ def extend_fields(in_file):
     for obj in RESULTS:
         RESULTS[i] = download_fields(obj)
         i += 1
-    save()
+        save() # indent out
 
 if __name__ == '__main__':
-    load("./classification/classified.json")
+    extend_fields("./classification/classified.json")

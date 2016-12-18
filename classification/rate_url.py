@@ -5,7 +5,7 @@ import clipboard
 from optparse import OptionParser
 from .GitHelper import Git
 
-OUT_FILE="results.json"
+OUT_FILE="./results.json"
 RESULTS=[]
 
 def options():
@@ -18,8 +18,8 @@ def options():
 
 def split_url(url):
     split = url.split('/')
-    title = split[-1]
-    user = split[-2]
+    title = split[4]
+    user = split[3]
     return (user, title)
 
 def save():

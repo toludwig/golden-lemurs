@@ -23,9 +23,10 @@ class Git(object):
         return len(list(self.repo.iter_contributors()))
 
     def get_readme(self):
-        readme = self.repo.readme().decoded
-        text = BeautifulSoup(readme, "html.parser").text
-        return text
+        if(readme = self.repo.readme() is not None):
+            text = BeautifulSoup(readme.decoded, "html.parser").text
+            return text
+        return ''
 
     def number_commits(self):
         return len(list(self.repo.iter_commits()))

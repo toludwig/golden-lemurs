@@ -18,8 +18,8 @@ def options():
 
 def split_url(url):
     split = url.split('/')
-    title = split[-1]
-    user = split[-2]
+    title = split[3]
+    user = split[4]
     return (user, title)
 
 def save():

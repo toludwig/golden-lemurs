@@ -5,9 +5,8 @@ import clipboard
 from optparse import OptionParser
 from .GitHelper import Git
 
-OUT_FILE="results.json"
+OUT_FILE="./results.json"
 RESULTS=[]
-CUR_OBJ={}
 
 def options():
     parser = OptionParser()
@@ -19,45 +18,69 @@ def options():
 
 def split_url(url):
     split = url.split('/')
-    title = split[-1]
-    user = split[-2]
+    title = split[4]
+    user = split[3]
     return (user, title)
 
 def save():
     with open(OUT_FILE, "w") as f:
-        json.dump(RESULTS, f)
+        json.dump(RESULTS, f, sort_keys=True, indent="    ")
 
-def download_additional_fields():
-    user, title = split_url(CUR_OBJ["URL"])
-    readme = get_readme()
-    CUR_OBJ["Readme"] = readme
+def download_fields(obj):
+    print(obj["URL"])
+    user, title = split_url(obj["URL"])
+    git = Git(user, title)
+    obj["User"]                 = user
+    obj["Title"]                = title
+    obj["Readme"]               = git.get_readme()
+    obj["NumberOfContributors"] = git.number_contributors()
+    obj["NumberCommits"]        = git.number_commits()
+    obj["Commits"]              = git.get_commits()
+    obj["NumberIssues"]         = git.number_issues()
+    obj["Issues"]               = git.get_issues()
+    obj["Times"]                = git.get_times()
+    return obj
 
 def main():
+    global RESULTS
     options()
     url = ""
 
     while True:
-        CUR_OBJ={}
+        cur_obj={}
 
         print("\nURL: ")
         while url == clipboard.paste():
             pass # wait till user copied knew URL
         url = clipboard.paste()
         print(url)
-        CUR_OBJ["URL"] = url
+        cur_obj["URL"] = url
 
         c = input("Ratings: [1] DEV [2] HW [3] EDU [4] DOCS [5] WEB [6] DATA [7] OTHER [S]kip [Q]uit\n")
         if c in ['1', '2', '3', '4', '5', '6', '7']:
-            CUR_OBJ["Category"] = c
+            cur_obj["Category"] = c
         elif c in ['s', 'S']:
             continue
         elif c in ['q', 'Q']:
-            break
+            return
 
-        download_additional_fields()
-        RESULTS.append(CUR_OBJ)
+        cur_obj = download_fields(cur_obj)
+        RESULTS.append(cur_obj)
+        save()
 
-    save()
+'''
+Function for adding the downloaded fields
+for classified JSON data with only URL and Category
+'''
+def extend_fields(in_file):
+    global RESULTS
+    RESULTS = json.load(open(in_file, "r"))
+    # download fields for each object
+    i=0
+    for obj in RESULTS:
+        RESULTS[i] = download_fields(obj)
+        i += 1
+        save() # indent out
 
 if __name__ == '__main__':
-    main()
+    extend_fields("./classification/trainingA.json")

@@ -8,9 +8,15 @@ class Singleton(type):
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
-class Data(object, metaclass=Singleton):
+class GloveWrapper(object, metaclass=Singleton):
     """Singleton that loads the GloVe Data"""
     def __init__(self):
         super(Data, self).__init__()
         print('Loading GloVe-Vectors. This will take a while...')
         self.data = pandas.read_csv('./data/glove.42B.300d.txt', delim_whitespace=True, error_bad_lines=False)
+
+    def lookup_word(self, word):
+        try:
+            return self.data.loc(word)
+        except Exception as e:
+            raise

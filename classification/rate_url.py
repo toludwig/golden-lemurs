@@ -1,31 +1,33 @@
 #!/usr/bin/python3
 import sys
-import json
+import simplejson as json
 import clipboard
 from optparse import OptionParser
 from .GitHelper import Git
 
-OUT_FILE="./results.json"
-RESULTS=[]
-
-def options():
+def _options():
     parser = OptionParser()
-    parser.add_option("-o", "--output", dest="out", type="string", help="file to write to")
+    parser.add_option("-o", "--output", dest="out", action="store",
+                      type="string", default='./results.json', help="file to write to")
 
-    params = parser.parse_args()[0]
-    if params.out is not None:
-        OUT_FILE = params.out
+    return parser.parse_args()
 
-def split_url(url):
+def _split_url(url):
+    """
+    Splits an URL into username and repo title.
+    Correct behaviour is only guarenteed for URLs pointing to the index
+    of a github repo.
+    """
     split = url.split('/')
     title = split[4]
     user = split[3]
     return (user, title)
 
-def download_fields(obj):
-    print(obj["URL"])
-    user, title = split_url(obj["URL"])
+def download_fields(url):
+    user, title = _split_url(url)
     git = Git(user, title)
+    obj = {}
+    obj["URL"] = url
     obj["User"]                 = user
     obj["Title"]                = title
     obj["Readme"]               = git.get_readme()
@@ -37,50 +39,47 @@ def download_fields(obj):
     obj["Times"]                = git.get_times()
     return obj
 
-def save():
-    with open(OUT_FILE, "w") as f:
-        json.dump(RESULTS, f, sort_keys=True, indent="    ")
+def _save(data, file):
+    with open(file, "w") as f:
+        json.dump(data, f, sort_keys=True, indent=4 * " ")
 
 def main():
-    global RESULTS
-    options()
-    url = ""
+    (options, args) = _options()
+    results = []
+    clipboard.copy('')
 
     while True:
-        cur_obj={}
+        url = ""
+        while url == '':
+            url = clipboard.paste()
+        print("URL: %s" % url)
 
-        print("\nURL: ")
-        while url == clipboard.paste():
-            pass # wait till user copied knew URL
-        url = clipboard.paste()
-        print(url)
-        cur_obj["URL"] = url
+        trying = True
+        while trying:
+            c = input("Ratings: [1] DEV [2] HW [3] EDU [4] DOCS [5] WEB [6] DATA [7] OTHER [S]kip [Q]uit\n")
+            if c in ['q', 'Q']:
+                _save(results, options.out)
+                return
+            elif c in ['s', 'S']:
+                trying = False
+            elif c in ['1', '2', '3', '4', '5', '6', '7']:
+                trying = False
+                cur_obj = download_fields(url)
+                cur_obj["Category"] = c
+                results.append(cur_obj)
 
-        c = input("Ratings: [1] DEV [2] HW [3] EDU [4] DOCS [5] WEB [6] DATA [7] OTHER [S]kip [Q]uit\n")
-        if c in ['1', '2', '3', '4', '5', '6', '7']:
-            cur_obj["Category"] = c
-        elif c in ['s', 'S']:
-            continue
-        elif c in ['q', 'Q']:
-            return
 
-        cur_obj = download_fields(cur_obj)
-        RESULTS.append(cur_obj)
-        save()
-
-'''
-Function for adding the downloaded fields
-for classified JSON data with only URL and Category
-'''
 def extend_fields(in_file):
-    global RESULTS
-    RESULTS = json.load(open(in_file, "r"))
+    '''
+    Function for adding the downloaded fields
+    for classified JSON data with only URL and Category
+    '''
+    with open(in_file, 'r') as f:
+        results = json.load(f)
     # download fields for each object
-    i=0
-    for obj in RESULTS:
-        RESULTS[i] = download_fields(obj)
-        i += 1
-        save() # indent out
+    for i, obj in enumerate(results):
+        results[i] = download_fields(obj['URL'])
+    return results
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -19,9 +19,9 @@ class Git(object):
         self.repo = self._get_repo(user, title)
 
     def _get_repo(self, user, title):
-        repo = self.api.search_repositories('%s user:%s fork:true'
-                                            % (title, user)).next().repository
-        return repo
+        repo = self.api.search_repositories('%s user:%s fork:true' % (title, user))
+        print('%s user:%s fork:true' % (title, user))
+        return repo.next().repository
 
     def number_contributors(self):
         return len(list(self.repo.iter_contributors()))

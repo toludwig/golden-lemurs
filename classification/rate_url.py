@@ -7,10 +7,12 @@ from .GitHelper import Git
 
 def load_data(repos, results, category):
     data = _load(results)
+    last_url = ''
     try:
         with open(repos, 'r') as file:
             urls = json.load(file)
             for url in urls:
+                last_url = url
                 repo = download_fields(url, 'api')
                 if repo != None:
                     repo["Category"] = category
@@ -19,7 +21,7 @@ def load_data(repos, results, category):
                     print("Repo invalid: %s" % url)
     except (KeyboardInterrupt, Exception) as err:
         _save(data, results + '.bak')
-        raise Exception("Crawler interrupted").with_traceback(sys.exc_info()[2])
+        raise Exception("Crawler interrupted @ %s" % last_url).with_traceback(sys.exc_info()[2])
     _save(data, results)
 
 def _options():
@@ -89,6 +91,7 @@ def _save(data, file):
 
 def rate_interactive(file):
     results = _load(file)
+    last_url = ''
     try:
         clipboard.copy('')
 
@@ -97,6 +100,7 @@ def rate_interactive(file):
             while url == '':
                 url = clipboard.paste()
             print("URL: %s" % url)
+            last_url = url
 
             trying = True
             while trying:
@@ -117,7 +121,7 @@ def rate_interactive(file):
                         print("Repo invalid: %s" % url)
     except (KeyboardInterrupt, Exception) as err:
         _save(results, file + '.bak')
-        raise Exception("Crawler interrupted").with_traceback(sys.exc_info()[2])
+        raise Exception("Crawler interrupted @ %s" % last_url).with_traceback(sys.exc_info()[2])
 
 def main():
     (options, args) = _options()

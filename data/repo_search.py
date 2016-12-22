@@ -5,7 +5,7 @@ import json
 def search_repos(my_filter, my_map, file = './projects.csv'):
     list = []
     with open(file, newline='') as csvfile:
-        repos = csv.reader(csvfile, strict=True)
+        repos = csv.reader(csvfile, doublequote=False,escapechar='\\', quoting=csv.QUOTE_NONNUMERIC)
         for repo in repos:
             if my_filter(repo):
                 list.append(my_map(repo))
@@ -24,7 +24,7 @@ def save_search(file, keywords):
 
 def list_repos():
     categories = [
-        ['edu.json', ['kit']],
+        ['edu.json', ['lecture']],
         ['homework.json', ['homework', 'exercise']],
         ['web.json', ['website', 'homepage']]
     ]

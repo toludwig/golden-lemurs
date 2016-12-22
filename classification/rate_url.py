@@ -11,8 +11,11 @@ def load_data(repos, results, category):
         urls = json.load(file)
         for url in urls:
             repo = download_fields(url, 'api')
-            repo["Category"] = category
-            data.append(repo)
+            if repo != None:
+                repo["Category"] = category
+                data.append(repo)
+            else:
+                print("Repo invalid: %s" % url)
     _save(data, results)
 
 def _options():
@@ -55,18 +58,21 @@ def download_fields(url, url_schema = 'web'):
     else:
         raise Exception('no such url schema')
     git = Git(user, title)
-    obj = {}
-    obj["URL"] = url
-    obj["User"] = user
-    obj["Title"] = title
-    obj["Readme"] = git.get_readme()
-    obj["NumberOfContributors"] = git.number_contributors()
-    obj["NumberCommits"] = git.number_commits()
-    obj["Commits"] = git.get_commits()
-    obj["NumberIssues"] = git.number_issues()
-    obj["Issues"] = git.get_issues()
-    obj["Times"] = git.get_times()
-    return obj
+    if git.valid():
+        obj = {}
+        obj["URL"] = url
+        obj["User"] = user
+        obj["Title"] = title
+        obj["Readme"] = git.get_readme()
+        obj["NumberOfContributors"] = git.number_contributors()
+        obj["NumberCommits"] = git.number_commits()
+        obj["Commits"] = git.get_commits()
+        obj["NumberIssues"] = git.number_issues()
+        obj["Issues"] = git.get_issues()
+        obj["Times"] = git.get_times()
+        return obj
+    else:
+        return None
 
 def _load(file):
     try:
@@ -108,8 +114,11 @@ def main():
                 elif c in ['1', '2', '3', '4', '5', '6', '7']:
                     trying = False
                     cur_obj = download_fields(url)
-                    cur_obj["Category"] = c
-                    results.append(cur_obj)
+                    if cur_obj != None:
+                        cur_obj["Category"] = c
+                        results.append(cur_obj)
+                    else:
+                        print("Repo invalid: %s" % url)
 
 
 # legacy, needed?

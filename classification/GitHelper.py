@@ -18,10 +18,16 @@ class Git(object):
         self.api = login(token=_token())
         self.repo = self._get_repo(user, title)
 
+    def valid(self):
+        return self.repo != None
+
     def _get_repo(self, user, title):
         repo = self.api.search_repositories('%s user:%s fork:true' % (title, user))
-        print('%s user:%s fork:true' % (title, user))
-        return repo.next().repository
+        # repo may not exist
+        try:
+            return repo.next().repository
+        except StopIteration:
+            return None
 
     def number_contributors(self):
         return len(list(self.repo.iter_contributors()))

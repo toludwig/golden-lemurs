@@ -43,8 +43,12 @@ def download_fields(url):
     return obj
 
 def _load(file):
-    with open(file, 'r') as f:
-        return json.load(f)
+    try:
+        with open(file, 'r') as f:
+            return json.load(f)
+        except:
+            print('no data found; creating %s' % file)
+            return []
 
 def _save(data, file):
     with open(file, "w") as f:
@@ -53,12 +57,7 @@ def _save(data, file):
 
 def main():
     (options, args) = _options()
-    results = []
-    try:
-        results = _load(options.out)
-    except:
-        print('no data found; creating %s' % options.out)
-        
+    results = _load(options.out)
     clipboard.copy('')
 
     while True:

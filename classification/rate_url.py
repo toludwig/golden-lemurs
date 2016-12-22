@@ -10,7 +10,7 @@ def load_data(repos, results, category):
     with open(repos, 'r') as file:
         urls = json.load(file)
         for url in urls:
-            repo = download_fields(url)
+            repo = download_fields(url, 'api')
             repo["Category"] = category
             data.append(repo)
     _save(data, results)
@@ -25,6 +25,16 @@ def _options():
 
     return parser.parse_args()
 
+def _split_api_url(url):
+    """
+    Splits an URL into username and repo title.
+    Correct behaviour is only guarenteed for URLs similiar to https://api.github.com/repos/{user}/{title}
+    """
+    split = url.split('/')
+    title = split[5]
+    user = split[4]
+    return (user, title)
+
 def _split_url(url):
     """
     Splits an URL into username and repo title.
@@ -37,8 +47,13 @@ def _split_url(url):
     return (user, title)
 
 
-def download_fields(url):
-    user, title = _split_url(url)
+def download_fields(url, url_schema = 'web'):
+    if url_schema == 'web':
+        user, title = _split_url(url)
+    elif url_schema == 'api':
+        user, title = _split_api_url(url)
+    else
+        raise Exception('no such url schema')
     git = Git(user, title)
     obj = {}
     obj["URL"] = url
@@ -97,17 +112,18 @@ def main():
                     results.append(cur_obj)
 
 
-def extend_fields(in_file):
-    '''
-    Function for adding the downloaded fields
-    for classified JSON data with only URL and Category
-    '''
-    with open(in_file, 'r') as f:
-        results = json.load(f)
-    # download fields for each object
-    for i, obj in enumerate(results):
-        results[i] = download_fields(obj['URL'])
-    return results
+# legacy, needed?
+# def extend_fields(in_file):
+#     '''
+#     Function for adding the downloaded fields
+#     for classified JSON data with only URL and Category
+#     '''
+#     with open(in_file, 'r') as f:
+#         results = json.load(f)
+#     # download fields for each object
+#     for i, obj in enumerate(results):
+#         results[i] = download_fields(obj['URL'])
+#     return results
 
 if __name__ == "__main__":
     main()

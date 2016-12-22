@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from random import randint
 
 def _token():
-    tokens = ['9e484681cd48b198297bb0de032445f92a962282']
+    tokens = ['9e484681cd48b198297bb0de032445f92a962282', '360e0d54fe6c4e1e944bcb6c2ed0533389683758']
     i = randint(0, len(tokens) - 1)
     return tokens[i]
 

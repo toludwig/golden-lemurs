@@ -36,3 +36,6 @@ def _options():
 def main():
     (options, args) = _options()
     load_data(options.list, options.out, options.category)
+
+if __name__ == '__main__':
+    main()

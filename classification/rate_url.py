@@ -46,9 +46,9 @@ def _load(file):
     try:
         with open(file, 'r') as f:
             return json.load(f)
-        except:
-            print('no data found; creating %s' % file)
-            return []
+    except:
+        print('no data found; creating %s' % file)
+        return []
 
 def _save(data, file):
     with open(file, "w") as f:

@@ -1,7 +1,11 @@
 #!/usr/bin/python3
 import sys
 import json
-import clipboard
+CLIPBOARD = TRUE
+try
+    import clipboard
+except:
+    CLIPBOARD = False
 from optparse import OptionParser
 from .GitHelper import Git
 
@@ -72,6 +76,9 @@ def main():
     if options.category == '0': # no category given, automatic
         load_data(options.list, options.out, options.category)
     else: # wait on paste
+        if not CLIPBOARD:
+            print('clipboard could not be read')
+            return
         results = _load(options.out)
         clipboard.copy('')
 

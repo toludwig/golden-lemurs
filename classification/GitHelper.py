@@ -25,7 +25,7 @@ class Git(object):
         self.valid = not type(self.repo) == NullObject
 
     def number_contributors(self):
-        return len(list(self.repo.contributors()))
+        return len(list(self.repo.contributor_statistics()))
 
     def get_readme(self):
         readme = self.repo.readme()

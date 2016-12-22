@@ -2,7 +2,7 @@
 import sys
 import json
 CLIPBOARD = TRUE
-try
+try:
     import clipboard
 except:
     CLIPBOARD = False

@@ -63,14 +63,11 @@ def download_fields(url, url_schema = 'web'):
     git = Git(user, title)
     if git.valid:
         obj = {}
-        obj["URL"] = url
         obj["User"] = user
         obj["Title"] = title
         obj["Readme"] = git.get_readme()
         obj["NumberOfContributors"] = git.number_contributors()
-        obj["NumberCommits"] = git.number_commits()
         obj["Commits"] = git.get_commits()
-        obj["NumberIssues"] = git.number_issues()
         obj["Issues"] = git.get_issues()
         obj["Times"] = git.get_times()
         return obj

@@ -37,15 +37,9 @@ class Git(object):
             return text
         return ''
 
-    def number_commits(self):
-        return len(list(self.repo.iter_commits()))
-
     def get_commits(self):
         repo = list(self.repo.iter_commits())
         return list(map(lambda x: x.commit.message, repo))
-
-    def number_issues(self):
-        return len(list(self.repo.iter_issues()))
 
     def get_issues(self):
         repo = list(self.repo.iter_issues())

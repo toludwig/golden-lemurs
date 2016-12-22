@@ -17,8 +17,10 @@ def load_data(repos, results, category):
                     data.append(repo)
                 else:
                     print("Repo invalid: %s" % url)
-    except (KeyboardInterrupt, Exception):
+    except (KeyboardInterrupt, Exception) as err:
+        print(err)
         _save(data, results + '.bak')
+        return
     _save(data, results)
 
 def _options():
@@ -114,7 +116,8 @@ def rate_interactive(file):
                         results.append(cur_obj)
                     else:
                         print("Repo invalid: %s" % url)
-    except (KeyboardInterrupt, Exception):
+    except (KeyboardInterrupt, Exception) as err:
+        print(err)
         _save(results, file + '.bak')
 
 def main():

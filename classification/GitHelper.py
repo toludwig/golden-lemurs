@@ -16,17 +16,16 @@ class Git(object):
     def __init__(self, user, title):
         super(Git, self).__init__()
         self.api = login(token=_token())
-        repo = self._get_repo(user, title)
-        self.valid = repo != None
-        self.repo = repo
+        # repo may not exist
+        self.repo = None
+        try:
+            self.repo = self._get_repo(user, title)
+            self.valid = True
+        except StopIteration:
+            self.valid = False
 
     def _get_repo(self, user, title):
-        repo = self.api.search_repositories('%s user:%s fork:true' % (title, user))
-        # repo may not exist
-        try:
-            return repo.next().repository
-        except StopIteration:
-            return None
+        return self.api.search_repositories('%s user:%s fork:true' % (title, user)).next().repository
 
     def number_contributors(self):
         return len(list(self.repo.iter_contributors()))

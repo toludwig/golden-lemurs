@@ -7,15 +7,18 @@ from .GitHelper import Git
 
 def load_data(repos, results, category):
     data = _load(results)
-    with open(repos, 'r') as file:
-        urls = json.load(file)
-        for url in urls:
-            repo = download_fields(url, 'api')
-            if repo != None:
-                repo["Category"] = category
-                data.append(repo)
-            else:
-                print("Repo invalid: %s" % url)
+    try:
+        with open(repos, 'r') as file:
+            urls = json.load(file)
+            for url in urls:
+                repo = download_fields(url, 'api')
+                if repo != None:
+                    repo["Category"] = category
+                    data.append(repo)
+                else:
+                    print("Repo invalid: %s" % url)
+    except KeyboardInterrupt:
+        _save(data, results + '.bak')
     _save(data, results)
 
 def _options():
@@ -86,14 +89,9 @@ def _save(data, file):
     with open(file, "w") as f:
         json.dump(data, f, sort_keys=True, indent=4 * " ")
 
-
-def main():
-    (options, args) = _options()
-
-    if options.category != '0': # category given, automatic
-        load_data(options.list, options.out, options.category)
-    else: # wait on paste
-        results = _load(options.out)
+def rate_interactive(file):
+    results = _load(file)
+    try:
         clipboard.copy('')
 
         while True:
@@ -107,7 +105,7 @@ def main():
                 c = input(
                     "Ratings: [1] DEV [2] HW [3] EDU [4] DOCS [5] WEB [6] DATA [7] OTHER [S]kip [Q]uit\n")
                 if c in ['q', 'Q']:
-                    _save(results, options.out)
+                    _save(results, file)
                     return
                 elif c in ['s', 'S']:
                     trying = False
@@ -119,6 +117,16 @@ def main():
                         results.append(cur_obj)
                     else:
                         print("Repo invalid: %s" % url)
+    except KeyboardInterrupt:
+        _save(results, file + '.bak')
+
+def main():
+    (options, args) = _options()
+
+    if options.category != '0': # category given, automatic
+        load_data(options.list, options.out, options.category)
+    else: # wait on paste
+        rate_interactive(options.out)
 
 
 # legacy, needed?

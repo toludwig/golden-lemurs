@@ -52,7 +52,7 @@ def download_fields(url, url_schema = 'web'):
         user, title = _split_url(url)
     elif url_schema == 'api':
         user, title = _split_api_url(url)
-    else
+    else:
         raise Exception('no such url schema')
     git = Git(user, title)
     obj = {}

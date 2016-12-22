@@ -15,7 +15,7 @@ class Git(object):
 
     def __init__(self, user, title):
         super(Git, self).__init__()
-        self.api = login(token=i_token())
+        self.api = login(token=_token())
         self.repo = self._get_repo(user, title)
 
     def _get_repo(self, user, title):

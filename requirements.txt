@@ -1,2 +1,5 @@
 numpy
 pandas
+github3.py
+markdown
+bs4

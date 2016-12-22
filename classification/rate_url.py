@@ -8,8 +8,8 @@ from .GitHelper import Git
 
 def _options():
     parser = OptionParser()
-    parser.add_option("-o", "--output", dest="out", action="store",
-                      type="string", default='./results.json', help="file to write to")
+    parser.add_option("-f", "--file", dest="out", action="store",
+                      type="string", default='./results.json', help="file to read from/write to")
 
     return parser.parse_args()
 
@@ -42,6 +42,9 @@ def download_fields(url):
     obj["Times"] = git.get_times()
     return obj
 
+def _load(file):
+    with open(file, 'r') as f:
+        return json.load(f)
 
 def _save(data, file):
     with open(file, "w") as f:
@@ -51,6 +54,11 @@ def _save(data, file):
 def main():
     (options, args) = _options()
     results = []
+    try:
+        results = _load(options.out)
+    except:
+        print('no data found; creating %s' % options.out)
+        
     clipboard.copy('')
 
     while True:

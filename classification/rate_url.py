@@ -5,14 +5,25 @@ import clipboard
 from optparse import OptionParser
 from .GitHelper import Git
 
+def load_data(repos, results, category):
+    data = _load(results)
+    with open(repos, 'r') as file:
+        urls = json.load(file)
+        for url in urls:
+            repo = download_fields(url)
+            repo["Category"] = category
+            data.append(repo)
+    _save(data, results)
 
 def _options():
     parser = OptionParser()
     parser.add_option("-f", "--file", dest="out", action="store",
-                      type="string", default='./results.json', help="file to read from/write to")
+                      type="string", default='./results.json', help="file with results")
+    parser.add_option("-r", "--repos", dest="list", action="store",
+                      type="string", default='./list.json', help="file with repo urls; default: reads clipboard")
+    parser.add_option("-c", "--category", dest="category", action="store", type="string", default='0', help="category to assign; default: console input")
 
     return parser.parse_args()
-
 
 def _split_url(url):
     """
@@ -57,29 +68,33 @@ def _save(data, file):
 
 def main():
     (options, args) = _options()
-    results = _load(options.out)
-    clipboard.copy('')
 
-    while True:
-        url = ""
-        while url == '':
-            url = clipboard.paste()
-        print("URL: %s" % url)
+    if options.category == '0': # no category given, automatic
+        load_data(options.list, options.out, options.category)
+    else: # wait on paste
+        results = _load(options.out)
+        clipboard.copy('')
 
-        trying = True
-        while trying:
-            c = input(
-                "Ratings: [1] DEV [2] HW [3] EDU [4] DOCS [5] WEB [6] DATA [7] OTHER [S]kip [Q]uit\n")
-            if c in ['q', 'Q']:
-                _save(results, options.out)
-                return
-            elif c in ['s', 'S']:
-                trying = False
-            elif c in ['1', '2', '3', '4', '5', '6', '7']:
-                trying = False
-                cur_obj = download_fields(url)
-                cur_obj["Category"] = c
-                results.append(cur_obj)
+        while True:
+            url = ""
+            while url == '':
+                url = clipboard.paste()
+            print("URL: %s" % url)
+
+            trying = True
+            while trying:
+                c = input(
+                    "Ratings: [1] DEV [2] HW [3] EDU [4] DOCS [5] WEB [6] DATA [7] OTHER [S]kip [Q]uit\n")
+                if c in ['q', 'Q']:
+                    _save(results, options.out)
+                    return
+                elif c in ['s', 'S']:
+                    trying = False
+                elif c in ['1', '2', '3', '4', '5', '6', '7']:
+                    trying = False
+                    cur_obj = download_fields(url)
+                    cur_obj["Category"] = c
+                    results.append(cur_obj)
 
 
 def extend_fields(in_file):

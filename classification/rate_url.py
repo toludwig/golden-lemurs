@@ -58,7 +58,7 @@ def download_fields(url, url_schema = 'web'):
     else:
         raise Exception('no such url schema')
     git = Git(user, title)
-    if git.valid():
+    if git.valid:
         obj = {}
         obj["URL"] = url
         obj["User"] = user

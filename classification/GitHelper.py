@@ -16,10 +16,9 @@ class Git(object):
     def __init__(self, user, title):
         super(Git, self).__init__()
         self.api = login(token=_token())
-        self.repo = self._get_repo(user, title)
-
-    def valid(self):
-        return self.repo != None
+        repo = self._get_repo(user, title)
+        self.valid = repo != None
+        self.repo = repo
 
     def _get_repo(self, user, title):
         repo = self.api.search_repositories('%s user:%s fork:true' % (title, user))

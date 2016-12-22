@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import sys
 import json
-CLIPBOARD = TRUE
+CLIPBOARD = True
 try:
     import clipboard
 except:

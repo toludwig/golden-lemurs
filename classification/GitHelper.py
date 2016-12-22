@@ -8,7 +8,8 @@ from random import randint
 
 def _token():
     tokens = ['9e484681cd48b198297bb0de032445f92a962282',
-              '360e0d54fe6c4e1e944bcb6c2ed0533389683758']
+              '360e0d54fe6c4e1e944bcb6c2ed0533389683758',
+              '16bf3237e831bbb0a226eeae44313ca2254f49be']
     i = randint(0, len(tokens) - 1)
     return tokens[i]
 

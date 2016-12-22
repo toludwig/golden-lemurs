@@ -18,9 +18,8 @@ def load_data(repos, results, category):
                 else:
                     print("Repo invalid: %s" % url)
     except (KeyboardInterrupt, Exception) as err:
-        print(err)
         _save(data, results + '.bak')
-        return
+        raise Exception("Crawler interrupted").with_traceback(sys.exec_info()[2])
     _save(data, results)
 
 def _options():
@@ -117,8 +116,8 @@ def rate_interactive(file):
                     else:
                         print("Repo invalid: %s" % url)
     except (KeyboardInterrupt, Exception) as err:
-        print(err)
         _save(results, file + '.bak')
+        raise Exception("Crawler interrupted").with_traceback(sys.exec_info()[2])
 
 def main():
     (options, args) = _options()

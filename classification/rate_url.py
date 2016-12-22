@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import sys
-import simplejson as json
+import json
 import clipboard
 from optparse import OptionParser
 from .GitHelper import Git

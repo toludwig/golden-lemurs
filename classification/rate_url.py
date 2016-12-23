@@ -17,8 +17,6 @@ def load_data(repos, results, category):
                 if repo != None:
                     repo["Category"] = category
                     data.append(repo)
-                else:
-                    print("Repo invalid: %s" % url)
     except (KeyboardInterrupt, Exception) as err:
         _save(data, results + '.bak')
         raise Exception("Crawler interrupted @ %s" % last_url).with_traceback(sys.exc_info()[2])
@@ -63,9 +61,10 @@ def download_fields(url, url_schema = 'web'):
         user, title = _split_api_url(url)
     else:
         raise Exception('no such url schema')
-    git = Git(user, title)
-    if git.valid:
-        try:
+    try:
+        git = Git(user, title)
+        # skip forks as heuristic to avoid training on duplicate data
+        if git.valid and not git.is_fork():
             obj = {}
             obj["User"] = user
             obj["Title"] = title
@@ -75,11 +74,9 @@ def download_fields(url, url_schema = 'web'):
             obj["Issues"] = git.get_issues()
             obj["Times"] = git.get_times()
             return obj
-        except Exception as err:
-            print("Crawler interrupted @ %s ; skipping this repo" % url).with_traceback(sys.exc_info()[2])
-            return None
-    else:
-        return None
+    except Exception as err:
+        print("Crawler interrupted @ %s because of %s ; skipping this repo" % (url, err))
+    return None
 
 def _load(file):
     try:

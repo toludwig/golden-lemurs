@@ -65,15 +65,19 @@ def download_fields(url, url_schema = 'web'):
         raise Exception('no such url schema')
     git = Git(user, title)
     if git.valid:
-        obj = {}
-        obj["User"] = user
-        obj["Title"] = title
-        obj["Readme"] = git.get_readme()
-        obj["NumberOfContributors"] = git.number_contributors()
-        obj["Commits"] = git.get_commits()
-        obj["Issues"] = git.get_issues()
-        obj["Times"] = git.get_times()
-        return obj
+        try:
+            obj = {}
+            obj["User"] = user
+            obj["Title"] = title
+            obj["Readme"] = git.get_readme()
+            obj["NumberOfContributors"] = git.number_contributors()
+            obj["Commits"] = git.get_commits()
+            obj["Issues"] = git.get_issues()
+            obj["Times"] = git.get_times()
+            return obj
+        except Exception as err:
+            print("Crawler interrupted @ %s ; skipping this repo" % url).with_traceback(sys.exc_info()[2])
+            return None
     else:
         return None
 

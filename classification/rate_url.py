@@ -76,7 +76,7 @@ def download_fields(url, url_schema = 'web'):
             obj["Times"] = git.get_times()
             return obj
         except Exception as err:
-            print("Crawler interrupted @ %s ; skipping this repo" % url).with_traceback(sys.exc_info()[2])
+            print("Crawler interrupted @ %s ; skipping this repo" % url)
             return None
     else:
         return None

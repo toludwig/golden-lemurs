@@ -24,6 +24,9 @@ class Git(object):
         self.repo = self.api.repository(user, title)
         self.valid = not type(self.repo) == NullObject
 
+    def is_fork(self):
+        return self.repo.fork
+
     def number_contributors(self):
         return len(list(self.repo.contributor_statistics()))
 

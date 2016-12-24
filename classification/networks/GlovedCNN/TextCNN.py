@@ -9,7 +9,7 @@ class TextCNN(object):
     """
 
     def __init__(self, sequence_length, num_classes, filter_sizes, num_filters,
-                 embedding_size=301):
+                 embedding_size=300):
 
          self.input = tf.placeholder(tf.float32, [None, sequence_length],
                                      name='input')
@@ -27,7 +27,7 @@ class TextCNN(object):
         # Convolution and max-pooling Layer
         pooled_outputs = []
         for i, filter_size in enumerate(filter_sizes):
-            with tf.name_scope("conv-maxpool-%s" % filter_size):
+            with tf.name_scope("conv-maxpool-%s" % i):
                 # Convolution Layer
                 filter_shape = [filter_size, embedding_size, 1, num_filters]
                 W = tf.Variable(tf.truncated_normal(

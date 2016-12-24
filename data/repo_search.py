@@ -25,11 +25,11 @@ def save_search(file, keywords):
 
 def list_repos():
     categories = [
-        #['edu.json', ['lecture', 'course', 'teaching']],
-        ['homework.json', ['homework', 'exercise']]
-        #['web.json', ['website', 'homepage']]
-        #['docs.json', ['docs']],
-        #['data.json', ['dataset', 'data_', 'data-', 'sample']]
+        ['edu.json', ['lecture', 'course', 'teaching']],
+        ['homework.json', ['homework', 'exercise']],
+        ['web.json', ['website', 'homepage']],
+        ['docs.json', ['docs']],
+        ['data.json', ['dataset', 'data_', 'data-', 'sample']]
     ]
     for entry in categories:
         file = entry[0]

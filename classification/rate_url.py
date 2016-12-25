@@ -4,22 +4,29 @@ import json
 import clipboard
 from optparse import OptionParser
 from .GitHelper import Git
+from random import sample
+from concurrent.futures import ThreadPoolExecutor
+from time import sleep
 
-def load_data(repos, results, category):
+def load_data(repos, results, category, num_indices=-1):
     data = _load(results)
     last_url = ''
     try:
         with open(repos, 'r') as file:
-            urls = json.load(file)
-            for url in urls:
-                last_url = url
-                repo = download_fields(url, 'api')
-                if repo != None:
-                    repo["Category"] = category
-                    data.append(repo)
+            if num_indices != -1:
+                entries = json.load(file)
+                indices = sample(range(len(entries)), num_indices)
+                urls = [entries[index] for index in indices]
+            else:
+                urls = json.load(file)
+            with ThreadPoolExecutor(max_workers=6) as executor:
+                new = filter(None, executor.map(download_fields, urls))
+            for repo in new:
+                repo["Category"] = category
+                data.append(repo)
     except (KeyboardInterrupt, Exception) as err:
         _save(data, results + '.bak')
-        raise Exception("Crawler interrupted @ %s" % last_url).with_traceback(sys.exc_info()[2])
+        raise Exception("Crawler interrupted").with_traceback(sys.exc_info()[2])
     _save(data, results)
 
 def _options():
@@ -54,29 +61,38 @@ def _split_url(url):
     return (user, title)
 
 
-def download_fields(url, url_schema = 'web'):
+def download_fields(url, url_schema = 'api'):
     if url_schema == 'web':
         user, title = _split_url(url)
     elif url_schema == 'api':
         user, title = _split_api_url(url)
     else:
         raise Exception('no such url schema')
+
+    # Api rate limit might have been reached
+    connected = False
+    while not connected:
+        try:
+            git = Git(user, title)
+            connected = True
+        except:
+            sleep(10)
+    if not git.valid():
+        return None
     try:
-        git = Git(user, title)
         # skip forks as heuristic to avoid training on duplicate data
-        if git.valid and not git.is_fork():
-            obj = {}
-            obj["User"] = user
-            obj["Title"] = title
-            obj["Readme"] = git.get_readme()
-            obj["NumberOfContributors"] = git.number_contributors()
-            obj["Commits"] = git.get_commits()
-            obj["Issues"] = git.get_issues()
-            obj["Times"] = git.get_times()
-            return obj
+        obj = {}
+        obj["User"] = user
+        obj["Title"] = title
+        obj["Readme"] = git.get_readme()
+        obj["NumberOfContributors"] = git.number_contributors()
+        obj["Commits"] = git.get_commits()
+        obj["Issues"] = git.get_issues()
+        obj["Times"] = git.get_times()
     except Exception as err:
         print("Crawler interrupted @ %s because of %s ; skipping this repo" % (url, err))
-    return None
+        return None
+    return obj
 
 def _load(file):
     try:
@@ -114,7 +130,7 @@ def rate_interactive(file):
                     trying = False
                 elif c in ['1', '2', '3', '4', '5', '6', '7']:
                     trying = False
-                    cur_obj = download_fields(url)
+                    cur_obj = download_fields(url, 'web')
                     if cur_obj != None:
                         cur_obj["Category"] = c
                         results.append(cur_obj)

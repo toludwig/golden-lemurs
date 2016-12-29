@@ -1,3 +1,5 @@
+import random
+import math
 import numpy as np
 import pandas
 
@@ -26,3 +28,31 @@ class GloveWrapper(object, metaclass=Singleton):
             return self.data.loc(word)
         except Exception as e:
             raise
+
+class TrainingData(object):
+    """Manages the trainingdata and provides batches. Currently not
+    memory efficient"""
+    def __init__(self):
+        super(TrainingData, self).__init__()
+        f1 = json.load(open('data/dev_full.json'))
+        f2 = json.load(open('data/data_full.json'))
+        f3 = json.load(open('data/docs_full.json'))
+        f4 = json.load(open('data/web_full.json'))
+        f5 = json.load(open('data/edu_full.json'))
+        f6 = json.load(open('data/homework_full.json'))
+        self.cats = [f1[-500], f2[-500], f3[-500], f4[-500], f5[-500], f6[-500]]
+        self.val = [f1[-500:], f2[-500:], f3[-500:], f4[-500:], f5[-500:], f6[-500:]]
+
+    def batch(self, size):
+        num_entries = math.ceil(size / len(self.cats))
+
+        data = []
+        for entry in self.cats:
+            indices = sample(range(len(entry)), num_entries)
+            data.append([data[index] for index in indices])
+        random.shuffle(data)
+
+        return data
+
+    def validation(self):
+        return self.val

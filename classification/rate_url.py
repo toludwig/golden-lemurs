@@ -20,12 +20,12 @@ def load_data(repos, results, category, num_indices=-1):
             else:
                 urls = json.load(file)
             with ThreadPoolExecutor(max_workers=6) as executor:
-                new = filter(None, executor.map(download_fields, urls))
+                new = list(filter(None, list(executor.map(download_fields, urls))))
             for repo in new:
                 repo["Category"] = category
                 data.append(repo)
     except (KeyboardInterrupt, Exception) as err:
-        _save(data, results + '.bak')
+        _save(new, results + '.bak')
         raise Exception("Crawler interrupted").with_traceback(sys.exc_info()[2])
     _save(data, results)
 

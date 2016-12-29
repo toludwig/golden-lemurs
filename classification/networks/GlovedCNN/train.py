@@ -8,16 +8,37 @@ from .TextCNN import TextCNN
 BATCH_SIZE = 300
 NUM_BATCHES = 100
 LEARNING_RATE = 1e-3
-VALIDATION_DATA = 300
-VALIDATION_EPOCHES = 100
+VAL_SIZE = 300
 CHECKPOINT_PATH = "out/Gloved.ckpt"
 TITLE = 'Muh net'
 COMMENT = "preprocess, mid-deep, normal pooling, wide ffn"
 
-def train(arg):
+
+def test(model_path=CHECKPOINT_PATH):
+    with tf.Session() as session:
+        self.saver.restore(session, CHECKPOINT_PATH)
+        validation_data = TrainingData().validation(VAL_SIZE)
+        results = []
+
+        def val_step(in_batch, target_batch):
+            feed_dict = {
+            cnn.input = in_batch,
+            cnn.target = target_batch,
+            cnn.dropout_prob = 0.0
+            }
+            acc = sess.run([cnn.accuracy], feed_dict)
+            return acc
+
+        for data in validation_data:
+            in = map(lambda x: x['Readme'], batch)
+            out = map(lambda x: x['Category'], batch)
+            results.append(val_step(in, out))
+    return np.average(results)
+
+def train():
     with tf.Session() as session:
         saver = tf.train.Saver()
-        data = TrainingData
+        data = TrainingData()
         cnn = TextCNN(sequence_length=150,
                       num_classes=6,
                       filter_sizes[3, 4, 5],
@@ -37,7 +58,7 @@ def train(arg):
             print(acc)
 
         for i in range(NUM_BATCHES):
-            batch = data.batch(300)
+            batch = data.batch(BATCH_SIZE)
             in = map(lambda x: x['Readme'], batch)
             out = map(lambda x: x['Category'], batch)
             train_step(in, out)

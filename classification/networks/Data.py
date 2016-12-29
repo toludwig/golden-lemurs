@@ -41,7 +41,7 @@ class TrainingData(object):
         f5 = json.load(open('data/edu_full.json'))
         f6 = json.load(open('data/homework_full.json'))
         self.cats = [f1[-500], f2[-500], f3[-500], f4[-500], f5[-500], f6[-500]]
-        self.val = [f1[-500:], f2[-500:], f3[-500:], f4[-500:], f5[-500:], f6[-500:]]
+        self.val = [f1[-500:] + f2[-500:] + f3[-500:] + f4[-500:] + f5[-500:] + f6[-500:]]
 
     def batch(self, size):
         num_entries = math.ceil(size / len(self.cats))
@@ -54,5 +54,5 @@ class TrainingData(object):
 
         return data
 
-    def validation(self):
-        return self.val
+    def validation(self, size):
+        return [self.val[x:x+size] for x in range(0, len(self.val), size)]

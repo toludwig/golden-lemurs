@@ -30,7 +30,7 @@ def list_repos():
         ['homework.json', ['homework', 'exercise']],
         ['web.json', ['website', 'homepage']],
         ['docs.json', ['docs']],
-        ['data.json', ['dataset', 'data_', 'data-', 'sample']]
+        ['data.json', ['dataset', 'sample']]
     ]
     for entry in categories:
         file = entry[0]

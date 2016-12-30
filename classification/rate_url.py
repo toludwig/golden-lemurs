@@ -7,6 +7,7 @@ from .GitHelper import Git
 from random import sample
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
+import traceback
 
 def load_data(repos, results, category, num_indices=-1):
     data = _load(results)
@@ -82,15 +83,23 @@ def download_fields(url, url_schema = 'api'):
     try:
         # skip forks as heuristic to avoid training on duplicate data
         obj = {}
+        print('start')
         obj["User"] = user
         obj["Title"] = title
         obj["Readme"] = git.get_readme()
         obj["NumberOfContributors"] = git.number_contributors()
-        obj["Commits"] = git.get_commits()
-        obj["Issues"] = git.get_issues()
+        obj["NumberOfCommits"] = git.number_commits()
+        obj["NumberOfIssues"] = git.number_issues()
+        obj["Branches"] = git.number_branches()
+        obj["Forks"] = git.number_forks()
+        obj["Stars"] = git.number_stars()
+        obj["Pulls"] = git.number_pull_requests()
+        obj["Subscribers"] = git.number_subscribers()
+        obj["CommitTimes"] = git.get_commit_times()
         obj["Times"] = git.get_times()
     except Exception as err:
         print("Crawler interrupted @ %s because of %s ; skipping this repo" % (url, err))
+        traceback.print_exc()
         return None
     return obj
 

@@ -1,7 +1,7 @@
 import random
 import math
-import numpy as np
 import pandas
+
 
 class Singleton(type):
     _instances = {}
@@ -29,6 +29,7 @@ class GloveWrapper(object, metaclass=Singleton):
         except Exception as e:
             raise
 
+
 class TrainingData(object):
     """Manages the trainingdata and provides batches. Currently not
     memory efficient"""
@@ -48,7 +49,7 @@ class TrainingData(object):
 
         data = []
         for entry in self.cats:
-            indices = sample(range(len(entry)), num_entries)
+            indices = random.sample(range(len(entry)), num_entries)
             data.append([data[index] for index in indices])
         random.shuffle(data)
 

@@ -1,7 +1,6 @@
-from pymongo import MongoClient
-import simplejson as json
 import bson
 from . import db
+
 
 class Logger(object):
     """

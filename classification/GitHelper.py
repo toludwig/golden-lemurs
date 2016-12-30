@@ -31,7 +31,7 @@ class Git():
         self.repo = self.api.repository(user, title)
 
     def valid(self):
-        return (False if self.repo is None else True)
+        return False if self.repo is None else True
 
     def is_fork(self):
         return self.repo.fork
@@ -90,4 +90,4 @@ class Git():
     def get_times(self):
         created = self.repo.created_at.timestamp()
         last = self.repo.updated_at.timestamp()
-        return (created, last)
+        return created, last

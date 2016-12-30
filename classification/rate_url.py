@@ -9,9 +9,9 @@ from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 import traceback
 
+
 def load_data(repos, results, category, num_indices=-1):
     data = _load(results)
-    last_url = ''
     try:
         with open(repos, 'r') as file:
             if num_indices != -1:
@@ -25,10 +25,11 @@ def load_data(repos, results, category, num_indices=-1):
             for repo in new:
                 repo["Category"] = category
                 data.append(repo)
-    except (KeyboardInterrupt, Exception) as err:
+    except (KeyboardInterrupt, Exception):
         _save(new, results + '.bak')
         raise Exception("Crawler interrupted").with_traceback(sys.exc_info()[2])
     _save(data, results)
+
 
 def _options():
     parser = OptionParser()
@@ -40,6 +41,7 @@ def _options():
 
     return parser.parse_args()
 
+
 def _split_api_url(url):
     """
     Splits an URL into username and repo title.
@@ -48,7 +50,8 @@ def _split_api_url(url):
     split = url.split('/')
     title = split[5]
     user = split[4]
-    return (user, title)
+    return user, title
+
 
 def _split_url(url):
     """
@@ -59,7 +62,7 @@ def _split_url(url):
     split = url.split('/')
     title = split[4]
     user = split[3]
-    return (user, title)
+    return user, title
 
 
 def download_fields(url, url_schema = 'api'):
@@ -103,6 +106,7 @@ def download_fields(url, url_schema = 'api'):
         return None
     return obj
 
+
 def _load(file):
     try:
         with open(file, 'r') as f:
@@ -111,9 +115,11 @@ def _load(file):
         print('no data found; creating %s' % file)
         return []
 
+
 def _save(data, file):
     with open(file, "w") as f:
         json.dump(data, f, sort_keys=True, indent=4 * " ")
+
 
 def rate_interactive(file):
     results = _load(file)
@@ -149,12 +155,13 @@ def rate_interactive(file):
         _save(results, file + '.bak')
         raise Exception("Crawler interrupted @ %s" % last_url).with_traceback(sys.exc_info()[2])
 
+
 def main():
     (options, args) = _options()
 
     if options.category != '0': # category given, automatic
         load_data(options.list, options.out, options.category)
-    else: # wait on paste
+    else:  # wait on paste
         rate_interactive(options.out)
 
 

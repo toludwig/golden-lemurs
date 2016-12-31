@@ -24,7 +24,6 @@ class GloveWrapper(object, metaclass=Singleton):
         self.data = Word2Vec.load_word2vec_format('data/GoogleNews-vectors-negative300.bin', binary=True)
 
     def lookup_word(self, word):
-        print(word)
         if word == '//pad//':
             return [0 for i in range(300)]
         try:

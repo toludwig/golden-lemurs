@@ -5,6 +5,8 @@ from ..Data import TrainingData, GloveWrapper
 from .. import TELEGRAM_API, TELEGRAM_TARGETS
 from .TextCNN import TextCNN
 import inspect
+import os
+
 
 BATCH_SIZE = 300
 NUM_BATCHES = 100
@@ -71,7 +73,6 @@ def train():
             _, new_acc, new_cost = session.run([optimizer, cnn.accuracy, cnn.loss], feed_dict)
             list_acc.append(new_acc)
             list_cost.append(new_cost)
-            print(acc)
 
         acc = []
         cost = []
@@ -81,18 +82,19 @@ def train():
             input_vect = list(map(lambda x: glove.tokenize(x['Readme'], 200), batch))
             output_vect = list(map(lambda x: x['Category'], batch))
 
-            print(input_vect[0])
             train_step(input_vect, output_vect, acc, cost)
 
             # Logging and backup
             print(cost)
             if i % SAVE_INTERVAL == 0:
-                LOGGER.set_cost(cost)
-                LOGGER.set_test_acc(acc)
+                #LOGGER.set_cost(cost)
+                #LOGGER.set_test_acc(acc)
+                if not os.path.exists(os.path.dirname(CHECKPOINT_PATH)):
+                    os.makedirs(os.path.dirname(CHECKPOINT_PATH))
 
                 checkpoint = saver.save(session, CHECKPOINT_PATH, global_step=i)
 
-            return checkpoint
+        return checkpoint
 
 
 def main():

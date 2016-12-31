@@ -1,6 +1,5 @@
 import random
 import math
-import pandas
 import simplejson as json
 import re
 from gensim.models.word2vec import Word2Vec
@@ -26,19 +25,22 @@ class GloveWrapper(object, metaclass=Singleton):
 
     def lookup_word(self, word):
         print(word)
+        if word == '//pad//':
+            return [0 for i in range(300)]
         try:
             return self.data[word]
         except:
-            return [[0] for i in range(300)]
+            return [0 for i in range(300)]
 
-    def tokenize(self, text):
+    def tokenize(self, text, length=200):
         # todo: padding
-        return [[self.lookup_word(word)] for word in clean_str(text).split()]
+        tokens = clean_str(text).split()
+        tokens += ['//pad//'] * (length - len(tokens))
+        return [self.lookup_word(word) for word in tokens[:length]]
 
 
 class TrainingData(object):
-    """Manages the trainingdata and provides batches. Currently not
-    memory efficient"""
+    """Manages the trainingdata and provides batches."""
     def __init__(self):
         super(TrainingData, self).__init__()
         #f1 = json.load(open('data/dev_full.json'))

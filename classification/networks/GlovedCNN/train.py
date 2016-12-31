@@ -22,7 +22,7 @@ def test(model_path=CHECKPOINT_PATH):
     with tf.Session() as session:
         tf.train.Saver().restore(session, model_path)
         validation_data = TrainingData().validation(VAL_SIZE)
-        cnn = TextCNN(sequence_length=150,
+        cnn = TextCNN(sequence_length=200,
                       num_classes=6,
                       filter_sizes=[3, 4, 5],
                       num_filters=128)
@@ -50,7 +50,7 @@ def train():
     with tf.Session() as session:
         data = TrainingData()
         glove = GloveWrapper()
-        cnn = TextCNN(sequence_length=150,
+        cnn = TextCNN(sequence_length=200,
                       num_classes=6,
                       filter_sizes=[3, 4, 5],
                       num_filters=128)
@@ -78,13 +78,14 @@ def train():
 
         for i in range(NUM_BATCHES):
             batch = data.batch(BATCH_SIZE)
-            input_vect = list(map(lambda x: glove.tokenize(x['Readme']), batch))
+            input_vect = list(map(lambda x: glove.tokenize(x['Readme'], 200), batch))
             output_vect = list(map(lambda x: x['Category'], batch))
 
             print(input_vect[0])
             train_step(input_vect, output_vect, acc, cost)
 
             # Logging and backup
+            print(cost)
             if i % SAVE_INTERVAL == 0:
                 LOGGER.set_cost(cost)
                 LOGGER.set_test_acc(acc)

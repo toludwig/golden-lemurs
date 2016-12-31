@@ -2,14 +2,13 @@ import bson
 from . import db
 
 
-class Logger(object):
+class Logger:
     """
     Stores neural network data in a database for later comparison.
     Provide the name, description and entire relevant source code as a
     string during initialization.
     """
     def __init__(self, name, description):
-        super(Logger, self).__init__()
         self.id = bson.ObjectId(db.networks.insert({'name': name,
                                                     'description': description}))
 

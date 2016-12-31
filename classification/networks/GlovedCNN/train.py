@@ -81,7 +81,7 @@ def train():
             input_vect = list(map(lambda x: glove.tokenize(x['Readme']), batch))
             output_vect = list(map(lambda x: x['Category'], batch))
 
-            print(input_vect)
+            print(input_vect[0])
             train_step(input_vect, output_vect, acc, cost)
 
             # Logging and backup

@@ -3,6 +3,7 @@ import math
 import pandas
 import simplejson as json
 import re
+from gensim.models.word2vec import Word2Vec
 
 
 class Singleton(type):
@@ -21,17 +22,17 @@ class GloveWrapper(object, metaclass=Singleton):
     def __init__(self):
         super(GloveWrapper, self).__init__()
         print('Loading GloVe-Vectors. This will take a while...')
-        self.data = pandas.read_csv('data/glove.42B.300d.txt',
-                                    delim_whitespace=True,
-                                    error_bad_lines=False)
+        self.data = Word2Vec.load_word2vec_format('data/GoogleNews-vectors-negative300.bin', binary=True)
 
     def lookup_word(self, word):
+        print(word)
         try:
-            return self.data.loc(word)[0]
+            return self.data[word]
         except:
             return [[0] for i in range(300)]
 
     def tokenize(self, text):
+        # todo: padding
         return [[self.lookup_word(word)] for word in clean_str(text).split()]
 
 

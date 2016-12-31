@@ -20,13 +20,14 @@ def load_data(repos, results, category, num_indices=-1):
                 urls = [entries[index] for index in indices]
             else:
                 urls = json.load(file)
-            with ThreadPoolExecutor(max_workers=6) as executor:
-                new = list(filter(None, list(executor.map(download_fields, urls))))
-            for repo in new:
+            with ThreadPoolExecutor(max_workers=8) as executor:
+                urls[:] = list(executor.map(download_fields, urls))
+            urls[:] = list(filter(None, urls))
+            for repo in urls:
                 repo["Category"] = category
-                data.append(repo)
+            data.append(urls)
     except (KeyboardInterrupt, Exception):
-        _save(new, results + '.bak')
+        _save(urls, results + '.bak')
         raise Exception("Crawler interrupted").with_traceback(sys.exc_info()[2])
     _save(data, results)
 
@@ -37,7 +38,10 @@ def _options():
                       type="string", default='./results.json', help="file with results")
     parser.add_option("-r", "--repos", dest="list", action="store",
                       type="string", default='./list.json', help="file with repo urls; default: reads clipboard")
-    parser.add_option("-c", "--category", dest="category", action="store", type="string", default='0', help="category to assign; default: console input")
+    parser.add_option("-c", "--category", dest="category", action="store", type="string", default='0',
+                      help="category to assign; default: console input")
+    parser.add_option("-n", "--number", dest="number", action="store", type="int", default=-1,
+                      help="number of repos to download")
 
     return parser.parse_args()
 
@@ -91,18 +95,16 @@ def download_fields(url, url_schema = 'api'):
         obj["Title"] = title
         obj["Readme"] = git.get_readme()
         obj["NumberOfContributors"] = git.number_contributors()
-        obj["NumberOfCommits"] = git.number_commits()
         obj["NumberOfIssues"] = git.number_issues()
         obj["Branches"] = git.number_branches()
         obj["Forks"] = git.number_forks()
         obj["Stars"] = git.number_stars()
         obj["Pulls"] = git.number_pull_requests()
         obj["Subscribers"] = git.number_subscribers()
-        obj["CommitTimes"] = git.get_commit_times()
+        (obj["NumberOfCommits"], obj["CommitTimes"]) = git.get_commit_times()
         obj["Times"] = git.get_times()
     except Exception as err:
         print("Crawler interrupted @ %s because of %s ; skipping this repo" % (url, err))
-        traceback.print_exc()
         return None
     return obj
 
@@ -146,7 +148,7 @@ def rate_interactive(file):
                 elif c in ['1', '2', '3', '4', '5', '6', '7']:
                     trying = False
                     cur_obj = download_fields(url, 'web')
-                    if cur_obj != None:
+                    if cur_obj is not None:
                         cur_obj["Category"] = c
                         results.append(cur_obj)
                     else:
@@ -160,7 +162,7 @@ def main():
     (options, args) = _options()
 
     if options.category != '0': # category given, automatic
-        load_data(options.list, options.out, options.category)
+        load_data(options.list, options.out, options.category, options.number)
     else:  # wait on paste
         rate_interactive(options.out)
 

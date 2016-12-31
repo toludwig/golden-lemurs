@@ -1,16 +1,22 @@
 import tensorflow as tf
 from ..Data import GloveWrapper
 
-class TextCNN(object):
+
+class TextCNN():
     """
     A CNN for text classification.
     Uses an embedding layer, followed by a convolutional, max-pooling and softmax layer.
     """
 
-    def __init__(self, sequence_length, num_classes, filter_sizes, num_filters,
-             embedding_size=300):
+    def __init__(self,
+                 sequence_length,
+                 num_classes,
+                 filter_sizes,
+                 num_filters,
+                 vocab_size=1000000,
+                 embedding_size=300):
 
-        self.input_vect = tf.placeholder(tf.float32, [None, sequence_length],
+        self.input_vect = tf.placeholder(tf.int32, [None, sequence_length],
                                     name='input')
 
         self.target_vect = tf.placeholder(tf.float32, [None, num_classes],
@@ -19,9 +25,11 @@ class TextCNN(object):
         self.dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
 
         with tf.device('/cpu:0'), tf.name_scope("embedding"):
-            w = tf.constant(GloveWrapper, name="w")
-            self.embedded_chars = tf.nn.embedding_lookup(w, self.input_vect)
-            self.embedded_chars_expanded = tf.expand_dims(self.embedded_chars, -1)
+            W = tf.Variable(
+                tf.random_uniform([vocab_size, embedding_size], -1.0, 1.0),
+                name="W")
+            self.embedded_chars = tf.nn.embedding_lookup(W, self.input_vect)
+            self.embedded_chars_expanded = tf.expand_dims(self.embedded_, -1)
 
         # Convolution and max-pooling Layer
         pooled_outputs = []

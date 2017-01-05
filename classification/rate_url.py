@@ -5,8 +5,8 @@ import clipboard
 from optparse import OptionParser
 from .GitHelper import Git
 from random import sample
-from concurrent.futures import ThreadPoolExecutor
 from time import sleep
+from multiprocessing import Pool
 import traceback
 
 
@@ -20,12 +20,12 @@ def load_data(repos, results, category, num_indices=-1):
                 urls = [entries[index] for index in indices]
             else:
                 urls = json.load(file)
-            with ThreadPoolExecutor(max_workers=8) as executor:
-                urls[:] = list(executor.map(download_fields, urls))
-            urls[:] = list(filter(None, urls))
+            with Pool(processes=8) as executor:
+                urls[:] = list(executor.imap(download_fields, urls))
+            urls = list(filter(None, urls))
             for repo in urls:
                 repo["Category"] = category
-            data.append(urls)
+            data += urls
     except (KeyboardInterrupt, Exception):
         _save(urls, results + '.bak')
         raise Exception("Crawler interrupted").with_traceback(sys.exc_info()[2])
@@ -95,7 +95,7 @@ def download_fields(url, url_schema = 'api'):
         obj["Title"] = title
         obj["Readme"] = git.get_readme()
         obj["NumberOfContributors"] = git.number_contributors()
-        obj["NumberOfIssues"] = git.number_issues()
+        #obj["NumberOfIssues"] = git.number_issues()
         obj["Branches"] = git.number_branches()
         obj["Forks"] = git.number_forks()
         obj["Stars"] = git.number_stars()

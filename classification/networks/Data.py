@@ -20,8 +20,9 @@ class GloveWrapper(object, metaclass=Singleton):
 
     def __init__(self):
         super(GloveWrapper, self).__init__()
-        print('Loading GloVe-Vectors. This will take a while...')
+        print('Loading GloVe-Vectors. This will take a while...', end='', flush=True)
         self.data = Word2Vec.load_word2vec_format('data/GoogleNews-vectors-negative300.bin', binary=True)
+        print('done.')
 
     def lookup_word(self, word):
         if word == '//pad//':
@@ -38,19 +39,22 @@ class GloveWrapper(object, metaclass=Singleton):
         return [self.lookup_word(word) for word in tokens[:length]]
 
 
-class TrainingData(object):
+class TrainingData():
     """Manages the trainingdata and provides batches."""
     def __init__(self):
-        super(TrainingData, self).__init__()
-        #f1 = json.load(open('data/dev_full.json'))
-        #f2 = json.load(open('data/data_full.json'))
-        #f3 = json.load(open('data/docs_full.json'))
-        #f4 = json.load(open('data/web_full.json'))
-        #f5 = json.load(open('data/edu_full.json'))
-        f6 = json.load(open('homework_full.json'))
-        self.cats = [f6]
-        #self.cats = [f1[-500], f2[-500], f3[-500], f4[-500], f5[-500], f6[-500]]
-        #self.val = [f1[-500:] + f2[-500:] + f3[-500:] + f4[-500:] + f5[-500:] + f6[-500:]]
+        print('Constructing training Data...', end='', flush=True)
+        f1 = json.load(open('data/dev_full.json'))
+        f2 = json.load(open('data/data_full.json'))
+        f3 = json.load(open('data/docs_full.json'))
+        f4 = json.load(open('data/web_full.json'))
+        f5 = json.load(open('data/edu_full.json'))
+        f6 = json.load(open('data/homework_full.json'))
+        self.cats = []
+        self.val = []
+        for cat in [f1, f2, f3, f4, f5, f6]:
+            self.cats.append(cat[:-500])
+            self.val += cat[-500:]
+        print('done')
 
     def batch(self, size):
         num_entries = math.floor(size / len(self.cats))

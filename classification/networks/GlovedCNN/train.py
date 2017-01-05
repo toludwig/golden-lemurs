@@ -64,31 +64,27 @@ def train():
         session.run(tf.initialize_all_variables())
         saver = tf.train.Saver()
 
-        def train_step(in_batch, target_batch, list_acc, list_cost):
+        def train_step(in_batch, target_batch, list_acc):
             feed_dict = {
                 cnn.input_vect: in_batch,
                 cnn.target_vect: target_batch,
                 cnn.dropout_keep_prob: 0.5
             }
-            _, new_acc, new_cost = session.run([optimizer, cnn.accuracy, cnn.loss], feed_dict)
-            list_acc.append(new_acc)
-            list_cost.append(new_cost)
+            _, new_acc = session.run([optimizer, cnn.accuracy], feed_dict=feed_dict)
+            # list_acc.append(float(new_acc))
+            print(new_acc)
 
         acc = []
-        cost = []
 
         for i in range(NUM_BATCHES):
             batch = data.batch(BATCH_SIZE)
             input_vect = list(map(lambda x: glove.tokenize(x['Readme'], 200), batch))
             output_vect = list(map(lambda x: x['Category'], batch))
-
-            train_step(input_vect, output_vect, acc, cost)
+            train_step(input_vect, output_vect, acc)
 
             # Logging and backup
-            print(cost)
             if i % SAVE_INTERVAL == 0:
-                #LOGGER.set_cost(cost)
-                #LOGGER.set_test_acc(acc)
+                LOGGER.set_test_acc(acc)
                 if not os.path.exists(os.path.dirname(CHECKPOINT_PATH)):
                     os.makedirs(os.path.dirname(CHECKPOINT_PATH))
 

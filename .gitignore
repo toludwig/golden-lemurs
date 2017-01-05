@@ -6,6 +6,12 @@ results.json
 # remote credentials
 .remote-sync.json
 
+# Da big stuff
+*.json
+*.bin
+*.bak
+*.gz
+
 # Byte-compiled / optimized / DLL files
 *__pycache__
 *.py[cod]

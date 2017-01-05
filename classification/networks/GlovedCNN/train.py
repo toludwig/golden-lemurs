@@ -4,30 +4,31 @@ from ..Logger import Logger
 from ..Data import TrainingData, GloveWrapper
 from .. import TELEGRAM_API, TELEGRAM_TARGETS
 from .TextCNN import TextCNN
+from .settings import *
 import inspect
 import os
 
-
-BATCH_SIZE = 300
-NUM_BATCHES = 100
-LEARNING_RATE = 1e-3
 VAL_SIZE = 300
 SAVE_INTERVAL = 20
 CHECKPOINT_PATH = "out/Gloved.ckpt"
-TITLE = 'Muh net'
-COMMENT = "preprocess, mid-deep, normal pooling, wide ffn"
+NETWORK_PATH = 'classification/networks/GlovedCNN/TextCNN.py'
+TITLE = 'TextCNN'
+COMMENT = """sequence_length=%d
+        filter_sizes=%s
+        num_filters=%d
+        num_batches=%d
+        batch_size=%d
+        learning rate=%f
+""" % (SEQUENCE_LENGTH, FILTER_SIZES, NUM_FILTERS, NUM_BATCHES, BATCH_SIZE, LEARNING_RATE)
 
 LOGGER = Logger(TITLE, COMMENT)
 
 
-def test(model_path=CHECKPOINT_PATH):
+def test(cnn, model_path=CHECKPOINT_PATH):
     with tf.Session() as session:
-        tf.train.Saver().restore(session, model_path)
         validation_data = TrainingData().validation(VAL_SIZE)
-        cnn = TextCNN(sequence_length=200,
-                      num_classes=6,
-                      filter_sizes=[3, 4, 5],
-                      num_filters=128)
+
+        tf.train.Saver().restore(session, model_path)
         results = []
 
         def val_step(in_batch, target_batch):
@@ -36,28 +37,22 @@ def test(model_path=CHECKPOINT_PATH):
                 cnn.target_vect: target_batch,
                 cnn.dropout_keep_prob: 1.0
             }
-            acc = session.run([cnn.accuracy], feed_dict)
+            acc = session.run(cnn.accuracy, feed_dict)
             return acc
 
         for batch in validation_data:
-            input_vect = map(lambda x: x['Readme'], batch)
-            target_vect = map(lambda x: x['Category'], batch)
-            results.append(val_step(input_vect, target_vect))
+            input_vect = list(map(lambda x: GloveWrapper().tokenize(x['Readme'], 200), batch))
+            target_vect = list(map(lambda x: int(x['Category']) - 1, batch))
+            results.append(float(val_step(input_vect, target_vect)))
 
     LOGGER.set_test_acc(results)
     return np.average(results)
 
 
-def train():
+def train(cnn):
     with tf.Session() as session:
-        data = TrainingData()
-        glove = GloveWrapper()
-        cnn = TextCNN(sequence_length=200,
-                      num_classes=6,
-                      filter_sizes=[3, 4, 5],
-                      num_filters=128)
 
-        #Logger.set_source(inspect.getsource(TextCNN))
+        LOGGER.set_source(NETWORK_PATH)
 
         optimizer = tf.train.AdamOptimizer(LEARNING_RATE).minimize(cnn.loss)
 
@@ -70,21 +65,21 @@ def train():
                 cnn.target_vect: target_batch,
                 cnn.dropout_keep_prob: 0.5
             }
-            _, new_acc = session.run([optimizer, cnn.accuracy], feed_dict=feed_dict)
-            # list_acc.append(float(new_acc))
-            print(new_acc)
+            _, new_acc, pred, scores = session.run([optimizer, cnn.accuracy, cnn.predictions, cnn.scores], feed_dict=feed_dict)
+            list_acc.append(float(new_acc))
 
         acc = []
 
-        for i in range(NUM_BATCHES):
-            batch = data.batch(BATCH_SIZE)
-            input_vect = list(map(lambda x: glove.tokenize(x['Readme'], 200), batch))
-            output_vect = list(map(lambda x: x['Category'], batch))
+        for i in range(1, NUM_BATCHES + 1):
+            batch = TrainingData().batch(BATCH_SIZE)
+            input_vect = list(map(lambda x: GloveWrapper().tokenize(x['Readme'], 200), batch))
+            output_vect = list(map(lambda x: int(x['Category']) - 1, batch))
             train_step(input_vect, output_vect, acc)
+            print('Training step %d/%d: %f%% Accuracy' % (i, NUM_BATCHES, acc[-1] * 100))
 
             # Logging and backup
             if i % SAVE_INTERVAL == 0:
-                LOGGER.set_test_acc(acc)
+                LOGGER.set_training_acc(acc)
                 if not os.path.exists(os.path.dirname(CHECKPOINT_PATH)):
                     os.makedirs(os.path.dirname(CHECKPOINT_PATH))
 
@@ -94,8 +89,13 @@ def train():
 
 
 def main():
-    checkpoint = train()
-    result = test(checkpoint)
+    cnn = TextCNN(sequence_length=SEQUENCE_LENGTH,
+                  num_classes=6,
+                  filter_sizes=FILTER_SIZES,
+                  num_filters=NUM_FILTERS)
+    checkpoint = train(cnn)
+    result = test(cnn, checkpoint)
+    LOGGER.set_score(result)
     print(result)
 
 

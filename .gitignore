@@ -2,6 +2,7 @@
 results.json
 
 *.idea
+out/
 
 # remote credentials
 .remote-sync.json

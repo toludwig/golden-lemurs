@@ -39,10 +39,11 @@ class GloveWrapper(object, metaclass=Singleton):
         return [self.lookup_word(word) for word in tokens[:length]]
 
 
-class TrainingData():
-    """Manages the trainingdata and provides batches."""
+class TrainingData(object, metaclass=Singleton):
+    """Manages the training data and provides batches."""
     def __init__(self):
-        print('Constructing training Data...', end='', flush=True)
+        super(TrainingData, self).__init__()
+        print('Constructing training data...', end='', flush=True)
         f1 = json.load(open('data/dev_full.json'))
         f2 = json.load(open('data/data_full.json'))
         f3 = json.load(open('data/docs_full.json'))

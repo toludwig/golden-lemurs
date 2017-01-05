@@ -4,6 +4,4 @@ markdown
 bs4
 clipboard
 tensorflow
-pymongo
-gensim
-simplejson
+bson

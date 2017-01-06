@@ -54,8 +54,13 @@ class TextCNN():
         self.h_pool = tf.concat(3, pooled_outputs)
         self.h_pool_flat = tf.reshape(self.h_pool, [-1, num_filters_total])
 
+        with tf.name_scope('fully_connected'):
+            w = tf.Variable(tf.truncated_normal([num_filters_total, num_filters_total], stddev=0.1), name="W")
+            b = tf.Variable(tf.constant(0.1, shape=[num_filters_total]), name="b")
+            self.ffn = tf.nn.relu(tf.nn.xw_plus_b(self.h_pool_flat, w, b))
+
         with tf.name_scope("dropout"):
-            self.h_drop = tf.nn.dropout(self.h_pool_flat, self.dropout_keep_prob)
+            self.h_drop = tf.nn.dropout(self.ffn, self.dropout_keep_prob)
 
         with tf.name_scope("output"):
             w = tf.Variable(tf.truncated_normal([num_filters_total, num_classes], stddev=0.1), name="W")

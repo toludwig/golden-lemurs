@@ -41,7 +41,7 @@ def test(cnn, model_path=CHECKPOINT_PATH):
             return acc
 
         for batch in validation_data:
-            input_vect = list(map(lambda x: GloveWrapper().tokenize(x['Readme'], 200), batch))
+            input_vect = list(map(lambda x: GloveWrapper().tokenize(x['Readme'], SEQUENCE_LENGTH), batch))
             target_vect = list(map(lambda x: int(x['Category']) - 1, batch))
             results.append(float(val_step(input_vect, target_vect)))
 
@@ -72,7 +72,7 @@ def train(cnn):
 
         for i in range(1, NUM_BATCHES + 1):
             batch = TrainingData().batch(BATCH_SIZE)
-            input_vect = list(map(lambda x: GloveWrapper().tokenize(x['Readme'], 200), batch))
+            input_vect = list(map(lambda x: GloveWrapper().tokenize(x['Readme'], SEQUENCE_LENGTH), batch))
             output_vect = list(map(lambda x: int(x['Category']) - 1, batch))
             train_step(input_vect, output_vect, acc)
             print('Training step %d/%d: %f%% Accuracy' % (i, NUM_BATCHES, acc[-1] * 100))

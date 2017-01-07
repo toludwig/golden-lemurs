@@ -1,3 +1,9 @@
-svg {
+div {
     border: 1px solid black;
 }
+
+svg circle.topBubble {
+  fill: #aaa;
+  stroke: #666;
+  stroke-width: 1.5px;
+ }

@@ -1,0 +1,33 @@
+{
+  "name": "Our app",
+  "description": "A lot of text",
+  "children": [{
+    "name": "Fancy classifier",
+    "template": "classifier",
+    "description": "My picture is missing",
+    "children": [{
+      "name": "FFN",
+      "template": "ffn",
+      "description": "For all the numbers"
+    }, {
+      "name": "RNN",
+      "template": "rnn"
+    }, {
+      "name": "CNN",
+      "template": "cnn",
+      "children": [{
+        "name": "Input Layer",
+        "template": "cnn_input"
+      }]
+    }]
+  }, {
+    "name": "Data mining",
+    "template": "crawler",
+    "description": "<b>Crawls</b> <i>stuff</i> via Big Cloud 4.0 data Computing",
+    "children": [
+        { "name": "GHTorrent" },
+        { "name": "Github API"}
+    ]
+  }]
+
+}

@@ -21,8 +21,10 @@
     "@angular/platform-browser": "2.2.3",
     "@angular/platform-browser-dynamic": "2.2.3",
     "@angular/router": "3.2.3",
+    "@types/ejs": "^2.3.33",
     "core-js": "^2.4.1",
     "d3": "^4.4.0",
+    "ejs": "^2.5.5",
     "rxjs": "5.0.0-beta.12",
     "ts-helpers": "^1.1.1",
     "zone.js": "^0.6.23"

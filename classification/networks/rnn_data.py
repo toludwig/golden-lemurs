@@ -53,4 +53,8 @@ def commit_time_profile(commit_times,
             days_in_bin = day_matrix[i:i+hour_steps]
             bins += [np.sum(days_in_bin)]
 
+    if normed:
+        bins_sum = np.sum(bins)
+        bins = bins / bins_sum
+    
     return bins

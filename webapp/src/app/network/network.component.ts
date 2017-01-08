@@ -117,7 +117,7 @@ export class NetworkComponent implements AfterViewInit {
     d3.json("/assets/network.json", (error, root: any) => {
       console.log(error);
       let hierarchy = d3.hierarchy(root);
-      let tree = d3.tree().size([w, h])(hierarchy);
+      let tree = d3.tree().size([3 * w, 0.9 * h])(hierarchy);
 
       var node = g.selectAll(".node")
         .data(tree.descendants().slice(1))
@@ -126,7 +126,6 @@ export class NetworkComponent implements AfterViewInit {
         .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
 
       node.on('mouseover', (d: any) => {
-        console.dir(d);
         this.title.emit(d.data.name);
         this.text.emit(d.data.description);
       });
@@ -138,7 +137,7 @@ export class NetworkComponent implements AfterViewInit {
       let zoom = d3.zoom().on('zoom', function() {
         g.attr('transform', d3.event.transform);
       });
-      g.call(zoom as any);
+      svg.call(zoom as any);
 
       function zoomOnLevel(level) {
         let x = level.map(node => node.x);
@@ -147,10 +146,20 @@ export class NetworkComponent implements AfterViewInit {
         let minY = Math.min.apply(null, y);
         let maxX = Math.max.apply(null, x);
         let maxY = Math.max.apply(null, y);
-        svg.call(zoom.extent([[minX, minY], [maxX, maxY]]));
-        console.dir([[minX, minY], [maxX, maxY]]);
+        let tr = g.attr('transform');
+        console.log(`before: ${tr}`)
+        svg.call( zoom.transform, d3.zoomIdentity.translate(minX, minY).scale(d3.zoomTransform(g.node() as Element).k));
+        tr = g.attr('transform');
+        console.log(`after: ${tr}`)
+        let vars: any = {};
+        vars['extent'] = [[minX, minY], [maxX, maxY]];
+        vars['level'] = level;
+        vars['group'] = g;
+        vars['zoom'] = zoom;
+        console.dir(vars);
       };
       node.on('click', function(d) {
+
         if (d.children && d.children.length >= 1)
           zoomOnLevel(d.children);
       });

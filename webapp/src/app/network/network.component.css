@@ -1,9 +1,17 @@
-div {
+:host {
+    display: flex;
+    flex-direction: row;
+}
+div#net {
+    flex: 0.5 1 0%;
     border: 1px solid black;
 }
 
-svg circle.topBubble {
-  fill: #aaa;
-  stroke: #666;
-  stroke-width: 1.5px;
- }
+div#docs {
+    flex: 0.5 0 40%;
+    border-left: 1px solid #64676;
+}
+
+div#docs h1 {
+    text-align: center;
+}

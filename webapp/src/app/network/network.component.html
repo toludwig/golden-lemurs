@@ -1,3 +1,11 @@
-<div #net>
+<div id="net" #net>
 
+</div>
+
+<div id="docs">
+    <header>
+        <h1>{{ title | async }}</h1>
+    </header>
+    <section [innerHTML]="text | async">
+    </section>
 </div>

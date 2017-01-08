@@ -3,24 +3,22 @@ import numpy as np
 from ..Logger import Logger
 from ..Data import TrainingData, GloveWrapper
 from .. import TELEGRAM_API, TELEGRAM_TARGETS
-from .TextCNN import TextCNN
+from .NumericFFN import NumericFFN
+from .NumericFFN import repo_params
 from .settings import *
 import inspect
 import os
 
 VAL_SIZE = 50
 SAVE_INTERVAL = 20
-CHECKPOINT_PATH = "out/Gloved.ckpt"
-NETWORK_PATH = 'classification/networks/GlovedCNN/TextCNN.py'
-TITLE = 'TextCNN'
-COMMENT = """sequence_length=%d
-        filter_sizes=%s
-        num_filters=%d
+CHECKPOINT_PATH = "out/Logistic.ckpt"
+NETWORK_PATH = 'classification/networks/NumericFFN/NumericFFN.py'
+TITLE = 'FNN'
+COMMENT = """neurons_hidden=%s
         num_batches=%d
         batch_size=%d
         learning rate=%f
-        neurons_hidden=%s
-""" % (SEQUENCE_LENGTH, FILTER_SIZES, NUM_FILTERS, NUM_BATCHES, BATCH_SIZE, LEARNING_RATE, NEURONS_HIDDEN)
+""" % (NEURONS_HIDDEN, NUM_BATCHES, BATCH_SIZE, LEARNING_RATE)
 
 LOGGER = Logger(TITLE, COMMENT)
 
@@ -34,7 +32,7 @@ def test(cnn, model_path=CHECKPOINT_PATH):
 
         def val_step(in_batch, target_batch):
             feed_dict = {
-                cnn.input_vect: in_batch,
+                cnn.in_vector: in_batch,
                 cnn.target_vect: target_batch,
                 cnn.dropout_keep_prob: 1.0
             }
@@ -42,7 +40,7 @@ def test(cnn, model_path=CHECKPOINT_PATH):
             return acc
 
         for batch in validation_data:
-            input_vect = list(map(lambda x: GloveWrapper().tokenize(x['Readme'], SEQUENCE_LENGTH), batch))
+            input_vect = list(map(lambda x: repo_params(x), batch))
             target_vect = list(map(lambda x: int(x['Category']) - 1, batch))
             results.append(float(val_step(input_vect, target_vect)))
 
@@ -62,18 +60,18 @@ def train(cnn):
 
         def train_step(in_batch, target_batch, list_acc):
             feed_dict = {
-                cnn.input_vect: in_batch,
+                cnn.in_vector: in_batch,
                 cnn.target_vect: target_batch,
                 cnn.dropout_keep_prob: 0.5
             }
-            _, new_acc, pred, scores = session.run([optimizer, cnn.accuracy, cnn.predictions, cnn.scores], feed_dict=feed_dict)
+            _, new_acc = session.run([optimizer, cnn.accuracy], feed_dict=feed_dict)
             list_acc.append(float(new_acc))
 
         acc = []
 
         for i in range(1, NUM_BATCHES + 1):
             batch = TrainingData().batch(BATCH_SIZE)
-            input_vect = list(map(lambda x: GloveWrapper().tokenize(x['Readme'], SEQUENCE_LENGTH), batch))
+            input_vect = list(map(lambda x: repo_params(x), batch))
             output_vect = list(map(lambda x: int(x['Category']) - 1, batch))
             train_step(input_vect, output_vect, acc)
             print('Training step %d/%d: %f%% Accuracy' % (i, NUM_BATCHES, acc[-1] * 100))
@@ -90,13 +88,11 @@ def train(cnn):
 
 
 def main():
-    cnn = TextCNN(sequence_length=SEQUENCE_LENGTH,
-                  num_classes=6,
-                  filter_sizes=FILTER_SIZES,
-                  num_filters=NUM_FILTERS,
-                  neurons_hidden=NEURONS_HIDDEN)
-    checkpoint = train(cnn)
-    result = test(cnn, checkpoint)
+    ffn = NumericFFN(parameters=len(FEATURES),
+                     neurons_hidden=NEURONS_HIDDEN,
+                     categories=6)
+    checkpoint = train(ffn)
+    result = test(ffn, checkpoint)
     LOGGER.set_score(result)
     print(result)
 

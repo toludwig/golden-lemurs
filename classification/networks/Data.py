@@ -3,6 +3,9 @@ import math
 import simplejson as json
 import re
 from gensim.models.word2vec import Word2Vec
+import numpy as np
+import calendar as cal
+from datetime import datetime
 
 
 class Singleton(type):
@@ -92,3 +95,60 @@ def clean_str(string):
     string = re.sub(r"`", " ", string)
     string = re.sub(r"\s{2,}", " ", string)
     return string.strip().lower()
+
+
+def commit_time_profile(commit_times,
+                        binsize=3,
+                        period='week',
+                        normed=True):
+    '''
+    From a list of commit times, make a histogram list with
+    bins of size [1h | 2h | 3h | 4h | 6h | 12h | 1d | 2d | 3d]
+    with respect to a period of one [week | month].
+    Thus you get an activity profile of the period averaged over all times.
+    If normed, the number of commits ber bin will be percentages.
+    '''
+
+    if 24 % binsize != 0:
+        raise Exception('Invalid Binsize')
+
+    times = [datetime.strptime(time, "%Y-%m-%dT%H:%M:%SZ") for time in commit_times]
+
+    days_per_period = 7 if period == 'week' else 31
+
+    day_hour_matrix = [[0 for i in range(24)] for j in range(days_per_period)]
+
+    for time in times:
+        if period == 'week':
+            # get weekday
+            month_day = time.day
+            month = time.month
+            year = time.year
+            day = cal.weekday(year, month, month_day)
+        elif period == 'month':
+            day = time.day - 1  # days start at 1, but matrix at 0
+
+        hour = time.hour
+        # incrementing a cell in the matrix
+        day_hour_matrix[day][hour] += 1
+
+    indexes = range(int(24 / binsize))
+    # summing over hours and/or days respectively
+    data = []
+    for day in day_hour_matrix:
+        bins = []
+        for index in indexes:
+            bins.append(sum(day[(binsize * index):(binsize * index)+3]))
+        data.append(bins)
+
+    if normed:
+        
+
+    return data
+
+if __name__ == '__main__':
+    import json
+    with open('data/dev_full.json', 'r') as f:
+        j = json.load(f)
+    test = commit_time_profile(j[15]['CommitTimes'])
+    print(test)

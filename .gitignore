@@ -1,5 +1,5 @@
 # data files
-results.json
+data/*.json
 
 *.idea
 out/

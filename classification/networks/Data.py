@@ -116,7 +116,7 @@ def commit_time_profile(commit_times,
 
     days_per_period = 7 if period == 'week' else 31
 
-    day_hour_matrix = [[0 for i in range(24)] for j in range(days_per_period)]
+    day_hour_matrix = np.zeros((days_per_period, 24))
 
     for time in times:
         if period == 'week':
@@ -139,10 +139,10 @@ def commit_time_profile(commit_times,
         bins = []
         for index in indexes:
             bins.append(sum(day[(binsize * index):(binsize * index)+3]))
+        if normed:
+            bins_sum = np.sum(bins)
+            bins = bins / bins_sum
         data.append(bins)
-
-    if normed:
-        
 
     return data
 

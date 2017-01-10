@@ -1,0 +1,101 @@
+Index: classification/networks/Ensemble.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- classification/networks/Ensemble.py	(revision )
++++ classification/networks/Ensemble.py	(revision )
+@@ -1,5 +1,4 @@
+ from .Logger import Logger
+-from .NumericFFN.NumericFFN import NumericFFN, repo_params
+ import tensorflow as tf
+ import numpy as np
+ import os
+@@ -17,7 +16,7 @@
+ NUM_BATCHES = 400
+ LEARNING_RATE = 1e-3
+ SAVE_INTERVAL = 50
+-NUM_FEATURES = 19
++NUM_FEATURES = 2
+ 
+ CHECKPOINT_PATH = "out/Ensemble"
+ TITLE = 'My Poor GPU'
+@@ -25,6 +24,21 @@
+ LOGGER = Logger(TITLE, DESCRIPTION)
+ 
+ 
++class NumericFFN:
++    def __init__(self, categories):
++
++        self.in_vector = tf.placeholder(tf.float32, [None, categories], name='input')
++        self.target_vect = tf.placeholder(tf.int64, [None], name='target')
++        with tf.name_scope("loss"):
++            losses = tf.nn.sparse_softmax_cross_entropy_with_logits(self.in_vector, self.target_vect)
++            self.loss = tf.reduce_mean(losses)
++
++        with tf.name_scope("accuracy"):
++            correct_predictions = tf.equal(tf.argmax(tf.nn.softmax(self.in_vector), 1), self.target_vect)
++            self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32), name="accuracy")
++
++
++
+ def rebuild_subnets(session):
+     """
+     loads the pretrained CNN and RNN for evaluation. Must be given a tf.Session to restore to
+@@ -49,6 +63,7 @@
+         dropout = tf.get_collection("dropout_keep_prop", scope='CNN')[0]
+         scores = tf.get_collection("scores", scope='CNN')[0]
+         sequence_length = tf.get_collection('sequence_length')[0]
++        predictions = tf.get_collection('predictions', scope='CNN')[0]
+ 
+         feed_dict = {
+             input: list(map(lambda x: GloveWrapper().tokenize(x['Readme'], sequence_length), batch)),
+@@ -63,6 +78,7 @@
+         sequence_length = tf.get_collection('series_length')[0]
+         batch_size = tf.get_collection('batch_size')[0]
+         scores = tf.get_collection("scores", scope='RNN')[0]
++        predictions = tf.get_collection('predictions', scope='RNN')[0]
+ 
+         feed_dict = {
+             input: list(map(lambda x: commit_time_profile(x['CommitTimes']), batch)),
+@@ -72,29 +88,18 @@
+         return session.run(scores, feed_dict)
+ 
+     # This just evaluates the input on both networks and concatenates the features extracted
+-    return np.column_stack((np.column_stack((cnn_eval(batch),
+-                                            rnn_eval(batch))),
+-                            list(map(lambda x: repo_params(x), batch))))
++    return np.add(rnn_eval(batch), cnn_eval(batch)) / 2
+ 
+ 
+ def train(ffn, session):
+ 
+-    optimizer = tf.train.AdamOptimizer(LEARNING_RATE).minimize(ffn.loss)
+-
+-    session.run(tf.initialize_all_variables())
+     saver = tf.train.Saver()
+-    tf.add_to_collection('score', ffn.scores)
+-    tf.add_to_collection('input', ffn.in_vector)
+-    tf.add_to_collection('dropout_keep_prop', ffn.dropout_keep_prob)
+-
+     def train_step(in_batch, target_batch, list_acc):
+         feed_dict = {
+             ffn.in_vector: in_batch,
+             ffn.target_vect: target_batch,
+-            ffn.dropout_keep_prob: 0.5
+         }
+-        _, new_acc, pred = session.run([optimizer, ffn.accuracy, ffn.predictions], feed_dict=feed_dict)
+-        print(pred)
++        new_acc = session.run(ffn.accuracy, feed_dict=feed_dict)
+         list_acc.append(float(new_acc))
+ 
+     acc = []
+@@ -122,7 +127,7 @@
+ 
+ def main():
+     with tf.Session() as session:
+-        ffn = NumericFFN(NUM_FEATURES, NEURONS_HIDDEN, 6)
++        ffn = NumericFFN(6)
+         rebuild_subnets(session)
+         train(ffn, session)
+ 

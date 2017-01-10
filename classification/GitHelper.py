@@ -74,8 +74,8 @@ class Git():
         repo = list(self.repo.iter_commits())
         return len(repo), list(map(lambda x: x.commit.author['date'], repo))
 
-    def get_commits(self):
-        repo = list(self.repo.iter_commits())
+    def get_commits(self, limit ):
+        repo = list(self.repo.iter_commits())[:limit]
         return list(map(lambda x: x.commit.message, repo))
 
     def get_issues(self):

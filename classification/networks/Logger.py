@@ -17,6 +17,7 @@ class Logger:
         self.set_test_acc([0])
         self.set_score(0)
         self.set_description(description)
+        self.set_source_string("")
 
     def set_description(self, description):
         db.networks.update({'_id': self.id}, {'$set': {'description': description}})
@@ -24,6 +25,9 @@ class Logger:
     def set_source(self, source_file):
         with open(source_file, 'r') as file:
             source = file.read()
+        db.source.update({'_id': self.id}, {'$set': {"source": source}})
+
+    def set_source_string(self, source):
         db.source.update({'_id': self.id}, {'$set': {"source": source}})
 
     def set_training_acc(self, accuracy):

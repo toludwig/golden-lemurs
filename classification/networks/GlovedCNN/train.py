@@ -10,7 +10,7 @@ import os
 
 VAL_SIZE = 50
 SAVE_INTERVAL = 20
-CHECKPOINT_PATH = "out/Gloved.ckpt"
+CHECKPOINT_PATH = "out/CNN"
 NETWORK_PATH = 'classification/networks/GlovedCNN/TextCNN.py'
 TITLE = 'TextCNN'
 COMMENT = """sequence_length=%d
@@ -55,10 +55,14 @@ def train(cnn):
 
         LOGGER.set_source(NETWORK_PATH)
 
-        optimizer = tf.train.AdamOptimizer(LEARNING_RATE).minimize(cnn.loss)
-
         session.run(tf.initialize_all_variables())
         saver = tf.train.Saver()
+        tf.add_to_collection('features', cnn.h_pool_flat)
+        tf.add_to_collection('input', cnn.input_vect)
+        tf.add_to_collection('dropout_keep_prop', cnn.dropout_keep_prob)
+        tf.add_to_collection('sequence_length', SEQUENCE_LENGTH)
+        tf.add_to_collection('scores', cnn.scores)
+        tf.add_to_collection('predictions', cnn.predictions)
 
         def train_step(in_batch, target_batch, list_acc):
             feed_dict = {
@@ -66,7 +70,7 @@ def train(cnn):
                 cnn.target_vect: target_batch,
                 cnn.dropout_keep_prob: 0.5
             }
-            _, new_acc, pred, scores = session.run([optimizer, cnn.accuracy, cnn.predictions, cnn.scores], feed_dict=feed_dict)
+            _, new_acc, pred, scores = session.run([cnn.train_op, cnn.accuracy, cnn.predictions, cnn.scores], feed_dict=feed_dict)
             list_acc.append(float(new_acc))
 
         acc = []
@@ -84,7 +88,7 @@ def train(cnn):
                 if not os.path.exists(os.path.dirname(CHECKPOINT_PATH)):
                     os.makedirs(os.path.dirname(CHECKPOINT_PATH))
 
-                checkpoint = saver.save(session, CHECKPOINT_PATH, global_step=i)
+                checkpoint = saver.save(session, os.path.join(CHECKPOINT_PATH, TITLE), global_step=i)
 
         return checkpoint
 

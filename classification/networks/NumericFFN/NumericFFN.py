@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import json
-from .settings import FEATURES
+from .settings import FEATURES, LEARNING_RATE, GRADIENT_NORM
 
 '''
 A simple FF net for the numerical fields of a repo, i.e.
@@ -53,7 +53,7 @@ class NumericFFN:
             w = tf.Variable(tf.truncated_normal([neurons_hidden[-1], categories], stddev=0.1), name="W")
             b = tf.Variable(tf.constant(0.1, shape=[categories]), name="b")
             self.scores = tf.nn.xw_plus_b(self.drop, w, b, name="scores")
-            self.predictions = tf.argmax(self.scores, 1, name="predictions")
+            self.predictions = tf.nn.softmax(self.scores)
 
         # CalculateMean cross-entropy loss
         with tf.name_scope("loss"):
@@ -64,3 +64,10 @@ class NumericFFN:
         with tf.name_scope("accuracy"):
             correct_predictions = tf.equal(tf.argmax(tf.nn.softmax(self.scores), 1), self.target_vect)
             self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32), name="accuracy")
+
+        # Adam Optimizer with exponential decay
+        with tf.name_scope("Optimizer"):
+            step = tf.Variable(0, trainable=False)
+            rate = tf.train.exponential_decay(LEARNING_RATE, step, 1, 0.9999)
+            optimizer = tf.train.AdamOptimizer(rate)
+            self.train_op = optimizer.minimize(self.loss, global_step=step)

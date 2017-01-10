@@ -1,5 +1,6 @@
 import tensorflow as tf
 from ..Data import GloveWrapper
+from .settings import LEARNING_RATE, GRADIENT_NORM
 
 
 class TextCNN:
@@ -71,7 +72,7 @@ class TextCNN:
             w = tf.Variable(tf.truncated_normal([neurons_hidden[-1], num_classes], stddev=0.1), name="W")
             b = tf.Variable(tf.constant(0.1, shape=[num_classes]), name="b")
             self.scores = tf.nn.xw_plus_b(self.drop, w, b, name="scores")
-            self.predictions = tf.argmax(self.scores, 1, name="predictions")
+            self.predictions = tf.nn.softmax(self.scores)
 
         # CalculateMean cross-entropy loss
         with tf.name_scope("loss"):
@@ -82,3 +83,10 @@ class TextCNN:
         with tf.name_scope("accuracy"):
             correct_predictions = tf.equal(tf.argmax(tf.nn.softmax(self.scores), 1), self.target_vect)
             self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32), name="accuracy")
+
+        # Adam Optimizer with exponential decay
+        with tf.name_scope("Optimizer"):
+            step = tf.Variable(0, trainable=False)
+            rate = tf.train.exponential_decay(LEARNING_RATE, step, 1, 0.9999)
+            optimizer = tf.train.AdamOptimizer(rate)
+            self.train_op = optimizer.minimize(self.loss, global_step=step)

@@ -98,9 +98,9 @@ def clean_str(string):
 
 
 def commit_time_profile(commit_times,
-                        binsize=3,
-                        period='week',
-                        normed=True):
+                        binsize=2,
+                        period='month',
+                        normed=False):
     '''
     From a list of commit times, make a histogram list with
     bins of size [1h | 2h | 3h | 4h | 6h | 12h | 1d | 2d | 3d]
@@ -138,12 +138,12 @@ def commit_time_profile(commit_times,
     for day in day_hour_matrix:
         bins = []
         for index in indexes:
-            bins.append(sum(day[(binsize * index):(binsize * index)+3]))
+            bins.append(sum(day[(binsize * index):(binsize * index)+binsize]))
         if normed:
             bins_sum = np.sum(bins)
             bins = bins / bins_sum
         data.append(bins)
-
+    data = sum(data, [])
     return data
 
 if __name__ == '__main__':

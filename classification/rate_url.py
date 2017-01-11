@@ -19,7 +19,7 @@ def add_commits(file, out, size=100):
             new = list(executor.imap(get_commits, data[:size]))
     except:
         raise Exception("Crawler interrupted").with_traceback(sys.exc_info()[2])
-    _save(data[len(new) - 1:], file)
+    _save(data[len(new):], file)
     _save(list(filter(None, new)), out)
     return True
 

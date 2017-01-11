@@ -56,5 +56,5 @@ def commit_time_profile(commit_times,
     if normed:
         bins_sum = np.sum(bins)
         bins = bins / bins_sum
-    
+
     return bins

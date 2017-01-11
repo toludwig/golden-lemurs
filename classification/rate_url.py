@@ -9,6 +9,42 @@ from time import sleep
 from multiprocessing import Pool
 import traceback
 
+def add_commits(file, out, size=100):
+    data = _load(file)
+    if data is []:
+        return False
+    new = _load(out)
+    try:
+        with Pool(processes=8) as executor:
+            new = list(executor.imap(get_commits, data[:size]))
+    except:
+        raise Exception("Crawler interrupted").with_traceback(sys.exc_info()[2])
+    _save(data[len(new) - 1:], file)
+    _save(list(filter(None, new)), out)
+    return True
+
+def get_commits(repo):
+    print(repo['Title'])
+    global new
+    connected = False
+    while not connected:
+        try:
+            git = Git(repo["User"], repo["Title"])
+            connected = True
+        except:
+            sleep(10)
+
+    if not git.valid():
+        return None
+
+    try:
+        repo['CommitMessages'] = git.get_commits(75)
+        done = True
+    except:
+        return None
+    return repo
+
+
 
 def load_data(repos, results, category, num_indices=-1):
     data = _load(results)

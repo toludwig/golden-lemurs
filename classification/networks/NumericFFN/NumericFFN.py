@@ -54,6 +54,7 @@ class NumericFFN:
             b = tf.Variable(tf.constant(0.1, shape=[categories]), name="b")
             self.scores = tf.nn.xw_plus_b(self.drop, w, b, name="scores")
             self.predictions = tf.nn.softmax(self.scores)
+            self.category = tf.arg_max(self.scores, 1)
 
         # CalculateMean cross-entropy loss
         with tf.name_scope("loss"):

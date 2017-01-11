@@ -56,9 +56,8 @@ class TrainingData(object, metaclass=Singleton):
         self.cats = []
         self.val = []
         for cat in [f1, f2, f3, f4, f5, f6]:
-            self.cats.append(cat[:-800])
-            self.val += cat[-800:-400]
-            self.test += cat[-400:]
+            self.cats.append(cat[:-500])
+            self.val += cat[-500:]
         print('done')
 
     def batch(self, size):
@@ -73,9 +72,6 @@ class TrainingData(object, metaclass=Singleton):
 
     def validation(self, size):
         return [self.val[x:x+size] for x in range(0, len(self.val), size)]
-
-    def test(self, size):
-        return [self.test[x:x+size] for x in range(0, len(self.test), size)]
 
 
 def clean_str(string):

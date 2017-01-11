@@ -59,6 +59,7 @@ def train(ffn):
         tf.add_to_collection('input', ffn.in_vector)
         tf.add_to_collection('dropout_keep_prop', ffn.dropout_keep_prob)
         tf.add_to_collection('predictions', ffn.predictions)
+        tf.add_to_collection('category', ffn.category)
 
         def train_step(in_batch, target_batch, list_acc):
             feed_dict = {

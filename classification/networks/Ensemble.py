@@ -4,6 +4,9 @@ import tensorflow as tf
 import numpy as np
 import os
 from .Data import GloveWrapper, TrainingData, commit_time_profile
+import simplejson as json
+import asyncio
+import websockets
 
 
 CNN_DATA = 'out/CNN/TextCNN-340'
@@ -15,6 +18,9 @@ RNN_META = 'out/RNN/RNN-400.meta'
 FNN_DATA = 'out/FFN/FNN-400'
 FNN_META = 'out/FFN/FNN-400.meta'
 
+ENSEMBLE_DATA = 'out/Ensemble/'
+ENSEMBLE_META = 'out/Ensemble/'
+
 NEURONS_HIDDEN = [100, 100]
 BATCH_SIZE = 350
 NUM_BATCHES = 200
@@ -23,7 +29,7 @@ SAVE_INTERVAL = 50
 NUM_FEATURES = 18
 
 CHECKPOINT_PATH = "out/Ensemble"
-TITLE = 'My Poor GPU'
+TITLE = 'Ensemble'
 DESCRIPTION = 'Placeholder'
 LOGGER = Logger(TITLE, DESCRIPTION)
 
@@ -40,6 +46,27 @@ def rebuild_subnets(session):
 
     saver = tf.train.import_meta_graph(FNN_META, import_scope='FFN')
     saver.restore(session, FNN_DATA)
+
+
+def rebuild_full(session):
+    rebuild_subnets(session)
+    saver = tf.train.import_meta_graph(ENSEMBLE_META, import_scope='Ensemble')
+    saver.restore(session, ENSEMBLE_DATA)
+
+
+def ensemble_eval(repos, session):
+    in_vect = get_subnet_features(repos, session)
+    # These give me variables or tensors I explicitly stored in the models. refer to the train files for the names.
+    input = tf.get_collection('input', scope='Ensemble')[0]
+    predictions = tf.get_collection('category', scope='Ensemble')[0]
+    dropout = tf.get_collection("dropout_keep_prop", scope='Ensemble')[0]
+
+    feed_dict = {
+        input: in_vect,
+        dropout: 1
+    }
+
+    return session.run(predictions, feed_dict)
 
 
 def get_subnet_features(batch, session):
@@ -133,6 +160,30 @@ def train(ffn, session):
     return checkpoint
 
 
+def test(rnn, session):
+    validation_data = TrainingData().validation(BATCH_SIZE)
+
+    results = []
+
+    def val_step(in_batch, target_batch):
+        feed_dict = {
+            rnn.input_vect: in_batch,
+            rnn.target_vect: target_batch,
+            rnn.dropout_keep_prob: 1.0,
+            rnn.batch_size: len(in_batch)
+        }
+        acc = session.run(rnn.accuracy, feed_dict)
+        return acc
+
+    for batch in validation_data:
+        input_vect = list(map(lambda x: commit_time_profile(x['CommitTimes']), batch))
+        target_vect = list(map(lambda x: int(x['Category']) - 1, batch))
+        results.append(float(val_step(input_vect, target_vect)))
+
+    LOGGER.set_test_acc(results)
+    return np.average(results)
+
+
 def main():
     with tf.Session() as session:
         ffn = NumericFFN(NUM_FEATURES, NEURONS_HIDDEN, 6)
@@ -141,6 +192,10 @@ def main():
         rebuild_subnets(session)
 
         train(ffn, session)
+        result = test(ffn, session)
+        LOGGER.set_score(result)
+        print(result)
+
 
 if __name__ == '__main__':
     main()

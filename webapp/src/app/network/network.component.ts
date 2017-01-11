@@ -4,25 +4,6 @@ import * as ejs from 'ejs';
 
 import { constructGraph } from "./graph";
 
-// TODO: fill dat shit, enhance & modify
-export type Architecture = Network[];
-export interface Network {
-  name: string;
-  layers: Layer[];
-  input: string;
-  output: string;
-}
-export interface Layer {
-  neurons: Neuron[];
-  prev: Layer | "input";
-  next: Layer | "output";
-}
-export interface Neuron {
-  weight: number;
-  inputs: Neuron[] | number[];
-  output: number;
-}
-
 @Component({
   selector: 'app-network',
   templateUrl: './network.component.html',
@@ -34,72 +15,13 @@ export class NetworkComponent implements AfterViewInit {
   @Output() public text = new EventEmitter<string>();
   @ViewChild('net') public net;
   repo = 'https://github.com/mschuwalow/StudDP'; // TODO: map to url
-  architecture = [
-    {
-      name: 'sample',
-      layers: [
-        {
-          neurons: [
-            {
-              weight: 42,
-              inputs: [1, 3, 3, 7],
-              output: 23
-            }, {
-              weight: 666,
-              inputs: [13],
-              output: 3.1415
-            }
-          ],
-          prev: 'input',
-          next: 'output'
-        }],
-      input: 'foo',
-      output: 'bar'
-    },
-    {
-      name: 'sample2',
-      layers: [
-        {
-          neurons: [
-            {
-              weight: 42,
-              inputs: [1, 3, 3, 7],
-              output: 23
-            }, {
-              weight: 666,
-              inputs: [13],
-              output: 3.1415
-            }
-          ],
-          prev: 'input',
-          next: 'output'
-        },
-        {
-          neurons: [
-            {
-              weight: 42,
-              inputs: [1, 3, 3, 7],
-              output: 23
-            }, {
-              weight: 666,
-              inputs: [13],
-              output: 3.1415
-            }
-          ],
-          prev: 'input',
-          next: 'output'
-        }
-      ],
-      input: 'foo',
-      output: 'bar'
-    }
-  ] as Architecture;
   constructor() { }
 
   ngAfterViewInit() {
 
     var w = window.innerWidth * 0.68 * 0.95;
     var h = Math.ceil(w * 0.7);
+    let size = 120; // node size
     var oR = 0;
     var nTop = 0;
 
@@ -112,27 +34,79 @@ export class NetworkComponent implements AfterViewInit {
 
     let g = svg.append('g');
 
-    let data = { name: "jesus" }; // TODO suck it out of maxim
+    // [1] DEV [2] HW [3] EDU [4] DOCS [5] WEB [6] DATA [7] OTHER
+    const DEV = 1, HW = 2, EDU = 3, DOCS = 4, WEB = 5, DATA = 6, OTHER = 7;
+    const NAMES = ["DEV", "HW", "EDU", "DOCS", "WEB", "DATA", "OTHER"];
+
+    interface NetworkDebugger {
+      // CONVENIENCE
+      names: string[]; // map numbers to category names
+      // NETWORK DATA
+      decision: number;
+      // CNN
+      softmaxCNN: number[];
+      outputCNN: number;
+      filtersCNN: number[]; // filter sizes as in settings.py
+
+      // parameters
+      sequenceLength: number;
+      embeddingSize: number;
+      // FFN
+
+      // INPUT DATA
+      readme: string;
+      readmePreprocessed: string;
+      contributors: number;
+      issues: number;
+      branches: number;
+      forks: number;
+      stars: number;
+      pullRequests: number;
+      subscribers: number;
+      commits: number;
+      // as unix time
+      commitTimes: number[];
+      startTime: number;
+      updateTime: number;
+    }
+    let data = {
+
+    }; // TODO suck it out of maxim
 
     d3.json("/assets/network.json", (error, root: any) => {
       console.log(error);
       let hierarchy = d3.hierarchy(root);
-      let tree = d3.tree().size([3 * w, 0.9 * h])(hierarchy);
+      let tree = d3.tree()
+        .separation(function(a, b) { return a.parent == b.parent ? 1 : 2; })
+        .nodeSize([120, 120])
+        (hierarchy);
 
       var node = g.selectAll(".node")
         .data(tree.descendants().slice(1))
         .enter().append("g")
         .attr("class", function(d) { return "node" + (d.children ? " node--internal" : " node--leaf"); })
-        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+        .attr("transform", function(d) {
+          // y = level in tree
+          let y = (d.y - 0.5) * h; // place in mid-screen, at page {level}
+          // x = index (children), 0 = mid
+          let x = (w / 2) + d.x * size;
+          return "translate(" + d.y + "," + d.x + ")";
+        })
+        .each((d: any) => console.info(`${d.data.name} at (${d.x}, ${d.y})`));
 
       node.on('mouseover', (d: any) => {
         this.title.emit(d.data.name);
-        this.text.emit(d.data.description);
+        let template = d.data.description;
+        let text = "";
+        if (template)
+          text = ejs.render(template, data);
+        this.text.emit(text);
       });
-      node.on('mouseout', () => {
-        this.title.emit(null);
-        this.text.emit(null);
-      });
+
+      //   node.on('mouseout', () => {
+      //     this.title.emit(null);
+      //     this.text.emit(null);
+      //   });
 
       let zoom = d3.zoom().on('zoom', function() {
         g.attr('transform', d3.event.transform);
@@ -148,7 +122,7 @@ export class NetworkComponent implements AfterViewInit {
         let maxY = Math.max.apply(null, y);
         let tr = g.attr('transform');
         console.log(`before: ${tr}`)
-        svg.call( zoom.transform, d3.zoomIdentity.translate(minX, minY).scale(d3.zoomTransform(g.node() as Element).k));
+        svg.call(zoom.transform, d3.zoomIdentity.translate(minX, minY).scale(d3.zoomTransform(g.node() as Element).k));
         tr = g.attr('transform');
         console.log(`after: ${tr}`)
         let vars: any = {};

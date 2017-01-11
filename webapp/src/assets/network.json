@@ -8,7 +8,13 @@
     "children": [{
       "name": "FFN",
       "template": "ffn",
-      "description": "For all the numbers"
+      "description": "<h1>For all the numbers</h1> We use a simple feed-forward neural network of multilayer perceptrons to do multinomial logistic regression.",
+      "children": [
+          {
+              "name": "Input Layer",
+              "template": "ffn_input"
+          }
+      ]
     }, {
       "name": "RNN",
       "template": "rnn"
@@ -16,17 +22,33 @@
       "name": "CNN",
       "template": "cnn",
       "children": [{
-        "name": "Input Layer",
-        "template": "cnn_input"
-      }]
+          "name": "Input Layer",
+          "template": "cnn_input"
+        },
+        {
+          "name": "Hidden Convolution Layers",
+          "template": "text_cnn"
+        },
+        {
+          "name": "Hidden Fully Connected Layers",
+          "template": "text_fully_connected"
+        },
+        {
+          "name": "Output layer",
+          "template": "text_output"
+        }
+      ]
     }]
   }, {
     "name": "Data mining",
+    "description": "As we need a rather large amount of data to train our neural networks for them to work satisfactory, we decided to automatically collect repositorys that for each category. To do that, we downloaded a dump of <a href=\"http://ghtorrent.org\">GHTorrent's</a> data and inspected it. ",
     "template": "crawler",
-    "description": "<b>Crawls</b> <i>stuff</i> via Big Cloud 4.0 data Computing",
-    "children": [
-        { "name": "GHTorrent" },
-        { "name": "Github API"}
+    "children": [{
+        "name": "GHTorrent"
+      },
+      {
+        "name": "Github API"
+      }
     ]
   }]
 

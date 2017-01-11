@@ -55,7 +55,15 @@ def train(cnn):
 
         LOGGER.set_source(NETWORK_PATH)
 
+        sum_dir = os.path.join(CHECKPOINT_PATH, 'summary')
+        if not os.path.exists(os.path.dirname(sum_dir)):
+            os.makedirs(os.path.dirname(sum_dir))
+        summary_writer = tf.train.SummaryWriter(sum_dir, session.graph)
         session.run(tf.initialize_all_variables())
+
+        run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
+        run_metadata = tf.RunMetadata()
+
         saver = tf.train.Saver()
         tf.add_to_collection('features', cnn.h_pool_flat)
         tf.add_to_collection('input', cnn.input_vect)
@@ -70,8 +78,11 @@ def train(cnn):
                 cnn.target_vect: target_batch,
                 cnn.dropout_keep_prob: 0.5
             }
-            _, new_acc, pred, scores = session.run([cnn.train_op, cnn.accuracy, cnn.predictions, cnn.scores], feed_dict=feed_dict)
+            _, new_acc, pred, summary = session.run([cnn.train_op, cnn.accuracy, cnn.predictions, cnn.merged],
+                                                    feed_dict=feed_dict)
             list_acc.append(float(new_acc))
+            summary_writer.add_summary(summary, i)
+            summary_writer.add_run_metadata(run_metadata, 'Step: %d' % i)
 
         acc = []
 
@@ -97,8 +108,7 @@ def main():
     cnn = TextCNN(sequence_length=SEQUENCE_LENGTH,
                   num_classes=6,
                   filter_sizes=FILTER_SIZES,
-                  num_filters=NUM_FILTERS,
-                  neurons_hidden=NEURONS_HIDDEN)
+                  num_filters=NUM_FILTERS)
     checkpoint = train(cnn)
     result = test(cnn, checkpoint)
     LOGGER.set_score(result)

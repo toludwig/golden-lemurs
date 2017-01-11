@@ -9,8 +9,8 @@ from .Data import GloveWrapper, TrainingData, commit_time_profile
 CNN_DATA = 'out/CNN/TextCNN-340'
 CNN_META = 'out/CNN/TextCNN-340.meta'
 
-RNN_DATA = 'out/RNN/RNN-300'
-RNN_META = 'out/RNN/RNN-300.meta'
+RNN_DATA = 'out/RNN/RNN-400'
+RNN_META = 'out/RNN/RNN-400.meta'
 
 FNN_DATA = 'out/FFN/FNN-400'
 FNN_META = 'out/FFN/FNN-400.meta'

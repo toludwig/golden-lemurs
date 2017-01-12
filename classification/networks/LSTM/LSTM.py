@@ -1,7 +1,5 @@
 import tensorflow as tf
-from .settings import LEARNING_RATE
-
-from tensorflow.python.framework import ops
+from .train import LEARNING_RATE
 from tensorflow.python.ops import clip_ops
 
 class LSTM:
@@ -56,7 +54,7 @@ class LSTM:
             gradients = zip(clipped_gradients, variables)
             self.train_op = optimizer.apply_gradients(gradients, global_step=step)
 
-            # Keep track of gradient values and sparsity
+        # Keep track of gradient values and sparsity
         gradient_summaries = []
         for gradient, variable in gradients:
             if gradient is not None:

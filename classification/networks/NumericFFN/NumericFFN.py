@@ -17,13 +17,6 @@ A simple FF net for the numerical fields of a repo, i.e.
 '''
 
 
-def repo_params(dict):
-    data = []
-    for key in FEATURES:
-        data.append(dict[key])
-    return data
-
-
 class NumericFFN:
     """
     Neural Network performing Logistic Regression

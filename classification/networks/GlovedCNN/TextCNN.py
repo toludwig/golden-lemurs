@@ -1,6 +1,6 @@
 import tensorflow as tf
 from ..Data import GloveWrapper
-from .settings import LEARNING_RATE, GRADIENT_NORM
+from .train import LEARNING_RATE
 
 
 class TextCNN:
@@ -85,22 +85,25 @@ class TextCNN:
             self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32), name="accuracy")
             tf.summary.scalar('accuracy', self.accuracy)
 
-        # Adam Optimizer with exponential decay
+        # Adam Optimizer with exponential decay and gradient clipping
         with tf.name_scope("Optimizer"):
             step = tf.Variable(0, trainable=False)
             rate = tf.train.exponential_decay(LEARNING_RATE, step, 1, 0.9999)
             optimizer = tf.train.AdamOptimizer(rate)
-            gradients = optimizer.compute_gradients(self.loss)
+            variables = tf.trainable_variables()
+            gradients = tf.gradients(self.loss, variables)
+            clipped_gradients, _ = clip_ops.clip_by_global_norm(gradients, gradient_limit)
+            gradients = zip(clipped_gradients, variables)
             self.train_op = optimizer.apply_gradients(gradients, global_step=step)
 
         # Keep track of gradient values and sparsity
-        grad_summaries = []
-        for g, v in gradients:
-            if g is not None:
-                grad_hist_summary = tf.histogram_summary("{}/grad/hist".format(v.name), g)
-                sparsity_summary = tf.scalar_summary("{}/grad/sparsity".format(v.name), tf.nn.zero_fraction(g))
-                grad_summaries.append(grad_hist_summary)
-                grad_summaries.append(sparsity_summary)
-        self.grad_summaries_merged = tf.merge_summary(grad_summaries)
+        gradient_summaries = []
+        for gradient, variable in gradients:
+            if gradient is not None:
+                grad_hist_summary = tf.histogram_summary("{}/grad/hist".format(variable.name), gradient)
+                sparsity_summary = tf.scalar_summary("{}/grad/sparsity".format(variable.name), tf.nn.zero_fraction(gradient))
+                gradient_summaries.append(grad_hist_summary)
+                gradient_summaries.append(sparsity_summary)
+        self.grad_summaries_merged = tf.merge_summary(gradient_summaries)
 
         self.merged = tf.summary.merge_all()

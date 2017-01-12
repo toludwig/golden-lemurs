@@ -52,14 +52,14 @@ class LSTM:
             optimizer = tf.train.AdamOptimizer(rate)
             variables = tf.trainable_variables()
             gradients = tf.gradients(self.loss, variables)
-            clipped_gradients, _ = tf.clip_by_global_norm(gradients, gradient_limit)
+            clipped_gradients, _ = clip_ops.clip_by_global_norm(gradients, gradient_limit)
             gradients = zip(clipped_gradients, variables)
             self.train_op = optimizer.apply_gradients(gradients, global_step=step)
 
             # Keep track of gradient values and sparsity
         gradient_summaries = []
         for gradient, variable in gradients:
-            if g is not None:
+            if gradient is not None:
                 grad_hist_summary = tf.histogram_summary("{}/grad/hist".format(variable.name), gradient)
                 sparsity_summary = tf.scalar_summary("{}/grad/sparsity".format(variable.name), tf.nn.zero_fraction(gradient))
                 gradient_summaries.append(grad_hist_summary)

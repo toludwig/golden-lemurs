@@ -10,7 +10,7 @@ import os
 import numpy as np
 import time
 
-SAVE_INTERVAL = 20
+SAVE_INTERVAL = 200
 CHECKPOINT_PATH = "out/RNN"
 NETWORK_PATH = 'classification/networks/LSTM/LSTM.py'
 TITLE = 'RNN'

@@ -11,8 +11,9 @@ import traceback
 
 def add_commits(file, out, size=100):
     data = _load(file)
-    if data is []:
+    if data == []:
         return False
+    print(data)
     new = _load(out)
     try:
         with Pool(processes=8) as executor:

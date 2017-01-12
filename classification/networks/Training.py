@@ -1,10 +1,11 @@
 """
-Provides a generalized interface for Training and Validating Neural Networks
+Provides a general interface for Training and Validating Neural Networks
 """
 
 import tensorflow as tf
 import time
 import os
+import numpy as np
 from .Data import TrainingData
 
 
@@ -32,6 +33,8 @@ def train(net,
     :return the path to the latest checkpoint.
     """
 
+    print("Started Training...")
+
     with tf.Session() as session:
 
         now = time.strftime("%c")
@@ -58,7 +61,7 @@ def train(net,
             batch = TrainingData().batch(batch_size)
             input_vect = list(map(lambda x: preprocess(x), batch))
             output_vect = list(map(lambda x: int(x['Category']) - 1, batch))
-            new_acc, new_loss, summary = training_step(input_vect, output_vect, acc)
+            new_acc, new_loss, summary = training_step(net, input_vect, output_vect, acc)
 
             acc.append(float(new_acc))
             loss.append(float(new_loss))
@@ -74,4 +77,51 @@ def train(net,
             logger.set_training_acc(acc)
             logger.set_cost(loss)
 
+        print("Training finished")
+
         return checkpoint
+
+def validate(net,
+          validation_step,
+          preprocess,
+          batch_size,
+          collection_hook,
+          logger):
+    """
+    This trains a network with our repository dataset.
+    :param net The net to train
+    :param validation_step the function used for the validation step.
+    :param preprocess preprocessing lambda to run on the data
+    :param batch_size size of batches to use
+    :param collection_hook the function to call for session collection setup
+    :param logger a mongodb logger to use
+    :return the path to the latest checkpoint.
+    """
+    print("Starting Validation...")
+
+    with tf.Session() as session:
+
+        session.run(tf.initialize_all_variables())
+
+        validation_data = TrainingData().validation(batch_size)
+
+        # Add variables to collection for later restoration during evaluation
+        collection_hook()
+
+        acc = []
+
+        for batch in validation_data:
+            input_vect = list(map(lambda x: preprocess(x), batch))
+            output_vect = list(map(lambda x: int(x['Category']) - 1, batch))
+            new_acc = validation_step(net, input_vect, output_vect, acc)
+
+            acc.append(float(new_acc))
+
+        score = np.average(acc)
+
+        logger.set_test_acc(acc)
+        logger.set_score(score)
+
+        print("Validation finished. Accuracy was %f%%" % score * 100)
+
+        return score

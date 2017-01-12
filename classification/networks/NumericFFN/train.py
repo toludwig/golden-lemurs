@@ -8,6 +8,7 @@ from .NumericFFN import repo_params
 from .settings import *
 import inspect
 import os
+import time
 
 VAL_SIZE = 50
 SAVE_INTERVAL = 20
@@ -53,6 +54,16 @@ def train(ffn):
 
         LOGGER.set_source(NETWORK_PATH)
 
+        now = time.strftime("%c")
+        sum_dir = os.path.join(CHECKPOINT_PATH, 'summary', now)
+        save_dir = os.path.join(CHECKPOINT_PATH, now)
+
+        for directory in [sum_dir, save_dir]:
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+
+        summary_writer = tf.summary.FileWriter(sum_dir, session.graph)
+
         session.run(tf.initialize_all_variables())
         saver = tf.train.Saver()
         tf.add_to_collection('score', ffn.scores)
@@ -67,9 +78,10 @@ def train(ffn):
                 ffn.target_vect: target_batch,
                 ffn.dropout_keep_prob: 0.5
             }
-            _, new_acc, pred = session.run([ffn.train_op, ffn.accuracy, ffn.predictions], feed_dict=feed_dict)
-            print(pred)
+            _, new_acc, summary = session.run([ffn.train_op, ffn.accuracy, ffn.merged], feed_dict=feed_dict)
+
             list_acc.append(float(new_acc))
+            summary_writer.add_summary(summary, i)
 
         acc = []
 

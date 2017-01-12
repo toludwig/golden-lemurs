@@ -14,6 +14,7 @@ class TextCNN:
                  num_classes,
                  filter_sizes,
                  num_filters,
+                 neurons_hidden,
                  embedding_size=300):
 
         self.input_vect = tf.placeholder(tf.float32, [None, sequence_length, embedding_size], name='input')
@@ -54,12 +55,20 @@ class TextCNN:
         num_filters_total = num_filters * len(filter_sizes)
         self.h_pool = tf.concat(3, pooled_outputs)
         self.h_pool_flat = tf.reshape(self.h_pool, [-1, num_filters_total])
+        self.hidden_layers = []
+        for i, num_neurons in enumerate(neurons_hidden):
+            with tf.name_scope('fully_connected-%d' % num_neurons):
+                w = tf.Variable(tf.truncated_normal([num_filters_total if i == 0 else neurons_hidden[i - 1],
+                                                     neurons_hidden[i]], stddev=0.1), name="W")
+                b = tf.Variable(tf.constant(0.1, shape=[neurons_hidden[i]]), name="b")
+                self.hidden_layers.append(tf.nn.relu(tf.nn.xw_plus_b(
+                    self.h_pool_flat if i == 0 else self.hidden_layers[-1], w, b, name="ffn")))
 
         with tf.name_scope('dropout'):
-            self.drop = tf.nn.dropout(self.h_pool_flat, self.dropout_keep_prob)
+            self.drop = tf.nn.dropout(self.hidden_layers[-1], self.dropout_keep_prob)
 
         with tf.name_scope("output"):
-            w = tf.Variable(tf.truncated_normal([num_filters_total, num_classes], stddev=0.1), name="W")
+            w = tf.Variable(tf.truncated_normal([neurons_hidden[-1], num_classes], stddev=0.1), name="W")
             b = tf.Variable(tf.constant(0.1, shape=[num_classes]), name="b")
             self.scores = tf.nn.xw_plus_b(self.drop, w, b, name="scores")
             self.predictions = tf.nn.softmax(self.scores)

@@ -60,15 +60,30 @@ class NumericFFN:
         with tf.name_scope("loss"):
             losses = tf.nn.sparse_softmax_cross_entropy_with_logits(self.scores, self.target_vect)
             self.loss = tf.reduce_mean(losses)
+            tf.summary.scalar('loss', self.loss)
 
         # Accuracy
         with tf.name_scope("accuracy"):
             correct_predictions = tf.equal(tf.argmax(tf.nn.softmax(self.scores), 1), self.target_vect)
             self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32), name="accuracy")
+            tf.summary.scalar('accuracy', self.accuracy)
 
         # Adam Optimizer with exponential decay
         with tf.name_scope("Optimizer"):
             step = tf.Variable(0, trainable=False)
             rate = tf.train.exponential_decay(LEARNING_RATE, step, 1, 0.9999)
             optimizer = tf.train.AdamOptimizer(rate)
-            self.train_op = optimizer.minimize(self.loss, global_step=step)
+            gradients = optimizer.compute_gradients(self.loss)
+            self.train_op = optimizer.apply_gradients(gradients, global_step=step)
+
+        # Keep track of gradient values and sparsity
+        grad_summaries = []
+        for g, v in gradients:
+            if g is not None:
+                grad_hist_summary = tf.histogram_summary("{}/grad/hist".format(v.name), g)
+                sparsity_summary = tf.scalar_summary("{}/grad/sparsity".format(v.name), tf.nn.zero_fraction(g))
+                grad_summaries.append(grad_hist_summary)
+                grad_summaries.append(sparsity_summary)
+        self.grad_summaries_merged = tf.merge_summary(grad_summaries)
+
+        self.merged = tf.summary.merge_all()

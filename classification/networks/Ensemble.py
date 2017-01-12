@@ -4,9 +4,7 @@ import tensorflow as tf
 import numpy as np
 import os
 from .Data import GloveWrapper, TrainingData, commit_time_profile
-import simplejson as json
-import asyncio
-import websockets
+import time
 
 
 CNN_DATA = 'out/CNN/TextCNN-340'
@@ -122,6 +120,16 @@ def get_subnet_features(batch, session):
 
 def train(ffn, session):
 
+    now = time.strftime("%c")
+    sum_dir = os.path.join(CHECKPOINT_PATH, 'summary', now)
+    save_dir = os.path.join(CHECKPOINT_PATH, now)
+
+    for directory in [sum_dir, save_dir]:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+    summary_writer = tf.summary.FileWriter(sum_dir, session.graph)
+
     saver = tf.train.Saver()
     tf.add_to_collection('score', ffn.scores)
     tf.add_to_collection('input', ffn.in_vector)
@@ -133,8 +141,9 @@ def train(ffn, session):
             ffn.target_vect: target_batch,
             ffn.dropout_keep_prob: 1
         }
-        _, new_acc, pred = session.run([ffn.train_op, ffn.accuracy, ffn.predictions], feed_dict=feed_dict)
-        print(pred)
+        _, new_acc, summary = session.run([ffn.train_op, ffn.accuracy, ffn.merged], feed_dict=feed_dict)
+
+        summary_writer.add_summary(summary, i)
         list_acc.append(float(new_acc))
 
     acc = []

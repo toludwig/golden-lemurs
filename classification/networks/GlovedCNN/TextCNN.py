@@ -1,6 +1,6 @@
 import tensorflow as tf
 from ..Data import GloveWrapper
-from .settings import LEARNING_RATE, GRADIENT_NORM
+from .train import LEARNING_RATE
 
 
 class TextCNN:
@@ -55,7 +55,6 @@ class TextCNN:
         num_filters_total = num_filters * len(filter_sizes)
         self.h_pool = tf.concat(3, pooled_outputs)
         self.h_pool_flat = tf.reshape(self.h_pool, [-1, num_filters_total])
-
         self.hidden_layers = []
         for i, num_neurons in enumerate(neurons_hidden):
             with tf.name_scope('fully_connected-%d' % num_neurons):
@@ -78,15 +77,33 @@ class TextCNN:
         with tf.name_scope("loss"):
             losses = tf.nn.sparse_softmax_cross_entropy_with_logits(self.scores, self.target_vect)
             self.loss = tf.reduce_mean(losses)
+            tf.summary.scalar('loss', self.loss)
 
         # Accuracy
         with tf.name_scope("accuracy"):
             correct_predictions = tf.equal(tf.argmax(tf.nn.softmax(self.scores), 1), self.target_vect)
             self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32), name="accuracy")
+            tf.summary.scalar('accuracy', self.accuracy)
 
-        # Adam Optimizer with exponential decay
+        # Adam Optimizer with exponential decay and gradient clipping
         with tf.name_scope("Optimizer"):
             step = tf.Variable(0, trainable=False)
             rate = tf.train.exponential_decay(LEARNING_RATE, step, 1, 0.9999)
             optimizer = tf.train.AdamOptimizer(rate)
-            self.train_op = optimizer.minimize(self.loss, global_step=step)
+            variables = tf.trainable_variables()
+            gradients = tf.gradients(self.loss, variables)
+            clipped_gradients, _ = clip_ops.clip_by_global_norm(gradients, gradient_limit)
+            gradients = zip(clipped_gradients, variables)
+            self.train_op = optimizer.apply_gradients(gradients, global_step=step)
+
+        # Keep track of gradient values and sparsity
+        gradient_summaries = []
+        for gradient, variable in gradients:
+            if gradient is not None:
+                grad_hist_summary = tf.histogram_summary("{}/grad/hist".format(variable.name), gradient)
+                sparsity_summary = tf.scalar_summary("{}/grad/sparsity".format(variable.name), tf.nn.zero_fraction(gradient))
+                gradient_summaries.append(grad_hist_summary)
+                gradient_summaries.append(sparsity_summary)
+        self.grad_summaries_merged = tf.merge_summary(gradient_summaries)
+
+        self.merged = tf.summary.merge_all()

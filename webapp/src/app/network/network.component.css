@@ -1,14 +1,19 @@
-:host {
+:host > div {
     display: flex;
     flex-direction: row;
 }
 div#net {
-    flex: 0.5 1 0%;
     border: 1px solid black;
+    position: absolute;
+    left: 0px;
+    right: 30%;
 }
 
 div#docs {
-    flex: 0.5 0 40%;
+    position: absolute;
+    right: 0px;
+    left: 70%;
+    padding: 7px;
     border-left: 1px solid #64676;
 }
 

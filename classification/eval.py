@@ -15,11 +15,11 @@ def start_eval_server():
         message = await websocket.recv()
         repo = json.loads(message)
         repo = download_fields(repo)
-        repo["Category"] = ensemble_eval(repo, session)
+        repo["Category"] = ensemble_eval(repo)
         await websocket.send(json.dumps(repo))
 
     with tf.Session() as session:
-        rebuild_full(session)
+        rebuild_full()
         start_server = websockets.serve(consult, 'localhost', 8765)
         asyncio.get_event_loop().run_until_complete(start_server)
         asyncio.get_event_loop().run_forever()

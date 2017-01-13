@@ -1,20 +1,17 @@
 * repo classification
-** TODO Training data mining
-** TODO frontend
+** DONE Training data mining
+   CLOSED: [2017-01-11 Mi 21:01]
+* TODO frontend
 - website
-- README
 - Documentation
-** TODO documentation
-Tobi does it ;)
-** TODO backend
-   SCHEDULED: <2016-12-17 Sa>
-*** task
-**** classes
-     DEV, HW, EDU, DOCS, WEB, DATA, OTHER
-*** confidence output
-*** relvant data
+- Documentation
+* TODO documentation
+** CNN
+  :LOGBOOK:
+  CLOCK: [2017-01-13 Fr 01:12]--[2017-01-13 Fr 01:37] =>  0:25
+  CLOCK: [2017-01-11 Mi 23:14]--[2017-01-11 Mi 23:39] =>  0:25
+  CLOCK: [2017-01-11 Mi 22:14]--[2017-01-11 Mi 22:39] =>  0:25
+  CLOCK: [2017-01-11 Mi 21:30]--[2017-01-11 Mi 21:55] =>  0:25
+  :END:
+** relvant data
 - file name
-**** readme (spam-filter)
-- bag of words
-**** topics???
-* recommender system

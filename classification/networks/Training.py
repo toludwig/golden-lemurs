@@ -62,7 +62,7 @@ def train(training_step,
 
         acc.append(float(new_acc))
         loss.append(float(new_loss))
-        summary_writer.add_summary(summary, 1)
+        summary_writer.add_summary(summary, i)
 
         print('Training step %d/%d: %f%% Accuracy' % (i, num_batches, acc[-1] * 100))
 
@@ -109,6 +109,6 @@ def validate(validation_step,
     logger.set_test_acc(acc)
     logger.set_score(score)
 
-    print("Validation finished. Accuracy was %f%%" % score * 100)
+    print("Validation finished. Accuracy was %f%%" % (score * 100))
 
     return score

@@ -1,7 +1,7 @@
-import numpy as np
 import tensorflow as tf
-import json
-from .settings import FEATURES, LEARNING_RATE, GRADIENT_NORM
+
+from tensorflow.python.framework import ops
+from tensorflow.python.ops import clip_ops
 
 '''
 A simple FF net for the numerical fields of a repo, i.e.
@@ -24,11 +24,13 @@ class NumericFFN:
     def __init__(self,
                  parameters,
                  neurons_hidden,
-                 categories):
+                 categories,
+                 learning_rate):
 
         self.in_vector = tf.placeholder(tf.float32, [None, parameters], name='input')
         self.target_vect = tf.placeholder(tf.int64, [None], name='target')
         self.dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
+        self.class_weights = tf.placeholder(tf.float32, [categories], name='class_weights')
 
         self.hidden_layers = []
         for i, num_neurons in enumerate(neurons_hidden):
@@ -52,7 +54,8 @@ class NumericFFN:
         # CalculateMean cross-entropy loss
         with tf.name_scope("loss"):
             losses = tf.nn.sparse_softmax_cross_entropy_with_logits(self.scores, self.target_vect)
-            self.loss = tf.reduce_mean(losses)
+            scale = tf.gather(self.class_weights, self.target_vect)
+            self.loss = tf.reduce_mean(losses * scale)
             tf.summary.scalar('loss', self.loss)
 
         # Accuracy
@@ -61,22 +64,25 @@ class NumericFFN:
             self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32), name="accuracy")
             tf.summary.scalar('accuracy', self.accuracy)
 
-        # Adam Optimizer with exponential decay
+        # Adam Optimizer with exponential decay and gradient clipping
         with tf.name_scope("Optimizer"):
             step = tf.Variable(0, trainable=False)
-            rate = tf.train.exponential_decay(LEARNING_RATE, step, 1, 0.9999)
+            rate = tf.train.exponential_decay(learning_rate, step, 1, 0.9999)
             optimizer = tf.train.AdamOptimizer(rate)
             gradients = optimizer.compute_gradients(self.loss)
-            self.train_op = optimizer.apply_gradients(gradients, global_step=step)
+            clipped_gradients = [(tf.clip_by_value(grad, -1., 1.), var) for grad, var in gradients]
+            self.train_op = optimizer.apply_gradients(clipped_gradients, global_step=step)
 
         # Keep track of gradient values and sparsity
-        grad_summaries = []
-        for g, v in gradients:
-            if g is not None:
-                grad_hist_summary = tf.histogram_summary("{}/grad/hist".format(v.name), g)
-                sparsity_summary = tf.scalar_summary("{}/grad/sparsity".format(v.name), tf.nn.zero_fraction(g))
-                grad_summaries.append(grad_hist_summary)
-                grad_summaries.append(sparsity_summary)
-        self.grad_summaries_merged = tf.merge_summary(grad_summaries)
+        for gradient, variable in gradients:
+            if isinstance(gradient, ops.IndexedSlices):
+                grad_values = gradient.values
+            else:
+                grad_values = gradient
+            tf.summary.histogram(variable.name, variable)
+            tf.summary.histogram(variable.name + "/gradients", grad_values)
+            tf.summary.histogram(variable.name + "/gradient_norm", clip_ops.global_norm([grad_values]))
+            tf.scalar_summary(variable.name + "/grad/sparsity", tf.nn.zero_fraction(gradient))
 
         self.merged = tf.summary.merge_all()
+

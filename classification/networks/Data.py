@@ -19,7 +19,7 @@ class Singleton(type):
 
 
 class GloveWrapper(object, metaclass=Singleton):
-    """Singleton that loads the GloVe Data"""
+    """Loads and manages the Word2vec Data"""
 
     def __init__(self):
         super(GloveWrapper, self).__init__()
@@ -47,26 +47,29 @@ class TrainingData(object, metaclass=Singleton):
     def __init__(self):
         super(TrainingData, self).__init__()
         print('Constructing training data...', end='', flush=True)
-        f1 = json.load(open('data/dev_full.json'))
-        f2 = json.load(open('data/data_full.json'))
-        f3 = json.load(open('data/docs_full.json'))
-        f4 = json.load(open('data/web_full.json'))
-        f5 = json.load(open('data/edu_full.json'))
-        f6 = json.load(open('data/homework_full.json'))
-        self.cats = []
+        f1 = json.load(open('data/dev_expanded.json'))
+        f6 = json.load(open('data/data_expanded.json'))
+        f4 = json.load(open('data/docs_expanded.json'))
+        f5 = json.load(open('data/web_expanded.json'))
+        f3 = json.load(open('data/edu_expanded.json'))
+        f2 = json.load(open('data/homework_expanded.json'))
+        self.train = []
         self.val = []
+        self.total_length = 0
+        self.factors = []
         for cat in [f1, f2, f3, f4, f5, f6]:
-            self.cats.append(cat[:-500])
-            self.val += cat[-500:]
+            cut = int(len(cat) / 10)
+            self.train += (cat[:-cut])
+            self.val += cat[-cut:]
+            temp = len(cat[:-cut])
+            self.factors.append(temp)
+            self.total_length += temp
+        self.factors = list(map(lambda x: ((1/6) / (x / self.total_length)), self.factors))
         print('done')
 
     def batch(self, size):
-        num_entries = math.floor(size / len(self.cats))
-
-        data = []
-        for entry in self.cats:
-            indices = random.sample(range(len(entry)), num_entries)
-            data += [entry[index] for index in indices]
+        indices = random.sample(range(len(self.train)), size)
+        data = [self.train[index] for index in indices]
         random.shuffle(data)
         return data
 

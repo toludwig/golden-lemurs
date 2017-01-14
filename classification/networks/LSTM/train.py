@@ -3,14 +3,9 @@ from ..Logger import Logger
 from ..Data import commit_time_profile
 from .. import TELEGRAM_API, TELEGRAM_TARGETS
 from .LSTM import LSTM
-from ..Training import train, validate
+from .settings import *
+from ..Training import train, validate, TrainingData
 
-LEARNING_RATE = 1e-3
-NUM_LAYERS = 4
-NUM_BATCHES = 3000
-BATCH_SIZE = 30
-SERIES_LENGTH = 744
-NEURONS_HIDDEN = 100
 
 SAVE_INTERVAL = 200
 CHECKPOINT_PATH = "out/RNN"
@@ -25,8 +20,12 @@ COMMENT = """learning_rate=%f
 """ % (LEARNING_RATE, NUM_LAYERS, NUM_BATCHES, BATCH_SIZE, SERIES_LENGTH, NEURONS_HIDDEN)
 
 
+def preprocess(x):
+    return commit_time_profile(x['CommitTimes'])
+
+
 def main():
-    rnn = LSTM(NUM_LAYERS, NEURONS_HIDDEN, 6, SERIES_LENGTH)
+    rnn = LSTM(NUM_LAYERS, NEURONS_HIDDEN, 6, SERIES_LENGTH, LEARNING_RATE)
 
     logger = Logger(TITLE, COMMENT)
     logger.set_source(NETWORK_PATH)
@@ -49,7 +48,8 @@ def main():
                 rnn.input_vect: in_batch,
                 rnn.target_vect: target_batch,
                 rnn.dropout_keep_prob: 0.5,
-                rnn.batch_size: len(in_batch)
+                rnn.batch_size: len(in_batch),
+                rnn.class_weights: TrainingData().factors
             }
             _, acc, cost, summary = session.run([rnn.train_op, rnn.accuracy, rnn.loss, rnn.merged],
                                                 feed_dict=feed_dict)
@@ -65,11 +65,8 @@ def main():
             acc = session.run(rnn.accuracy, feed_dict)
             return acc
 
-        def preprocess(x):
-            commit_time_profile(x['CommitTimes'])
-
         train(train_step, preprocess, NUM_BATCHES,
-              BATCH_SIZE, collection_hook, logger, CHECKPOINT_PATH, 200)
+              BATCH_SIZE, collection_hook, logger, CHECKPOINT_PATH, 50)
 
         validate(val_step, preprocess, BATCH_SIZE, logger)
 

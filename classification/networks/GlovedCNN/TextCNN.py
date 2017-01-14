@@ -1,6 +1,7 @@
 import tensorflow as tf
-from ..Data import GloveWrapper
-from .train import LEARNING_RATE
+
+from tensorflow.python.framework import ops
+from tensorflow.python.ops import clip_ops
 
 
 class TextCNN:
@@ -15,13 +16,13 @@ class TextCNN:
                  filter_sizes,
                  num_filters,
                  neurons_hidden,
+                 learning_rate,
                  embedding_size=300):
 
         self.input_vect = tf.placeholder(tf.float32, [None, sequence_length, embedding_size], name='input')
-
         self.target_vect = tf.placeholder(tf.int64, [None], name='target')
-
         self.dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
+        self.class_weights = tf.placeholder(tf.float32, [categories], name='class_weights')
 
         with tf.name_scope("embedding"):
             self.embedded_chars_expanded = tf.expand_dims(self.input_vect, -1)
@@ -76,7 +77,8 @@ class TextCNN:
         # CalculateMean cross-entropy loss
         with tf.name_scope("loss"):
             losses = tf.nn.sparse_softmax_cross_entropy_with_logits(self.scores, self.target_vect)
-            self.loss = tf.reduce_mean(losses)
+            scale = tf.gather(self.class_weights, self.target_vect)
+            self.loss = tf.reduce_mean(losses * scale)
             tf.summary.scalar('loss', self.loss)
 
         # Accuracy
@@ -88,22 +90,21 @@ class TextCNN:
         # Adam Optimizer with exponential decay and gradient clipping
         with tf.name_scope("Optimizer"):
             step = tf.Variable(0, trainable=False)
-            rate = tf.train.exponential_decay(LEARNING_RATE, step, 1, 0.9999)
+            rate = tf.train.exponential_decay(learning_rate, step, 1, 0.9999)
             optimizer = tf.train.AdamOptimizer(rate)
-            variables = tf.trainable_variables()
-            gradients = tf.gradients(self.loss, variables)
-            clipped_gradients, _ = clip_ops.clip_by_global_norm(gradients, gradient_limit)
-            gradients = zip(clipped_gradients, variables)
-            self.train_op = optimizer.apply_gradients(gradients, global_step=step)
+            gradients = optimizer.compute_gradients(self.loss)
+            clipped_gradients = [(tf.clip_by_value(grad, -1., 1.), var) for grad, var in gradients]
+            self.train_op = optimizer.apply_gradients(clipped_gradients, global_step=step)
 
         # Keep track of gradient values and sparsity
-        gradient_summaries = []
         for gradient, variable in gradients:
-            if gradient is not None:
-                grad_hist_summary = tf.histogram_summary("{}/grad/hist".format(variable.name), gradient)
-                sparsity_summary = tf.scalar_summary("{}/grad/sparsity".format(variable.name), tf.nn.zero_fraction(gradient))
-                gradient_summaries.append(grad_hist_summary)
-                gradient_summaries.append(sparsity_summary)
-        self.grad_summaries_merged = tf.merge_summary(gradient_summaries)
+            if isinstance(gradient, ops.IndexedSlices):
+                grad_values = gradient.values
+            else:
+                grad_values = gradient
+            tf.summary.histogram(variable.name, variable)
+            tf.summary.histogram(variable.name + "/gradients", grad_values)
+            tf.summary.histogram(variable.name + "/gradient_norm", clip_ops.global_norm([grad_values]))
+            tf.scalar_summary(variable.name + "/grad/sparsity", tf.nn.zero_fraction(gradient))
 
         self.merged = tf.summary.merge_all()

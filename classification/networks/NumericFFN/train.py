@@ -2,15 +2,9 @@ import tensorflow as tf
 from ..Logger import Logger
 from .. import TELEGRAM_API, TELEGRAM_TARGETS
 from .NumericFFN import NumericFFN
+from ..Data import TrainingData
 from ..Training import train, validate
-
-NEURONS_HIDDEN = [100, 600]
-BATCH_SIZE = 500
-NUM_BATCHES = 400
-LEARNING_RATE = 1e-3
-GRADIENT_NORM = 5
-
-FEATURES = ['Branches', 'Forks', 'NumberOfCommits', 'NumberOfContributors', 'Pulls', 'Stars', 'Subscribers']
+from .settings import *
 
 VAL_SIZE = 50
 SAVE_INTERVAL = 20
@@ -28,14 +22,15 @@ CHECKPOINT_PATH = "out/FFN"
 def preprocess(x):
     data = []
     for key in FEATURES:
-        data.append(dict[key])
+        data.append(x[key])
     return data
 
 
 def main():
     ffn = NumericFFN(parameters=len(FEATURES),
                      neurons_hidden=NEURONS_HIDDEN,
-                     categories=6)
+                     categories=6,
+                     learning_rate=LEARNING_RATE)
 
     logger = Logger(TITLE, COMMENT)
     logger.set_source(NETWORK_PATH)
@@ -55,7 +50,8 @@ def main():
             feed_dict = {
                 ffn.in_vector: in_batch,
                 ffn.target_vect: target_batch,
-                ffn.dropout_keep_prob: 0.5
+                ffn.dropout_keep_prob: 0.5,
+                ffn.class_weights: TrainingData().factors
             }
             _, acc, cost, summary = session.run([ffn.train_op, ffn.accuracy, ffn.loss, ffn.merged],
                                                 feed_dict=feed_dict)

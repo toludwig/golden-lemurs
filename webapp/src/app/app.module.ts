@@ -11,12 +11,12 @@ import { ClassifyComponent} from './classify/classify.component';
 import { DocsComponent } from './docs/docs.component';
 import { NetworkComponent } from './network/network.component';
 
-const routes = [
-    { path: '', pathMatch: 'full', redirectTo: 'classify'},
-    { path: 'classify', component: ClassifyComponent},
-    { path: 'network', component: NetworkComponent},
-    { path: 'docs', component: DocsComponent}
-];
+// const routes = [
+//     { path: '', pathMatch: 'full', redirectTo: 'classify'},
+//     { path: 'classify', component: ClassifyComponent},
+//     { path: 'network', component: NetworkComponent},
+//     { path: 'docs', component: DocsComponent}
+// ];
 
 @NgModule({
   declarations: [
@@ -28,7 +28,7 @@ const routes = [
     BrowserModule,
     FormsModule,
     HttpModule,
-    RouterModule.forRoot(routes),
+    // RouterModule.forRoot(routes),
     MaterialModule.forRoot()
   ],
   providers: [],

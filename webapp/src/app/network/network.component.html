@@ -1,13 +1,13 @@
-<div>
-  <div id="net" #net>
-
-  </div>
-
-  <div id="docs">
-    <header>
-      <h1>{{ title | async }}</h1>
-    </header>
-    <section [innerHTML]="text | async">
-    </section>
-  </div>
-</div>
+<md-grid-list cols="3" rowHeight="200px">
+  <md-grid-tile *ngFor="let card of dashboard" [colspan]="card.cols" [rowspan]="card.rows">
+    <md-card>
+      <md-card-header>
+        <md-card-title>{{card.title}}</md-card-title>
+        <md-card-subtitle>{{card.subtitle}}</md-card-subtitle>
+        <img md-card-avatar [src]="'assets/' + card.image" />
+      </md-card-header>
+      <md-card-content [innerHTML]="card.text">
+      </md-card-content>
+    </md-card>
+  </md-grid-tile>
+</md-grid-list>

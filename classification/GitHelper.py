@@ -1,32 +1,79 @@
 #!/usr/bin/python3
 
 from github3 import login
-from github3.null import NullObject
 from markdown import markdown
 from bs4 import BeautifulSoup
 from random import randint
+import requests
 
-tokens = [login(token='9e484681cd48b198297bb0de032445f92a962282'),
-          login(token='360e0d54fe6c4e1e944bcb6c2ed0533389683758'),
-          login(token='16bf3237e831bbb0a226eeae44313ca2254f49be'),
-          login(token='d357de7b1afbf063489f189f4afae3b678c48aeb'),
-          login(token='562373b01a5538554be70cd9da1cab100e70f34c'),
-          login(token='1b661528ad9c44d9e93aa3d1c6cee8a9c76ab984'),
-          login(token='7ca977da54b4ca3b3704c7d52a76188ccbe1e371'),
-          login(token='85d168fcb6f40e92026cf29050b03391a888c340'),
-          login(token='c245bd72e2408680e9e8136b162e45df022a1ed8')]
+# keys = ['9e484681cd48b198297bb0de032445f92a962282']
 
+keys = ['9e484681cd48b198297bb0de032445f92a962282',
+ '360e0d54fe6c4e1e944bcb6c2ed0533389683758',
+ '16bf3237e831bbb0a226eeae44313ca2254f49be',
+ 'd357de7b1afbf063489f189f4afae3b678c48aeb',
+ '562373b01a5538554be70cd9da1cab100e70f34c',
+ '1b661528ad9c44d9e93aa3d1c6cee8a9c76ab984',
+ '7ca977da54b4ca3b3704c7d52a76188ccbe1e371',
+ '85d168fcb6f40e92026cf29050b03391a888c340',
+ 'c245bd72e2408680e9e8136b162e45df022a1ed8']
+
+
+tokens = list(map(lambda key: login(token=key), keys))
+
+# Type queries into this side of the screen, and you will
+# see intelligent typeaheads aware of the current GraphQL type schema,
+# live syntax, and validation errors highlighted within the text.
+
+# We'll get you started with a simple query showing your username!
+graph_ql_query = """query RepoInfo($owner:String!, $name:String!) {
+    repository(owner:$owner, name: $name) {
+    	isFork
+      updatedAt
+      createdAt
+      stargazers {
+        totalCount
+      }
+      pullRequests {
+        totalCount
+      }
+      forks {
+        totalCount
+      }
+      watchers {
+        totalCount
+      }
+    }
+  }
+  """
+
+selected_token = tokens[randint(0, len(tokens) - 1)]
 
 def _token():
-    i = randint(0, len(tokens) - 1)
-    return tokens[i]
+    global selected_token
+    if selected_token.rate_limit()['resources']['core']['remaining'] > 0:
+        return selected_token
+    else:
+        selected_token = None
+        while selected_token is None:
+            i = randint(0, len(tokens) - 1)
+            selected_token = tokens[i]
+            if not selected_token.rate_limit()['resources']['core']['remaining'] > 0:
+                selected_token = None
+        return selected_token
 
+def _key():
+    i = randint(0, len(keys) - 1)
+    return keys[i]
 
 class Git():
     """docstring for Git."""
 
+
     def __init__(self, user, title):
         self.api = _token()
+        self.user = user
+        self.title = title
         # repo may not exist
         self.repo = self.api.repository(user, title)
 
@@ -41,7 +88,7 @@ class Git():
 
     def get_readme(self):
         readme = self.repo.readme()
-        if not type(readme) == NullObject:
+        if readme is not None:
             text = BeautifulSoup(readme.decoded, "html.parser").text
             return text
         return ''
@@ -88,3 +135,16 @@ class Git():
         created = self.repo.created_at.timestamp()
         last = self.repo.updated_at.timestamp()
         return created, last
+
+    def get_files(self):
+        try:
+            header = { 'Authorization': 'token %s' % _key()}
+            api = 'https://api.github.com/repos/%s/%s' % (self.user, self.title)
+            commits = requests.get('%s/commits' % api,
+                headers=header)
+            sha = commits.json()[0]['sha']
+            tree = requests.get('%s/git/trees/%s' % (api, sha), params={ 'recursive': '1' }, headers=header)
+            names = list(map(lambda entry: entry['path'], tree.json()['tree']))
+            return names
+        except:
+            return []

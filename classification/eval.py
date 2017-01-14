@@ -13,13 +13,19 @@ def start_eval_server():
 
     async def consult(websocket, path):
         message = await websocket.recv()
-        repo = json.loads(message)
-        repo = download_fields(repo)
-        repo["Category"] = ensemble_eval(repo, session)
+        message = json.loads(message)
+        repo = download_fields(message['Url'], 'web')
+        repo["Category"] = ensemble_eval([repo])[0].tolist()
+        print(repo)
         await websocket.send(json.dumps(repo))
 
     with tf.Session() as session:
-        rebuild_full(session)
+        rebuild_full()
         start_server = websockets.serve(consult, 'localhost', 8765)
+        print('Started listening on localhost:8765')
         asyncio.get_event_loop().run_until_complete(start_server)
         asyncio.get_event_loop().run_forever()
+
+
+if __name__ == '__main__':
+    start_eval_server()

@@ -1,0 +1,24 @@
+* documentation
+** ffn
+*** TODO topology (once verbose)
+**** dropout
+**** softmax
+*** TODO training
+**** mini batches
+**** ...
+** rnn
+*** TODO topology
+*** TODO training
+** cnn
+*** DONE cv background
+*** DONE word vector explanation
+*** TODO topology
+    :LOGBOOK:
+    CLOCK: [2017-01-13 Fr 02:33]--[2017-01-13 Fr 02:58] =>  0:25
+    :END:
+*** TODO training
+** ensemble
+*** TODO stacking
+** training data mining
+*** DONE general blabla
+*** TODO information expectation...?

@@ -16,7 +16,10 @@ RUN curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
 RUN apt-get install -y --no-install-recommends nodejs
 
 RUN ["mkdir", "/home/app"]
-COPY ["classification", "data", "docs", "webapp", "/home/app/"]
+COPY classification /home/app/classification/
+COPY data /home/app/data/
+COPY docs /home/app/docs/
+COPY webapp /home/app/webapp/
 
 WORKDIR /home/app/webapp
 RUN ["npm", "install"]

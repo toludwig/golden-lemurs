@@ -8,6 +8,7 @@ from random import sample
 from time import sleep
 from multiprocessing import Pool
 
+def add_commits(file, out, size=100):
 
 def load_data(repos, results, category, size=100):
     data = _load(repos)
@@ -27,6 +28,23 @@ def load_data(repos, results, category, size=100):
     _save(list(filter(None, new)), results)
     return True
 
+
+def enrich_entry(repo, action):
+    print(repo['Title'])
+    connected = False
+        try:
+    while not connected:
+            git = Git(repo["User"], repo["Title"])
+            connected = True
+        except:
+
+            sleep(10)
+    if not git.valid():
+    try:
+        return None
+    except:
+        action(repo, git)
+        return repo
 
 def _options():
     parser = OptionParser()
@@ -93,6 +111,7 @@ def download_fields(url):
         obj["Subscribers"] = git.number_subscribers()
         obj["NumberOfCommits"], obj["CommitTimes"], obj["CommitMessages"] = git.get_commits()
         obj["Times"] = git.get_times()
+        obj["Files"] = git.get_files()
     except Exception as err:
         print("Crawler interrupted @ %s because of %s ; skipping this repo" % (url, err))
         return None

@@ -8,7 +8,6 @@ from random import sample
 from time import sleep
 from multiprocessing import Pool
 
-def add_commits(file, out, size=100):
 
 def load_data(repos, results, category, size=100):
     data = _load(repos)
@@ -29,22 +28,49 @@ def load_data(repos, results, category, size=100):
     return True
 
 
+def add_files(file, out, size=100):
+    def get_files(repo):
+        def action(r, git):
+            r['Files'] = git.get_files()
+        return enrich_entry(repo, action)
+
+    return add_enrichment(file, out, size, get_files)
+
+
+def add_enrichment(file, out, size, action):
+    data = _load(file)
+    if data is []:
+        return False
+    new = _load(out)
+    try:
+        with Pool(processes=8) as executor:
+            new += list(executor.imap(action, data[:size]))
+    except:
+        raise Exception("Crawler interrupted").with_traceback(sys.exc_info()[2])
+    downloaded = [i for i, elem in enumerate(new) if new[i] is not None]
+    _save([data[i] for i, elem in enumerate(data) if i not in downloaded], file)
+    _save(list(filter(None, new)), out)
+
+
 def enrich_entry(repo, action):
     print(repo['Title'])
     connected = False
-        try:
     while not connected:
+        try:
             git = Git(repo["User"], repo["Title"])
             connected = True
         except:
-
             sleep(10)
+
     if not git.valid():
-    try:
         return None
-    except:
+    try:
         action(repo, git)
         return repo
+    except Exception as err:
+        print("Crawler interrupted @ %s because of %s ; skipping this repo" % (repo["Url"], err))
+        return None
+
 
 def _options():
     parser = OptionParser()
@@ -170,7 +196,7 @@ def rate_interactive(file):
 def main():
     (options, args) = _options()
 
-    if options.category != '0': # category given, automatic
+    if options.category != '0':  # category given, automatic
         load_data(options.list, options.out, options.category, options.number)
     else:  # wait on paste
         rate_interactive(options.out)

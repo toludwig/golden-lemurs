@@ -13,7 +13,6 @@ A simple FF net for the numerical fields of a repo, i.e.
 - number of pulls
 - number of stars
 - number of subscribers
-- activity duration (last-activity - creation)
 '''
 
 

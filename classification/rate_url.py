@@ -8,8 +8,24 @@ from random import sample
 from time import sleep
 from multiprocessing import Pool
 
-
 def add_commits(file, out, size=100):
+
+    def get_commits(repo):
+        def action(r, git):
+            r['CommitMessages'] = git.get_commits(75)
+        return enrich_entry(repo, action)
+
+    return add_enrichment(file, out, size, get_commits)
+
+def add_files(file, out, size=100):
+    def get_files(repo):
+        def action(r, git):
+            r['Files'] = git.get_files()
+        return enrich_entry(repo, action)
+
+    return add_enrichment(file, out, size, get_files)
+
+def add_enrichment(file, out, size, action):
     data = _load(file)
     if data == []:
         return False
@@ -17,16 +33,16 @@ def add_commits(file, out, size=100):
     new = _load(out)
     try:
         with Pool(processes=8) as executor:
-            new += list(executor.imap(get_commits, data[:size]))
+            new += list(executor.imap(action, data[:size]))
     except:
         raise Exception("Crawler interrupted").with_traceback(sys.exc_info()[2])
     _save(data[size:], file)
     _save(list(filter(None, new)), out)
     return True
 
-def get_commits(repo):
+
+def enrich_entry(repo, action):
     print(repo['Title'])
-    global new
     connected = False
     while not connected:
         try:
@@ -37,13 +53,12 @@ def get_commits(repo):
 
     if not git.valid():
         return None
-
     try:
-        repo['CommitMessages'] = git.get_commits(75)
-        done = True
+        action(repo, git)
+        return repo
     except:
         return None
-    return repo
+
 
 
 
@@ -140,6 +155,7 @@ def download_fields(url, url_schema = 'api'):
         obj['CommitMessages'] = git.get_commits(75)
         (obj["NumberOfCommits"], obj["CommitTimes"]) = git.get_commit_times()
         obj["Times"] = git.get_times()
+        obj["Files"] = git.get_files()
     except Exception as err:
         print("Crawler interrupted @ %s because of %s ; skipping this repo" % (url, err))
         return None

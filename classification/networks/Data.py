@@ -47,12 +47,12 @@ class TrainingData(object, metaclass=Singleton):
     def __init__(self):
         super(TrainingData, self).__init__()
         print('Constructing training data...', end='', flush=True)
-        f1 = json.load(open('data/dev_full.json'))
-        f2 = json.load(open('data/data_full.json'))
-        f3 = json.load(open('data/docs_full.json'))
-        f4 = json.load(open('data/web_full.json'))
-        f5 = json.load(open('data/edu_full.json'))
-        f6 = json.load(open('data/homework_full.json'))
+        f1 = json.load(open('data/dev_expanded.json'))
+        f2 = json.load(open('data/data_expanded.json'))
+        f3 = json.load(open('data/docs_expanded.json'))
+        f4 = json.load(open('data/web_expanded.json'))
+        f5 = json.load(open('data/edu_expanded.json'))
+        f6 = json.load(open('data/homework_expanded.json'))
         self.cats = []
         self.val = []
         for cat in [f1, f2, f3, f4, f5, f6]:

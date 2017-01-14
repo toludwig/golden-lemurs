@@ -4,15 +4,8 @@ from ..Data import TrainingData, GloveWrapper
 from .. import TELEGRAM_API, TELEGRAM_TARGETS
 from .TextCNN import TextCNN
 from ..Training import train, validate
+from .settings import *
 
-SEQUENCE_LENGTH = 200
-FILTER_SIZES = [3, 4, 5, 6]
-NUM_FILTERS = 164
-BATCH_SIZE = 200
-NUM_BATCHES = 350
-LEARNING_RATE = 1e-3
-NEURONS_HIDDEN = [100]
-GRADIENT_NORM = 5
 
 VAL_SIZE = 50
 SAVE_INTERVAL = 20
@@ -29,12 +22,17 @@ COMMENT = """sequence_length=%d
 """ % (SEQUENCE_LENGTH, FILTER_SIZES, NUM_FILTERS, NUM_BATCHES, BATCH_SIZE, LEARNING_RATE, NEURONS_HIDDEN)
 
 
+def preprocess(x, sequence_length=SEQUENCE_LENGTH):
+    return GloveWrapper().tokenize(x['Readme'], sequence_length)
+
+
 def main():
     cnn = TextCNN(sequence_length=SEQUENCE_LENGTH,
                   num_classes=6,
                   filter_sizes=FILTER_SIZES,
                   num_filters=NUM_FILTERS,
-                  neurons_hidden=NEURONS_HIDDEN)
+                  neurons_hidden=NEURONS_HIDDEN,
+                  learning_rate=LEARNING_RATE)
 
     logger = Logger(TITLE, COMMENT)
     logger.set_source(NETWORK_PATH)
@@ -69,9 +67,6 @@ def main():
             }
             acc = session.run(cnn.accuracy, feed_dict)
             return acc
-
-        def preprocess(x):
-            return GloveWrapper().tokenize(x['Readme'], SEQUENCE_LENGTH)
 
         train(train_step, preprocess, NUM_BATCHES,
               BATCH_SIZE, collection_hook, logger, CHECKPOINT_PATH)

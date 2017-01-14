@@ -7,7 +7,7 @@ from .GitHelper import Git
 from random import sample
 from time import sleep
 from multiprocessing import Pool
-import traceback
+
 
 def add_commits(file, out, size=100):
     data = _load(file)
@@ -127,7 +127,6 @@ def download_fields(url, url_schema = 'api'):
     try:
         # skip forks as heuristic to avoid training on duplicate data
         obj = {}
-        print('start')
         obj["User"] = user
         obj["Title"] = title
         obj["Readme"] = git.get_readme()
@@ -138,6 +137,7 @@ def download_fields(url, url_schema = 'api'):
         obj["Stars"] = git.number_stars()
         obj["Pulls"] = git.number_pull_requests()
         obj["Subscribers"] = git.number_subscribers()
+        obj['CommitMessages'] = git.get_commits(75)
         (obj["NumberOfCommits"], obj["CommitTimes"]) = git.get_commit_times()
         obj["Times"] = git.get_times()
     except Exception as err:

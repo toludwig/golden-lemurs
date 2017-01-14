@@ -3,14 +3,7 @@ from ..Logger import Logger
 from .. import TELEGRAM_API, TELEGRAM_TARGETS
 from .NumericFFN import NumericFFN
 from ..Training import train, validate
-
-NEURONS_HIDDEN = [100, 600]
-BATCH_SIZE = 500
-NUM_BATCHES = 400
-LEARNING_RATE = 1e-3
-GRADIENT_NORM = 5
-
-FEATURES = ['Branches', 'Forks', 'NumberOfCommits', 'NumberOfContributors', 'Pulls', 'Stars', 'Subscribers']
+from .settings import *
 
 VAL_SIZE = 50
 SAVE_INTERVAL = 20
@@ -28,14 +21,15 @@ CHECKPOINT_PATH = "out/FFN"
 def preprocess(x):
     data = []
     for key in FEATURES:
-        data.append(dict[key])
+        data.append(x[key])
     return data
 
 
 def main():
     ffn = NumericFFN(parameters=len(FEATURES),
                      neurons_hidden=NEURONS_HIDDEN,
-                     categories=6)
+                     categories=6,
+                     learning_rate=LEARNING_RATE)
 
     logger = Logger(TITLE, COMMENT)
     logger.set_source(NETWORK_PATH)

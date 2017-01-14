@@ -41,7 +41,7 @@ class Git():
 
     def get_readme(self):
         readme = self.repo.readme()
-        if not type(readme) == NullObject:
+        if readme is not None:
             text = BeautifulSoup(readme.decoded, "html.parser").text
             return text
         return ''

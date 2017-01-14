@@ -4,7 +4,7 @@ from ..Data import commit_time_profile
 from .. import TELEGRAM_API, TELEGRAM_TARGETS
 from .LSTM import LSTM
 from .settings import *
-from ..Training import train, validate
+from ..Training import train, validate, TrainingData
 
 
 SAVE_INTERVAL = 200
@@ -48,7 +48,8 @@ def main():
                 rnn.input_vect: in_batch,
                 rnn.target_vect: target_batch,
                 rnn.dropout_keep_prob: 0.5,
-                rnn.batch_size: len(in_batch)
+                rnn.batch_size: len(in_batch),
+                rnn.class_weights: TrainingData().factors
             }
             _, acc, cost, summary = session.run([rnn.train_op, rnn.accuracy, rnn.loss, rnn.merged],
                                                 feed_dict=feed_dict)

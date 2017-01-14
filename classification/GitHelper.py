@@ -22,6 +22,10 @@ def _token():
     return tokens[i]
 
 
+def _commit_info(commit):
+    return commit.author["date"], commit.message
+
+
 class Git():
     """docstring for Git."""
 
@@ -70,13 +74,9 @@ class Git():
     def number_subscribers(self):
         return len(list(self.repo.iter_subscribers()))
 
-    def get_commit_times(self):
+    def get_commits(self):
         repo = list(self.repo.iter_commits())
-        return len(repo), list(map(lambda x: x.commit.author['date'], repo))
-
-    def get_commits(self, limit ):
-        repo = list(self.repo.iter_commits())[:limit]
-        return list(map(lambda x: x.commit.message, repo))
+        return len(repo), list(map(lambda x: _commit_info(x), repo))
 
     def get_issues(self):
         repo = list(self.repo.iter_issues())

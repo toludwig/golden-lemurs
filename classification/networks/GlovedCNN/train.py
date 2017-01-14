@@ -3,7 +3,7 @@ from ..Logger import Logger
 from ..Data import TrainingData, GloveWrapper
 from .. import TELEGRAM_API, TELEGRAM_TARGETS
 from .TextCNN import TextCNN
-from ..Training import train, validate
+from ..Training import train, validate, TrainingData
 from .settings import *
 
 
@@ -53,7 +53,8 @@ def main():
             feed_dict = {
                 cnn.input_vect: in_batch,
                 cnn.target_vect: target_batch,
-                cnn.dropout_keep_prob: 0.5
+                cnn.dropout_keep_prob: 0.5,
+                cnn.class_weights: TrainingData().factors
             }
             _, acc, cost, summary = session.run([cnn.train_op, cnn.accuracy, cnn.loss, cnn.merged],
                                                 feed_dict=feed_dict)

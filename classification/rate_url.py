@@ -9,64 +9,23 @@ from time import sleep
 from multiprocessing import Pool
 
 
-def add_commits(file, out, size=100):
-    data = _load(file)
-    if data == []:
+def load_data(repos, results, category, size=100):
+    data = _load(repos)
+    if data is []:
         return False
-    print(data)
-    new = _load(out)
+    new = _load(results)
     try:
         with Pool(processes=8) as executor:
-            new += list(executor.imap(get_commits, data[:size]))
-    except:
-        raise Exception("Crawler interrupted").with_traceback(sys.exc_info()[2])
-    _save(data[size:], file)
-    _save(list(filter(None, new)), out)
-    return True
-
-def get_commits(repo):
-    print(repo['Title'])
-    global new
-    connected = False
-    while not connected:
-        try:
-            git = Git(repo["User"], repo["Title"])
-            connected = True
-        except:
-            sleep(10)
-
-    if not git.valid():
-        return None
-
-    try:
-        repo['CommitMessages'] = git.get_commits(75)
-        done = True
-    except:
-        return None
-    return repo
-
-
-
-def load_data(repos, results, category, num_indices=-1):
-    data = _load(results)
-    try:
-        with open(repos, 'r') as file:
-            if num_indices != -1:
-                entries = json.load(file)
-                indices = sample(range(len(entries)), num_indices)
-                urls = [entries[index] for index in indices]
-            else:
-                urls = json.load(file)
-            with Pool(processes=8) as executor:
-                urls[:] = list(executor.imap(download_fields, urls))
-            urls = list(filter(None, urls))
-            for repo in urls:
+            new += list(executor.imap(download_fields, data[:size]))
+        for repo in new:
+            if repo is not None:
                 repo["Category"] = category
-            data += urls
     except (KeyboardInterrupt, Exception):
-        _save(urls, results + '.bak')
         raise Exception("Crawler interrupted").with_traceback(sys.exc_info()[2])
-    _save(data, results)
+    downloaded = [i for i, elem in enumerate(new) if new[i] is not None]
+    _save([data[i] for i, elem in enumerate(data) if i not in downloaded], repos)
+    _save(list(filter(None, new)), results)
+    return True
 
 
 def _options():
@@ -77,7 +36,7 @@ def _options():
                       type="string", default='./list.json', help="file with repo urls; default: reads clipboard")
     parser.add_option("-c", "--category", dest="category", action="store", type="string", default='0',
                       help="category to assign; default: console input")
-    parser.add_option("-n", "--number", dest="number", action="store", type="int", default=-1,
+    parser.add_option("-n", "--number", dest="number", action="store", type="int", default=50,
                       help="number of repos to download")
 
     return parser.parse_args()
@@ -101,18 +60,14 @@ def _split_url(url):
     of a github repo.
     """
     split = url.split('/')
-    title = split[4]
-    user = split[3]
+    title = split[-1]
+    user = split[-2]
     return user, title
 
 
-def download_fields(url, url_schema = 'api'):
-    if url_schema == 'web':
-        user, title = _split_url(url)
-    elif url_schema == 'api':
-        user, title = _split_api_url(url)
-    else:
-        raise Exception('no such url schema')
+def download_fields(url):
+    user, title = _split_url(url)
+    print('%s/%s' % (user, title))
 
     # Api rate limit might have been reached
     connected = False
@@ -131,14 +86,12 @@ def download_fields(url, url_schema = 'api'):
         obj["Title"] = title
         obj["Readme"] = git.get_readme()
         obj["NumberOfContributors"] = git.number_contributors()
-        #obj["NumberOfIssues"] = git.number_issues()
         obj["Branches"] = git.number_branches()
         obj["Forks"] = git.number_forks()
         obj["Stars"] = git.number_stars()
         obj["Pulls"] = git.number_pull_requests()
         obj["Subscribers"] = git.number_subscribers()
-        obj['CommitMessages'] = git.get_commits(75)
-        (obj["NumberOfCommits"], obj["CommitTimes"]) = git.get_commit_times()
+        obj["NumberOfCommits"], obj["CommitTimes"], obj["CommitMessages"] = git.get_commits()
         obj["Times"] = git.get_times()
     except Exception as err:
         print("Crawler interrupted @ %s because of %s ; skipping this repo" % (url, err))
@@ -184,13 +137,13 @@ def rate_interactive(file):
                     trying = False
                 elif c in ['1', '2', '3', '4', '5', '6', '7']:
                     trying = False
-                    cur_obj = download_fields(url, 'web')
+                    cur_obj = download_fields(url)
                     if cur_obj is not None:
                         cur_obj["Category"] = c
                         results.append(cur_obj)
                     else:
                         print("Repo invalid: %s" % url)
-    except (KeyboardInterrupt, Exception) as err:
+    except (KeyboardInterrupt, Exception):
         _save(results, file + '.bak')
         raise Exception("Crawler interrupted @ %s" % last_url).with_traceback(sys.exc_info()[2])
 

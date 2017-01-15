@@ -81,17 +81,21 @@ Our CNN for Word Vectors
 
 Now for the actual neural net. We construct a Convolutional Neural Network of multiple
 convolutional and pooling layers. Its topology looks like this [^3]:
-
 ![picture of cnn topology](./cnn_topology.png)
 
-The input size is 
+The size of the input matrix is 300 words of the mentioned dimensionality 300.
 
-For the convolutional layer, we use filter sizes of _k_ out of [3, 4, 5, 6].
+For the convolutional layer, we use one-dimensional filters (because we operate on vectors)
+with sizes of _k_ out of [3, 4, 5, 6].
 For each filter we have 164 instances of initially random weights which are learned in the training, depicted here for _k_=3:
 
 ![picture of filter matrix](./filter_matrix.png)
 
-From.
+The strides with which the filters are sliding equal 1 for all filter sizes,
+hence they are of course overlapping.
+
+After we applied these convolutions one layer of pooling follows.
+
 
 _________________________
 

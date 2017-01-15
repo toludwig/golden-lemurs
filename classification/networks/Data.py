@@ -45,7 +45,7 @@ class GloveWrapper(object, metaclass=Singleton):
     def __init__(self):
         super(GloveWrapper, self).__init__()
         print('Loading GloVe-Vectors. This will take a while...', end='', flush=True)
-        self.data = Word2Vec.load_word2vec_format('data/GoogleNews-vectors-negative300.bin', binary=True)
+        self.data = Word2Vec.load_word2vec_format('./data/GoogleNews-vectors-negative300.bin', binary=True)
         print('done.')
 
     def lookup_word(self, word):

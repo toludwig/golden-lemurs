@@ -2,7 +2,7 @@ import tensorflow as tf
 
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import clip_ops
-
+from tensorflow.contrib.layers import l2_regularizer
 
 class TextCNN:
     """
@@ -17,12 +17,15 @@ class TextCNN:
                  num_filters,
                  neurons_hidden,
                  learning_rate,
-                 embedding_size=300):
+                 embedding_size,
+                 reg_lambda):
 
         self.input_vect = tf.placeholder(tf.float32, [None, sequence_length, embedding_size], name='input')
         self.target_vect = tf.placeholder(tf.int64, [None], name='target')
         self.dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
-        self.class_weights = tf.placeholder(tf.float32, [categories], name='class_weights')
+        self.class_weights = tf.placeholder(tf.float32, [num_classes], name='class_weights')
+
+        self.weights = []
 
         with tf.name_scope("embedding"):
             self.embedded_chars_expanded = tf.expand_dims(self.input_vect, -1)
@@ -30,46 +33,65 @@ class TextCNN:
         # Convolution and max-pooling Layer
         pooled_outputs = []
         for i, filter_size in enumerate(filter_sizes):
-            with tf.name_scope("conv-maxpool-%s" % i):
+            with tf.variable_scope("conv-maxpool-%s" % i):
+
                 # Convolution Layer
                 filter_shape = [filter_size, embedding_size, 1, num_filters]
-                w = tf.Variable(tf.truncated_normal(
-                    filter_shape, stddev=0.1), name="W")
+                w = tf.get_variable("W", shape=filter_shape,
+                                    initializer=tf.contrib.layers.xavier_initializer_conv2d(),
+                                    regularizer=l2_regularizer(reg_lambda))
+
                 b = tf.Variable(tf.constant(0.1, shape=[num_filters]), name="b")
+
                 conv = tf.nn.conv2d(
                     self.embedded_chars_expanded,
-                    w,
+                    w,  # Uses the kernel widths defined in filter sizes
                     strides=[1, 1, 1, 1],
                     padding="VALID",
                     name="conv")
+
                 # Apply relu
                 h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
+
                 # Max-pooling over the outputs
                 pooled = tf.nn.max_pool(
                     h,
-                    ksize=[1, sequence_length - filter_size + 1, 1, 1],
+                    ksize=[1, sequence_length - filter_size + 1, 1, 1],  # Shape is due to valid padding
                     strides=[1, 1, 1, 1],
                     padding='VALID',
                     name="pool")
                 pooled_outputs.append(pooled)
-            # Combine all the pooled features
+
         num_filters_total = num_filters * len(filter_sizes)
         self.h_pool = tf.concat(3, pooled_outputs)
         self.h_pool_flat = tf.reshape(self.h_pool, [-1, num_filters_total])
         self.hidden_layers = []
+
+        # Fully connected layers
         for i, num_neurons in enumerate(neurons_hidden):
-            with tf.name_scope('fully_connected-%d' % num_neurons):
-                w = tf.Variable(tf.truncated_normal([num_filters_total if i == 0 else neurons_hidden[i - 1],
-                                                     neurons_hidden[i]], stddev=0.1), name="W")
+            with tf.variable_scope('fully_connected-%d' % num_neurons):
+
+                w = tf.get_variable('W',
+                                    shape=[num_filters_total if i == 0 else neurons_hidden[i - 1], neurons_hidden[i]],
+                                    initializer=tf.contrib.layers.xavier_initializer(),
+                                    regularizer=l2_regularizer(reg_lambda))
+
                 b = tf.Variable(tf.constant(0.1, shape=[neurons_hidden[i]]), name="b")
-                self.hidden_layers.append(tf.nn.relu(tf.nn.xw_plus_b(
-                    self.h_pool_flat if i == 0 else self.hidden_layers[-1], w, b, name="ffn")))
+
+                self.hidden_layers.append(tf.nn.relu(tf.nn.xw_plus_b(self.h_pool_flat if i == 0
+                                                                     else self.hidden_layers[-1],
+                                                                     w,
+                                                                     b,
+                                                                     name="ffn")))
 
         with tf.name_scope('dropout'):
             self.drop = tf.nn.dropout(self.hidden_layers[-1], self.dropout_keep_prob)
 
-        with tf.name_scope("output"):
-            w = tf.Variable(tf.truncated_normal([neurons_hidden[-1], num_classes], stddev=0.1), name="W")
+        with tf.variable_scope("output"):
+            w = tf.get_variable('W',
+                                shape=[neurons_hidden[-1], num_classes],
+                                initializer=tf.contrib.layers.xavier_initializer(),
+                                regularizer=l2_regularizer(reg_lambda))
             b = tf.Variable(tf.constant(0.1, shape=[num_classes]), name="b")
             self.scores = tf.nn.xw_plus_b(self.drop, w, b, name="scores")
             self.predictions = tf.nn.softmax(self.scores)
@@ -77,8 +99,11 @@ class TextCNN:
         # CalculateMean cross-entropy loss
         with tf.name_scope("loss"):
             losses = tf.nn.sparse_softmax_cross_entropy_with_logits(self.scores, self.target_vect)
+
+            # Weighted loss depending on class frequency
             scale = tf.gather(self.class_weights, self.target_vect)
-            self.loss = tf.reduce_mean(losses * scale)
+            self.loss = tf.reduce_mean((losses * scale)) + \
+                        sum(tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES))  # Weight Decay
             tf.summary.scalar('loss', self.loss)
 
         # Accuracy

@@ -36,7 +36,9 @@ def main():
                   filter_sizes=FILTER_SIZES,
                   num_filters=NUM_FILTERS,
                   neurons_hidden=NEURONS_HIDDEN,
-                  learning_rate=LEARNING_RATE)
+                  learning_rate=LEARNING_RATE,
+                  embedding_size=EMBEDDING_SIZE,
+                  reg_lambda=L2_REG)
 
     logger = Logger(TITLE, COMMENT)
     logger.set_source(NETWORK_PATH)
@@ -74,7 +76,7 @@ def main():
             return acc
 
         train(train_step, preprocess, NUM_BATCHES,
-              BATCH_SIZE, collection_hook, logger, CHECKPOINT_PATH)
+              BATCH_SIZE, collection_hook, logger, CHECKPOINT_PATH, L2_REG)
 
         validate(val_step, preprocess, VAL_SIZE, logger)
 

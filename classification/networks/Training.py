@@ -16,7 +16,8 @@ def train(training_step,
           collection_hook,
           logger,
           checkpoint_path,
-          log_interval = 20):
+          log_interval=20,
+          full=False):
     """
     This trains a network with our repository dataset. Has to be called within a tf.Session
     :param training_step the function used for the training step.
@@ -54,7 +55,12 @@ def train(training_step,
     acc = []
     loss = []
 
-    for i in range(1, num_batches + 1):
+    if full:
+        data = TrainingData().full(batch_size)
+    else:
+        data = [TrainingData().batch(batch_size) for i in range(num_batches)]
+
+    for i, batch in enumerate(data):
         batch = TrainingData().batch(batch_size)
         input_vect = list(map(lambda x: preprocess(x), batch))
         output_vect = list(map(lambda x: int(x['Category']) - 1, batch))

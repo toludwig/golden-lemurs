@@ -72,7 +72,7 @@ def enrich_entry(repo, action):
         action(repo, git)
         return repo
     except Exception as err:
-        print("Crawler interrupted @ %s because of %s ; skipping this repo" % (repo["Url"], err))
+        print("Crawler interrupted @ %s/%s because of %s ; skipping this repo" % (repo['User'], repo['Title'], err))
         return None
 
 

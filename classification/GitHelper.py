@@ -132,16 +132,19 @@ class Git:
         return created, last
 
     def get_files(self):
-        vars = {}
+        debug = {}
         try:
             header = { 'Authorization': 'token %s' % _token(as_key=True)}
             api = 'https://api.github.com/repos/%s/%s' % (self.user, self.title)
             commits = requests.get('%s/commits' % api,
                 headers=header)
-            vars['commits'] = commits.json()
+            debug['commits'] = commits.json()
             sha = commits.json()[0]['sha']
             tree = requests.get('%s/git/trees/%s' % (api, sha), params={'recursive': '1'}, headers=header)
-            vars['tree'] = tree.json()
+            debug['tree'] = tree.json()
             names = list(map(lambda entry: entry['path'], tree.json()['tree']))
             return names
-        except Exception: raise
+        except Exception as e:
+            print(e)
+            print(debug)
+            raise e

@@ -2,6 +2,7 @@ import tensorflow as tf
 from ..Logger import Logger
 from .. import TELEGRAM_API, TELEGRAM_TARGETS
 from .NumericFFN import NumericFFN
+from ..Data import TrainingData
 from ..Training import train, validate
 from .settings import *
 
@@ -49,7 +50,8 @@ def main():
             feed_dict = {
                 ffn.in_vector: in_batch,
                 ffn.target_vect: target_batch,
-                ffn.dropout_keep_prob: 0.5
+                ffn.dropout_keep_prob: 0.5,
+                ffn.class_weights: TrainingData().factors
             }
             _, acc, cost, summary = session.run([ffn.train_op, ffn.accuracy, ffn.loss, ffn.merged],
                                                 feed_dict=feed_dict)

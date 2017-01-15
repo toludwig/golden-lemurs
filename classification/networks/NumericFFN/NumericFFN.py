@@ -13,7 +13,6 @@ A simple FF net for the numerical fields of a repo, i.e.
 - number of pulls
 - number of stars
 - number of subscribers
-- activity duration (last-activity - creation)
 '''
 
 
@@ -30,6 +29,7 @@ class NumericFFN:
         self.in_vector = tf.placeholder(tf.float32, [None, parameters], name='input')
         self.target_vect = tf.placeholder(tf.int64, [None], name='target')
         self.dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
+        self.class_weights = tf.placeholder(tf.float32, [categories], name='class_weights')
 
         self.hidden_layers = []
         for i, num_neurons in enumerate(neurons_hidden):
@@ -53,7 +53,8 @@ class NumericFFN:
         # CalculateMean cross-entropy loss
         with tf.name_scope("loss"):
             losses = tf.nn.sparse_softmax_cross_entropy_with_logits(self.scores, self.target_vect)
-            self.loss = tf.reduce_mean(losses)
+            scale = tf.gather(self.class_weights, self.target_vect)
+            self.loss = tf.reduce_mean(losses * scale)
             tf.summary.scalar('loss', self.loss)
 
         # Accuracy

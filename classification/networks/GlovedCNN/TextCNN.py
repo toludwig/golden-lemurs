@@ -20,10 +20,9 @@ class TextCNN:
                  embedding_size=300):
 
         self.input_vect = tf.placeholder(tf.float32, [None, sequence_length, embedding_size], name='input')
-
         self.target_vect = tf.placeholder(tf.int64, [None], name='target')
-
         self.dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
+        self.class_weights = tf.placeholder(tf.float32, [categories], name='class_weights')
 
         with tf.name_scope("embedding"):
             self.embedded_chars_expanded = tf.expand_dims(self.input_vect, -1)
@@ -78,7 +77,8 @@ class TextCNN:
         # CalculateMean cross-entropy loss
         with tf.name_scope("loss"):
             losses = tf.nn.sparse_softmax_cross_entropy_with_logits(self.scores, self.target_vect)
-            self.loss = tf.reduce_mean(losses)
+            scale = tf.gather(self.class_weights, self.target_vect)
+            self.loss = tf.reduce_mean(losses * scale)
             tf.summary.scalar('loss', self.loss)
 
         # Accuracy

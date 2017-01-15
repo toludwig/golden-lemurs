@@ -17,6 +17,7 @@ class LSTM:
         self.target_vect = tf.placeholder(tf.int64, [None], name='labels')
         self.dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
         self.batch_size = tf.placeholder(tf.int32, name='batch_size')
+        self.class_weights = tf.placeholder(tf.float32, [categories], name='class_weights')
 
         # LSTM Layers
         with tf.name_scope('LSTM'):
@@ -34,9 +35,10 @@ class LSTM:
             self.predictions = tf.nn.softmax(self.scores)
 
         # CalculateMean cross-entropy loss
-        with tf.name_scope('loss'):
+        with tf.name_scope("loss"):
             losses = tf.nn.sparse_softmax_cross_entropy_with_logits(self.scores, self.target_vect)
-            self.loss = tf.reduce_sum(losses) / tf.cast(self.batch_size, tf.float32)
+            scale = tf.gather(self.class_weights, self.target_vect)
+            self.loss = tf.reduce_mean(losses * scale)
             tf.summary.scalar('loss', self.loss)
 
         # Accuracy

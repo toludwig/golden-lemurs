@@ -21,12 +21,12 @@ numerical, textual and temporal ones:
 Especially for the numerical fields, there is no real justification for each of these items yet.
 For now we take as much information as we can get and hope
 that our classifiers selects the relevant ones. The other groups are more
-intentionally took...
+deliberately chosen...
 
 First of all the README obviously carries very much information.
 This is one of the first things you would check as a human after
 you have seen the repo name. We will use a classifier to extract
-not only keywords, but rather a whole topic vector.
+not only keywords, but rather the real semantics using **topic modeling**.
 
 The idea behind the analysis of commit times was, that there are
 probably certain time profiles (say within a week), that repeat over the

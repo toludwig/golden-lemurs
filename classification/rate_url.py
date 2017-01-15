@@ -11,7 +11,7 @@ from multiprocessing import Pool
 
 def load_data(repos, results, category, size=100):
     data = _load(repos)
-    if data is []:
+    if data == []:
         return False
     new = _load(results)
     try:
@@ -28,28 +28,32 @@ def load_data(repos, results, category, size=100):
     return True
 
 
-def add_files(file, out, size=100):
-    def get_files(repo):
-        def action(r, git):
-            r['Files'] = git.get_files()
-        return enrich_entry(repo, action)
+def get_files(repo):
+    def action(r, git):
+        r['Files'] = git.get_files()
 
+    return enrich_entry(repo, action)
+
+
+def add_files(file, out, size=100):
     return add_enrichment(file, out, size, get_files)
 
 
 def add_enrichment(file, out, size, action):
     data = _load(file)
-    if data is []:
+    if data == []:
         return False
     new = _load(out)
+    addition = []
     try:
         with Pool(processes=8) as executor:
-            new += list(executor.imap(action, data[:size]))
+            addition += list(executor.imap(action, data[:size]))
     except:
         raise Exception("Crawler interrupted").with_traceback(sys.exc_info()[2])
-    downloaded = [i for i, elem in enumerate(new) if new[i] is not None]
+    downloaded = [i for i, elem in enumerate(addition) if addition[i] is not None]
     _save([data[i] for i, elem in enumerate(data) if i not in downloaded], file)
-    _save(list(filter(None, new)), out)
+    _save(new + list(filter(None, addition)), out)
+    return True
 
 
 def enrich_entry(repo, action):
@@ -59,7 +63,7 @@ def enrich_entry(repo, action):
         try:
             git = Git(repo["User"], repo["Title"])
             connected = True
-        except:
+        except Exception:
             sleep(10)
 
     if not git.valid():
@@ -84,17 +88,6 @@ def _options():
                       help="number of repos to download")
 
     return parser.parse_args()
-
-
-def _split_api_url(url):
-    """
-    Splits an URL into username and repo title.
-    Correct behaviour is only guarenteed for URLs similiar to https://api.github.com/repos/{user}/{title}
-    """
-    split = url.split('/')
-    title = split[5]
-    user = split[4]
-    return user, title
 
 
 def _split_url(url):
@@ -148,7 +141,7 @@ def _load(file):
     try:
         with open(file, 'r') as f:
             return json.load(f)
-    except:
+    except Exception:
         print('no data found; creating %s' % file)
         return []
 

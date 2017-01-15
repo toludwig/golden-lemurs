@@ -2,6 +2,7 @@ import tensorflow as tf
 
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import clip_ops
+from tensorflow.contrib.layers import l2_regularizer
 
 
 class LSTM:
@@ -17,19 +18,26 @@ class LSTM:
         self.target_vect = tf.placeholder(tf.int64, [None], name='labels')
         self.dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
         self.batch_size = tf.placeholder(tf.int32, name='batch_size')
-        self.class_weights = tf.placeholder(tf.float32, [categories], name='class_weights')
+        self.class_weights = tf.placeholder(tf.float32, [num_classes], name='class_weights')
 
         # LSTM Layers
         with tf.name_scope('LSTM'):
-            cell = tf.nn.rnn_cell.LSTMCell(hidden_size)
+            cell = tf.nn.rnn_cell.LSTMCell(hidden_size,
+                                           initializer=tf.contrib.layers.xavier_initializer())
+            """
+            No need for regularization here as the LSTMs inner architecture prevents gradient vanishing. exploding
+            gradients are dealt with by gradient clipping.
+            """
+
             cell = tf.nn.rnn_cell.DropoutWrapper(cell, output_keep_prob=self.dropout_keep_prob)
-            multi_cell = tf.nn.rnn_cell.MultiRNNCell([cell] * num_layers)
+            multi_cell = tf.nn.rnn_cell.MultiRNNCell([cell] * num_layers)  # This creates deep rnn layers
             state = multi_cell.zero_state(self.batch_size, tf.float32)
             self.lstm, state = multi_cell(self.input_vect, state)
 
         # Output Layer
         with tf.name_scope("output"):
-            w = tf.Variable(tf.truncated_normal([hidden_size, num_classes], stddev=0.1), name="W")
+            w = tf.get_variable('W', shape=[hidden_size, num_classes],
+                                initializer=tf.contrib.layers.xavier_initializer())
             b = tf.Variable(tf.constant(0.1, shape=[num_classes]), name="b")
             self.scores = tf.nn.xw_plus_b(self.lstm, w, b, name="scores")
             self.predictions = tf.nn.softmax(self.scores)
@@ -38,7 +46,7 @@ class LSTM:
         with tf.name_scope("loss"):
             losses = tf.nn.sparse_softmax_cross_entropy_with_logits(self.scores, self.target_vect)
             scale = tf.gather(self.class_weights, self.target_vect)
-            self.loss = tf.reduce_mean(losses * scale)
+            self.loss = tf.reduce_mean(losses * scale) / tf.cast(self.batch_size, tf.float32)
             tf.summary.scalar('loss', self.loss)
 
         # Accuracy

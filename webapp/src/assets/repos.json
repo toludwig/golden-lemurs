@@ -1,0 +1,18 @@
+[{
+  "User": "Test",
+  "Title": "Satan",
+  "Readme": "Foo",
+  "NumberOfContributors": 0,
+  "NumberOfIssues": 1,
+  "Branches": 2,
+  "Forks": 3,
+  "Stars": 4,
+  "Pulls": 5,
+  "Subscribers": 6,
+  "CommitMessages": ["Bla", "Blub"],
+  "NumberOfCommits": 2,
+  "CommitTimes": [123, 456],
+  "Times": [1337, 4223],
+  "Files": ["tmp", "debug", "readme"],
+  "Category": "1"
+}]

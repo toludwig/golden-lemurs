@@ -1,0 +1,40 @@
+div#plot {
+  height: 800px;
+  margin-top: 10px;
+  margin-left: 200px;
+  margin-right: 200px;
+}
+
+div#repo {
+    width: 500px;
+    float: right;
+}
+
+md-select#y {
+  position: absolute;
+  left: 80px;
+  top: 700px;
+  width: 100px;
+  height: 28px;
+}
+#repo md-list {
+    width: 200px;
+}
+md-card-content > p {
+    position: relative;
+    top: 35px;
+    clear: both;
+    margin-bottom: 50px;
+}
+
+md-select#x {
+  position: absolute;
+  left: 205px;
+  top: 760px;
+  width: 100px;
+  height: 28px;
+}
+
+svg {
+  border: 1px dashed #7e7c7e;
+}

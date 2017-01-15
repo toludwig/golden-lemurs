@@ -8,6 +8,27 @@ import calendar as cal
 from datetime import datetime
 
 
+class Extension_Vectorizer:
+
+    def __init__(self):
+       with open('data/extensions.json') as f:
+           self.extensions = json.load(f)
+
+    def vectorize(self, repo):
+        text = ""
+        for file in repo['Files']:
+            text += " " + file
+        cleaned = clean_str(text).split()
+        vector = np.zeros(len(self.extensions))
+        for word in cleaned:
+            try:
+                index = self.extensions[word]
+                vector[index] += 1
+            except KeyError:
+                pass
+        return vector
+
+
 class Singleton(type):
     _instances = {}
 
@@ -36,7 +57,6 @@ class GloveWrapper(object, metaclass=Singleton):
             return [0 for i in range(300)]
 
     def tokenize(self, text, length=200):
-        # todo: padding
         tokens = clean_str(text).split()
         tokens += ['//pad//'] * (length - len(tokens))
         return [self.lookup_word(word) for word in tokens[:length]]
@@ -47,12 +67,12 @@ class TrainingData(object, metaclass=Singleton):
     def __init__(self):
         super(TrainingData, self).__init__()
         print('Constructing training data...', end='', flush=True)
-        f1 = json.load(open('data/dev_expanded.json'))
-        f6 = json.load(open('data/data_expanded.json'))
-        f4 = json.load(open('data/docs_expanded.json'))
-        f5 = json.load(open('data/web_expanded.json'))
-        f3 = json.load(open('data/edu_expanded.json'))
-        f2 = json.load(open('data/homework_expanded.json'))
+        f1 = json.load(open('data/dev.json'))
+        f6 = json.load(open('data/data.json'))
+        f4 = json.load(open('data/docs.json'))
+        f5 = json.load(open('data/web.json'))
+        f3 = json.load(open('data/edu.json'))
+        f2 = json.load(open('data/homework.json'))
         self.train = []
         self.val = []
         self.total_length = 0
@@ -64,7 +84,7 @@ class TrainingData(object, metaclass=Singleton):
             temp = len(cat[:-cut])
             self.factors.append(temp)
             self.total_length += temp
-        self.factors = list(map(lambda x: ((1/6) / (x / self.total_length)), self.factors))
+        self.factors = list(map(lambda x: (1 / len(self.factors) / (x / self.total_length)), self.factors))
         print('done')
 
     def batch(self, size):
@@ -75,6 +95,10 @@ class TrainingData(object, metaclass=Singleton):
 
     def validation(self, size):
         return [self.val[x:x+size] for x in range(0, len(self.val), size)]
+
+    def full(self, size):
+        data = self.val + self.train
+        return [data[x:x + size] for x in range(0, len(data), size)]
 
 
 def clean_str(string):
@@ -102,7 +126,7 @@ def clean_str(string):
 
 def commit_time_profile(commit_times,
                         binsize=1,
-                        period='month',
+                        period='week',
                         normed=False):
     '''
     From a list of commit times, make a histogram list with

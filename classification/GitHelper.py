@@ -146,5 +146,6 @@ class Git():
             tree = requests.get('%s/git/trees/%s' % (api, sha), params={ 'recursive': '1' }, headers=header)
             names = list(map(lambda entry: entry['path'], tree.json()['tree']))
             return names
-        except:
+        except e as Exception:
+            print(e)
             return []

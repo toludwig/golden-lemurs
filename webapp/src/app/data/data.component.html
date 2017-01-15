@@ -1,15 +1,15 @@
 <div id="plot">
 
   <svg [attr.width]="width" [attr.height]="height" #plot>
-
+    <g #data></g>
 </svg>
-  <md-select [disabled]="!dataLoaded" id="y" placeholder="y-Axis" [(ngModel)]="yAxis" (onClose)="draw()">
+  <md-select [disabled]="!dataLoaded" id="y" placeholder="y-Axis" [(ngModel)]="yAxis" (onClose)="resetScale(); draw()">
     <md-option *ngFor='let category of categoryLabels; let i = index' [value]="categories[i]">
       {{ category }}
     </md-option>
   </md-select>
 
-  <md-select [disabled]="!dataLoaded" id="x" placeholder="x-Axis" [(ngModel)]="xAxis" (onClose)="draw()">
+  <md-select [disabled]="!dataLoaded" id="x" placeholder="x-Axis" [(ngModel)]="xAxis" (onClose)="resetScale(); draw()">
     <md-option *ngFor='let category of categoryLabels; let i = index' [value]="categories[i]">
       {{ category }}
     </md-option>
@@ -22,50 +22,50 @@
         <md-card-subtitle>{{ (repo | async)?.User }}</md-card-subtitle>
       </md-card-header>
       <md-card-content>
-          <md-chip-list>
-              <md-chip [selected]="(repo | async)?.Category == '1'">DEV</md-chip>
-              <md-chip [selected]="(repo | async)?.Category == '2'">HW</md-chip>
-              <md-chip [selected]="(repo | async)?.Category == '3'">EDU</md-chip>
-              <md-chip [selected]="(repo | async)?.Category == '4'">DOCS</md-chip>
-              <md-chip [selected]="(repo | async)?.Category == '5'">WEB</md-chip>
-              <md-chip [selected]="(repo | async)?.Category == '6'">DATA</md-chip>
-              <md-chip [selected]="(repo | async)?.Category == '7'">OTHER</md-chip>
-          </md-chip-list>
+        <md-chip-list>
+          <md-chip [style.background-color]="(repo | async)?.Category == '1' ? this.colors('1') : '#e0e0e0'">DEV</md-chip>
+          <md-chip [style.background-color]="(repo | async)?.Category == '2' ? this.colors('2') : '#e0e0e0'">HW</md-chip>
+          <md-chip [style.background-color]="(repo | async)?.Category == '3' ? this.colors('3') : '#e0e0e0'">EDU</md-chip>
+          <md-chip [style.background-color]="(repo | async)?.Category == '4' ? this.colors('4') : '#e0e0e0'">DOCS</md-chip>
+          <md-chip [style.background-color]="(repo | async)?.Category == '5' ? this.colors('5') : '#e0e0e0'">WEB</md-chip>
+          <md-chip [style.background-color]="(repo | async)?.Category == '6' ? this.colors('6') : '#e0e0e0'">DATA</md-chip>
+          <md-chip [style.background-color]="(repo | async)?.Category == '7' ? this.colors('7') : '#e0e0e0'">OTHER</md-chip>
+        </md-chip-list>
         <md-list [style.float]="'left'">
-            <md-list-item>
-                <span> {{ (repo | async)?.NumberOfContributors }} </span>
-                <label md-line>Contributors</label>
-            </md-list-item>
-            <md-list-item>
-                <label md-line>Issues</label>
-                <span> {{ (repo | async)?.NumberOfIssues }}</span>
-            </md-list-item>
-            <md-list-item>
-                <span> {{ (repo | async)?.Branches }}</span>
-                <label md-line>Branches</label>
-            </md-list-item>
-            <md-list-item>
-                <span> {{ (repo | async)?.Forks }}</span>
-                <label md-line>Forks</label>
-            </md-list-item>
+          <md-list-item>
+            <span> {{ (repo | async)?.NumberOfContributors }} </span>
+            <label md-line>Contributors</label>
+          </md-list-item>
+          <md-list-item>
+            <label md-line>Issues</label>
+            <span> {{ (repo | async)?.NumberOfIssues }}</span>
+          </md-list-item>
+          <md-list-item>
+            <span> {{ (repo | async)?.Branches }}</span>
+            <label md-line>Branches</label>
+          </md-list-item>
+          <md-list-item>
+            <span> {{ (repo | async)?.Forks }}</span>
+            <label md-line>Forks</label>
+          </md-list-item>
         </md-list>
         <md-list [style.float]="'right'">
-            <md-list-item>
-                <span> {{ (repo | async)?.Stars }}</span>
-                <label md-line>Stars</label>
-            </md-list-item>
-            <md-list-item>
-                <span> {{ (repo | async)?.Pulls }}</span>
-                <label md-line>Pulls</label>
-            </md-list-item>
-            <md-list-item>
-                <span> {{ (repo | async)?.Subscribers }}</span>
-                <label md-line>Subscribers</label>
-            </md-list-item>
-            <md-list-item>
-                <span> {{ (repo | async)?.Commits }}</span>
-                <label md-line>Commits</label>
-            </md-list-item>
+          <md-list-item>
+            <span> {{ (repo | async)?.Stars }}</span>
+            <label md-line>Stars</label>
+          </md-list-item>
+          <md-list-item>
+            <span> {{ (repo | async)?.Pulls }}</span>
+            <label md-line>Pulls</label>
+          </md-list-item>
+          <md-list-item>
+            <span> {{ (repo | async)?.Subscribers }}</span>
+            <label md-line>Subscribers</label>
+          </md-list-item>
+          <md-list-item>
+            <span> {{ (repo | async)?.Commits }}</span>
+            <label md-line>Commits</label>
+          </md-list-item>
         </md-list>
         <p [innerHTML]="(repo | async)?.Readme | MarkdownToHtml">
         </p>

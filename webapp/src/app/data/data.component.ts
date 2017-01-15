@@ -28,6 +28,7 @@ interface Repo {
 export class DataComponent implements AfterViewInit {
 
   @ViewChild('plot') plot;
+  @ViewChild('data') datapoints;
 
   public categories = ["NumberOfContributors", "NumberOfIssues", "Branches", "Forks", "Stars", "Pulls", "Subscribers", "NumberOfCommits", "Category"];
   public categoryLabels = ["Contributors", "Issues", "Branches", "Forks", "Stars", "Pulls", "Subscribers", "Commits", "Category"];
@@ -38,14 +39,37 @@ export class DataComponent implements AfterViewInit {
   @Output() dataLoaded = false;
   @Output() width = 800;
   @Output() height = 600;
-
+  @Output() colors = d3.scaleOrdinal(d3.schemeCategory10);
   @Output() repo = new EventEmitter<Repo>();
+  @Output() xStart: number;
+  @Output() xEnd: number;
+  @Output() yStart: number;
+  @Output() yEnd: number;
+  @Output() normalXScale: d3.ScaleLinear<number, number>;
+  @Output() normalYScale: d3.ScaleLinear<number, number>;
 
-  size = 20;
+  size = 5;
 
   private data: Repo[];
 
   constructor() { }
+
+  public resetScale() {
+      const row = attr => this.data.map(d => d[attr]);
+      const domain = data => [Math.min(...data), Math.max(...data)];
+      const xData = row(this.xAxis);
+      const yData = row(this.yAxis);
+      [this.xStart, this.xEnd] = domain(xData);
+      [this.yStart, this.yEnd] = domain(yData);
+
+      this.normalXScale = d3.scaleLinear()
+        .domain([this.xStart, this.xEnd])
+        .range([this.size, this.width - this.size]);
+
+      this.normalYScale = d3.scaleLinear()
+        .domain([this.yStart, this.yEnd])
+        .range([this.size, this.size - this.height]);
+  }
 
   ngAfterViewInit() {
     d3.json('assets/data.json', (error, data) => {
@@ -57,6 +81,9 @@ export class DataComponent implements AfterViewInit {
       for (let d of this.data) {
         d.Category = '' + Math.floor(Math.random() * 6 + 1);
       }
+
+      this.resetScale();
+
       this.dataLoaded = true;
       this.repo.emit(this.data[0]);
       this.draw();
@@ -65,15 +92,11 @@ export class DataComponent implements AfterViewInit {
 
   draw() {
     if (!this.dataLoaded) return;
-    const elem = this.plot.nativeElement;
-    const plot = d3.select(elem);
+    const plot = d3.select(this.plot.nativeElement);
+    const datapoints = d3.select(this.datapoints.nativeElement);
 
-    const data = attr => this.data.map(d => d[attr]);
-    const domain = data => [Math.min(...data), Math.max(...data)];
-    const xData = data(this.xAxis);
-    const yData = data(this.yAxis);
-    const xDomain = domain(xData);
-    const yDomain = domain(yData);
+    const xDomain = [this.xStart, this.xEnd];
+    const yDomain = [this.yStart, this.yEnd];
 
     const xScale = d3.scaleLinear()
       .domain(xDomain)
@@ -81,7 +104,7 @@ export class DataComponent implements AfterViewInit {
 
     const yScale = d3.scaleLinear()
       .domain(yDomain)
-      .range([this.height - this.size, this.size]);
+      .range([this.size, this.height - this.size]);
 
     let xValues = xScale.ticks();
     if (xValues.length == 0) xValues = [xDomain[0]];
@@ -106,14 +129,28 @@ export class DataComponent implements AfterViewInit {
       .append('text').classed('yLabel', true)
       .merge(yLabel)
       .text(d => d)
-      .attr('y', (d, i) => (9 - i) / 10 * this.height)
+      .attr('y', (d, i) => (9 - i) / yValues.length * this.height)
       .attr('x', 0)
       .attr('font-size', 10)
       .attr('text-align', 'start');
 
-    const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-    const repos = plot.selectAll('g.repo').data(this.data);
+    const self = this;
+    const zoomed = function() {
+      const tr = d3.zoomTransform(this);
+      datapoints.attr('transform', tr.toString());
+      let screenStart = tr.invert([0, 0]);
+      let screenEnd = tr.invert([self.width, self.height]);
+      let domainStart = [self.normalXScale.invert(screenStart[0]), self.normalYScale.invert(screenStart[1])];
+      let domainEnd = [self.normalXScale.invert(screenEnd[0]), self.normalYScale.invert(screenEnd[1])];
+      console.log(`screen: ${screenStart} - ${screenEnd}`);
+      console.log(`domain: ${domainStart} - ${domainEnd}`);
+      [self.xStart, self.yStart] = domainStart;
+      [self.xEnd, self.yEnd] = domainEnd;
+      self.draw();
+    };
+    const zoom = d3.zoom().on('zoom', zoomed);
+    plot.call(zoom);
+    const repos = datapoints.selectAll('g.repo').data(this.data);
 
     repos.exit().remove();
 
@@ -132,7 +169,7 @@ export class DataComponent implements AfterViewInit {
       .attr('cx', d => xScale(d[this.xAxis]))
       .attr('cy', d => yScale(d[this.yAxis]))
       .attr('r', () => this.size)
-      .attr('fill', (d: Repo) => color(d.Category));
+      .attr('fill', (d: Repo) => this.colors(d.Category));
 
 
     // const voronoi = d3.voronoi()

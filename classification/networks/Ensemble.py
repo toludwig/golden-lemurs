@@ -22,6 +22,7 @@ NUM_BATCHES = 100
 LEARNING_RATE = 1e-3
 SAVE_INTERVAL = 50
 NUM_FEATURES = 24
+L2_REG = 0.01
 
 CHECKPOINT_PATH = "out/Ensemble"
 TITLE = 'Ensemble'
@@ -139,7 +140,7 @@ def main():
     with tf.Session() as session:
 
         with tf.name_scope('Ensemble'):
-            ffn = NumericFFN(NUM_FEATURES, NEURONS_HIDDEN, 6, LEARNING_RATE)
+            ffn = NumericFFN(NUM_FEATURES, NEURONS_HIDDEN, 6, LEARNING_RATE, L2_REG)
 
         session.run(tf.initialize_all_variables())
         rebuild_subnets()

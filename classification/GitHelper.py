@@ -49,6 +49,7 @@ graph_ql_query = """query RepoInfo($owner:String!, $name:String!) {
 
 selected_token = tokens[randint(0, len(tokens) - 1)]
 
+
 def _token():
     global selected_token
     if selected_token.rate_limit()['resources']['core']['remaining'] > 0:
@@ -62,17 +63,18 @@ def _token():
                 selected_token = None
         return selected_token
 
+
 def _key():
     i = randint(0, len(keys) - 1)
     return keys[i]
+
 
 def _commit_info(commit):
     return commit.author["date"], commit.message
 
 
-class Git():
+class Git:
     """docstring for Git."""
-
 
     def __init__(self, user, title):
         self.api = _token()
@@ -103,13 +105,13 @@ class Git():
     def number_branches(self):
         try:
             return len(list(self.repo.branches()))
-        except:
+        except Exception:
             return 1
 
     def number_forks(self):
         try:
             return len(list(self.repo.forks()))
-        except:
+        except Exception:
             return 1
 
     def number_pull_requests(self):
@@ -143,7 +145,7 @@ class Git():
             commits = requests.get('%s/commits' % api,
                 headers=header)
             sha = commits.json()[0]['sha']
-            tree = requests.get('%s/git/trees/%s' % (api, sha), params={ 'recursive': '1' }, headers=header)
+            tree = requests.get('%s/git/trees/%s' % (api, sha), params={'recursive': '1'}, headers=header)
             names = list(map(lambda entry: entry['path'], tree.json()['tree']))
             return names
         except e as Exception:

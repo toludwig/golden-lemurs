@@ -30,7 +30,8 @@ def main():
     ffn = NumericFFN(parameters=len(FEATURES),
                      neurons_hidden=NEURONS_HIDDEN,
                      categories=6,
-                     learning_rate=LEARNING_RATE)
+                     learning_rate=LEARNING_RATE,
+                     reg_lambda=0.01)
 
     logger = Logger(TITLE, COMMENT)
     logger.set_source(NETWORK_PATH)
@@ -67,7 +68,7 @@ def main():
             return acc
 
         train(train_step, preprocess, NUM_BATCHES,
-              BATCH_SIZE, collection_hook, logger, CHECKPOINT_PATH)
+              BATCH_SIZE, collection_hook, logger, CHECKPOINT_PATH, L2_REG)
 
         validate(val_step, preprocess, BATCH_SIZE, logger)
 

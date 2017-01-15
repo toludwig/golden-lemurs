@@ -13,10 +13,10 @@ numerical, textual and temporal ones:
   - number of subscribers
 * textual
   - README
-  - TODO: what about filenames and extensions?
+  - filenames and extensions
+  - commits
 * temporal
   - times of commits
-  - TODO: lifetime (duration)
 
 Especially for the numerical fields, there is no real justification for each of these items yet.
 For now we take as much information as we can get and hope
@@ -72,9 +72,16 @@ amounts of samples for each class, e.g. by searching for 'github physics homewor
 Soon we noticed that this is no satisfactory method to get large amounts of
 training data, so we automated the procedure.
 
-We used [GHTorrent](http://ghtorrent.org/) to dump a CSV database of size (TODO)
-containing repositories names.
-Upon this we ran a query for keywords in the names using a parser (TODO).
+We used [GHTorrent](http://ghtorrent.org/) to dump a CSV database of **all (!)**
+Github repositories i.e. **39.7 million**, as of January 2017. This CSV
+contains all the metadata of every activity on Github, including of course the repository names.
+However, we ignore the metadata here, and download only the relevant data later via the API (see below).
+
+Also we had to clean the repository list from forks that have the same READMEs
+and contents, in order to not overrepresent vastly forked repositories.
+
+To filter for informative samples for each category we look only at the repository names.
+Upon this we run a parsing script `repo_search.py` looking for keywords in their names:
 
 | No. | Category | Keywords           |
 |-----|----------|--------------------|
@@ -95,7 +102,7 @@ The next step was to download relevant data fields for each repository to learn 
 Our choice of features we want to train is described the next section.
 
 To access Github repositories we use a Python wrapper for the Github API: [github3](https://github.com/sigmavirus24/github3.py).
-This allows us to dump Readmes and metadata like the number of commits and so on.
+This allows us to dump READMEs and all the data fields we specified above.
 
 With the downloaded data we extend our JSON files to 'dev_full.json' etc.
 Thus we yield the following training sample format:

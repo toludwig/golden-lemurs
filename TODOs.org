@@ -1,27 +1,30 @@
-* documentation
-** ffn
-*** TODO topology (once verbose)
-**** dropout
-**** softmax
-*** TODO training
-**** mini batches
-**** adam optimizer
-**** ...
-** rnn
+* TOC
+** TODO abstract
+*** TODO idea
+*** TODO results
+** DONE data
+*** DONE training data mining
+*** DONE information expectation
+*** DONE data format
+** DONE ffn
+*** DONE topology
+*** DONE softmax
+*** DONE activation function
+** TODO rnn
+*** TODO background
 *** TODO topology
-*** TODO training
-** cnn
+** TODO cnn
 *** DONE cv background
 *** DONE word vector explanation
 *** TODO topology
-*** TODO training
-** ensemble
+** TODO ensemble
 *** TODO stacking
-** DONE introduction
-*** training data mining
-*** information expectation...?
-*** data format
-    :LOGBOOK:
-    CLOCK: [2017-01-14 Sa 21:55]--[2017-01-14 Sa 22:20] =>  0:25
-    CLOCK: [2017-01-14 Sa 21:25]--[2017-01-14 Sa 21:50] =>  0:25
-    :END:
+** TODO training
+*** TODO dropout
+*** TODO cross entropy loss
+*** TODO accuracy
+*** TODO mini batches
+*** TODO adam optimizer
+*** ...
+** TODO tensorboard
+*** TODO relevant data

@@ -47,26 +47,19 @@ graph_ql_query = """query RepoInfo($owner:String!, $name:String!) {
   }
   """
 
-selected_token = tokens[randint(0, len(tokens) - 1)]
+selected_token = randint(0, len(tokens) - 1)
 
-
-def _token():
+def _token(as_key=False):
     global selected_token
-    if selected_token.rate_limit()['resources']['core']['remaining'] > 0:
-        return selected_token
+    if tokens[selected_token].rate_limit()['resources']['core']['remaining'] > 0:
+        return (tokens[selected_token] if not as_key else keys[selected_token])
     else:
         selected_token = None
         while selected_token is None:
-            i = randint(0, len(tokens) - 1)
-            selected_token = tokens[i]
-            if not selected_token.rate_limit()['resources']['core']['remaining'] > 0:
+            selected_token = randint(0, len(tokens) - 1)
+            if not tokens[selected_token].rate_limit()['resources']['core']['remaining'] > 0:
                 selected_token = None
-        return selected_token
-
-
-def _key():
-    i = randint(0, len(keys) - 1)
-    return keys[i]
+        return (tokens[selected_token] if not as_key else keys[selected_token])
 
 
 def _commit_info(commit):
@@ -139,15 +132,16 @@ class Git:
         return created, last
 
     def get_files(self):
+        vars = {}
         try:
-            header = { 'Authorization': 'token %s' % _key()}
+            header = { 'Authorization': 'token %s' % _token(as_key=True)}
             api = 'https://api.github.com/repos/%s/%s' % (self.user, self.title)
             commits = requests.get('%s/commits' % api,
                 headers=header)
+            vars['commits'] = commits.json()
             sha = commits.json()[0]['sha']
             tree = requests.get('%s/git/trees/%s' % (api, sha), params={'recursive': '1'}, headers=header)
+            vars['tree'] = tree.json()
             names = list(map(lambda entry: entry['path'], tree.json()['tree']))
             return names
-        except e as Exception:
-            print(e)
-            return []
+        except Exception: raise

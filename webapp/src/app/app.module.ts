@@ -10,25 +10,34 @@ import { AppComponent } from './app.component';
 import { ClassifyComponent} from './classify/classify.component';
 import { DocsComponent } from './docs/docs.component';
 import { NetworkComponent } from './network/network.component';
+import { DataComponent } from './data/data.component';
 
-// const routes = [
-//     { path: '', pathMatch: 'full', redirectTo: 'classify'},
-//     { path: 'classify', component: ClassifyComponent},
-//     { path: 'network', component: NetworkComponent},
-//     { path: 'docs', component: DocsComponent}
-// ];
+import { MarkdownToHtmlPipe } from 'markdown-to-html-pipe';
+
+const routes = [
+  { path: '', pathMatch: 'full', redirectTo: 'classify' },
+  { path: 'classify', component: ClassifyComponent },
+  { path: 'network', component: NetworkComponent },
+  { path: 'docs', component: DocsComponent },
+  { path: 'dashboard', component: NetworkComponent },
+  { path: 'data', component: DataComponent },
+  { path: '**', component: ClassifyComponent }
+];
 
 @NgModule({
   declarations: [
     AppComponent,
     ClassifyComponent,
     DocsComponent,
-    NetworkComponent],
+    NetworkComponent,
+    DataComponent,
+    MarkdownToHtmlPipe
+  ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    // RouterModule.forRoot(routes),
+    RouterModule.forRoot(routes),
     MaterialModule.forRoot()
   ],
   providers: [],

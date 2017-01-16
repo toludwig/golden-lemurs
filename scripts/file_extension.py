@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import json
 import re
 
@@ -9,8 +10,8 @@ def main(files):
             data = json.load(f)
 
         for repo in data:
-            for file in repo['Files']:
-                cleaned = re.sub('^.*/', '', file)
+            for path in repo['Files']:
+                cleaned = re.sub('^.*/', '', path)
                 index = cleaned.rfind('.')
                 if index == -1:
                     continue

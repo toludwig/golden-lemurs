@@ -106,7 +106,6 @@ def _split_url(url):
 
 def download_fields(url):
     user, title = _split_url(url)
-    print('%s/%s' % (user, title))
 
     # Api rate limit might have been reached
     connected = False
@@ -133,7 +132,7 @@ def download_fields(url):
         obj["NumberOfCommits"], obj["CommitTimes"], obj["CommitMessages"] = git.get_commits()
         obj["Times"] = git.get_times()
         obj["Files"] = git.get_files()
-    except Exception as err:
+    except KeyboardInterrupt as err:
         print("Crawler interrupted @ %s because of %s ; skipping this repo" % (url, err))
         return None
     return obj

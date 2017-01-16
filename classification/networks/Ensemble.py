@@ -1,14 +1,15 @@
+import numpy as np
+import tensorflow as tf
+
+from scripts.Training.CNN_Commits import preprocess as preprocess_commits
+from .Data import GloveWrapper, TrainingData
+from .GlovedCNN.train import preprocess as preprocess_cnn
+from .LSTM.train import preprocess as preprocess_rnn
 from .Logger import Logger
 from .NumericFFN.NumericFFN import NumericFFN
-from .Training import train, validate
-import tensorflow as tf
-import numpy as np
-from .Data import GloveWrapper, TrainingData, commit_time_profile
 from .NumericFFN.train import NETWORK_PATH
 from .NumericFFN.train import preprocess as preprocess_ffn
-from .LSTM.train import preprocess as preprocess_rnn
-from .GlovedCNN.train import preprocess as preprocess_cnn
-from .CNN_Commits.train import preprocess as preprocess_commits
+from .Training import train, validate
 
 CNN_PATH = 'models/CNN'
 COMMITS_PATH = 'models/Commits'
@@ -17,7 +18,7 @@ FFN_PATH = 'models/FFN'
 ENSEMBLE_PATH = 'models/Ensemble'
 
 NEURONS_HIDDEN = [100, 100]
-BATCH_SIZE = 350
+BATCH_SIZE = 300
 NUM_BATCHES = 100
 LEARNING_RATE = 1e-3
 SAVE_INTERVAL = 50
@@ -52,15 +53,31 @@ def ensemble_eval(repos):
     session = tf.get_default_session()
     in_vect = get_subnet_features(repos)
     # These give me variables or tensors I explicitly stored in the models. refer to the train files for the names.
-    input = tf.get_collection('Ensemble/input')[0]
-    predictions = tf.get_collection('Ensemble/predictions')[0]
-    dropout = tf.get_collection("Ensemble/dropout_keep_prop")[0]
+    input = tf.get_collection('input', scope='Ensemble')[0]
+    predictions = tf.get_collection('predictions', scope='Ensemble')[0]
+    dropout = tf.get_collection("dropout_keep_prop", scope='Ensemble')[0]
 
     feed_dict = {
         input: in_vect,
         dropout: 1
     }
 
+    return session.run(predictions, feed_dict)
+
+
+def cnn_eval(batch):
+    session = tf.get_default_session()
+    input = tf.get_collection('input', scope='CNN')[0]
+    features = tf.get_collection('features', scope='CNN')[0]
+    dropout = tf.get_collection("dropout_keep_prop", scope='CNN')[0]
+    scores = tf.get_collection("scores", scope='CNN')[0]
+    sequence_length = tf.get_collection('sequence_length')[0]
+    predictions = tf.get_collection('predictions', scope='CNN')[0]
+
+    feed_dict = {
+        input: list(map(lambda x: preprocess_cnn(x, sequence_length), batch)),
+        dropout: 1
+    }
     return session.run(predictions, feed_dict)
 
 
@@ -159,7 +176,8 @@ def main():
             feed_dict = {
                 ffn.in_vector: get_subnet_features(in_batch),
                 ffn.target_vect: target_batch,
-                ffn.dropout_keep_prob: 0.5
+                ffn.dropout_keep_prob: 0.5,
+                ffn.class_weights: TrainingData().factors
             }
             _, acc, cost, summary = session.run([ffn.train_op, ffn.accuracy, ffn.loss, ffn.merged],
                                                 feed_dict=feed_dict)
@@ -175,7 +193,8 @@ def main():
             return acc
 
         train(train_step, lambda x: x, NUM_BATCHES,
-              BATCH_SIZE, collection_hook, logger, CHECKPOINT_PATH)
+              BATCH_SIZE, collection_hook, logger, CHECKPOINT_PATH,
+              name='Ensemble', full=True)
 
         validate(val_step, lambda x: x, BATCH_SIZE, logger)
 

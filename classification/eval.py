@@ -2,7 +2,7 @@ import asyncio
 import websockets
 import simplejson as json
 from .rate_url import download_fields
-from .networks.Ensemble import rebuild_full, ensemble_eval
+from .networks.Ensemble import rebuild_full, ensemble_eval, cnn_eval
 import tensorflow as tf
 
 
@@ -14,9 +14,11 @@ def start_eval_server():
     async def consult(websocket, path):
         message = await websocket.recv()
         message = json.loads(message)
-        repo = download_fields(message['Url'], 'web')
-        repo["Category"] = ensemble_eval([repo])[0].tolist()
+        repo = download_fields(message['Url'])
+        repo["Category"] = cnn_eval([repo])[0].tolist()
         print(repo)
+        print('\n')
+        print(repo["Category"])
         await websocket.send(json.dumps(repo))
 
     with tf.Session() as session:

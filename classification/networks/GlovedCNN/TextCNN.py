@@ -69,7 +69,7 @@ class TextCNN:
 
         # Fully connected layers
         for i, num_neurons in enumerate(neurons_hidden):
-            with tf.variable_scope('fully_connected-%d' % num_neurons):
+            with tf.variable_scope('fully_connected-%d' % i):
 
                 w = tf.get_variable('W',
                                     shape=[num_filters_total if i == 0 else neurons_hidden[i - 1], neurons_hidden[i]],
@@ -94,7 +94,7 @@ class TextCNN:
                                 regularizer=l2_regularizer(reg_lambda))
             b = tf.Variable(tf.constant(0.1, shape=[num_classes]), name="b")
             self.scores = tf.nn.xw_plus_b(self.drop, w, b, name="scores")
-            self.predictions = tf.nn.softmax(self.scores)
+            self.predictions = tf.nn.softmax(self.scores, name='predictions')
 
         # CalculateMean cross-entropy loss
         with tf.name_scope("loss"):
@@ -117,12 +117,13 @@ class TextCNN:
             step = tf.Variable(0, trainable=False)
             rate = tf.train.exponential_decay(learning_rate, step, 1, 0.9999)
             optimizer = tf.train.AdamOptimizer(rate)
-            gradients = optimizer.compute_gradients(self.loss)
-            clipped_gradients = [(tf.clip_by_value(grad, -1., 1.), var) for grad, var in gradients]
-            self.train_op = optimizer.apply_gradients(clipped_gradients, global_step=step)
+            tvars = tf.trainable_variables()
+            gradients = tf.gradients(self.loss, tvars)
+            clipped_gradients,_ = tf.clip_by_global_norm(gradients, 5)
+            self.train_op = optimizer.apply_gradients(zip(clipped_gradients, tvars), global_step=step)
 
         # Keep track of gradient values and sparsity
-        for gradient, variable in gradients:
+        for gradient, variable in zip(clipped_gradients, tvars):
             if isinstance(gradient, ops.IndexedSlices):
                 grad_values = gradient.values
             else:
@@ -130,6 +131,6 @@ class TextCNN:
             tf.summary.histogram(variable.name, variable)
             tf.summary.histogram(variable.name + "/gradients", grad_values)
             tf.summary.histogram(variable.name + "/gradient_norm", clip_ops.global_norm([grad_values]))
-            tf.scalar_summary(variable.name + "/grad/sparsity", tf.nn.zero_fraction(gradient))
+            tf.summary.scalar(variable.name + "/grad/sparsity", tf.nn.zero_fraction(gradient))
 
         self.merged = tf.summary.merge_all()

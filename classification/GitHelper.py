@@ -49,21 +49,23 @@ graph_ql_query = """query RepoInfo($owner:String!, $name:String!) {
 
 selected_token = randint(0, len(tokens) - 1)
 
+
 def _token(as_key=False):
     global selected_token
     if tokens[selected_token].rate_limit()['resources']['core']['remaining'] > 0:
-        return (tokens[selected_token] if not as_key else keys[selected_token])
+        return tokens[selected_token] if not as_key else keys[selected_token]
     else:
         selected_token = None
         while selected_token is None:
             selected_token = randint(0, len(tokens) - 1)
             if not tokens[selected_token].rate_limit()['resources']['core']['remaining'] > 0:
                 selected_token = None
-        return (tokens[selected_token] if not as_key else keys[selected_token])
+        return tokens[selected_token] if not as_key else keys[selected_token]
 
 
 def _commit_info(commit):
-    return commit.author["date"], commit.message
+
+    return commit.commit.author["date"], commit.commit.message
 
 
 class Git:
@@ -118,7 +120,8 @@ class Git:
 
     def get_commits(self):
         repo = list(self.repo.iter_commits())
-        return len(repo), list(map(lambda x: _commit_info(x), repo))
+        temp = list(map(lambda x: _commit_info(x), repo))
+        return len(repo), [commit[0] for commit in temp], [commit[1] for commit in temp]
 
     def get_issues(self):
         repo = list(self.repo.iter_issues())

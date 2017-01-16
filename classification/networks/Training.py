@@ -7,7 +7,7 @@ import time
 import os
 import numpy as np
 from .Data import TrainingData
-
+from .. import MODEL_DIR
 
 def train(training_step,
           preprocess,
@@ -16,8 +16,10 @@ def train(training_step,
           collection_hook,
           logger,
           checkpoint_path,
+          model_path=MODEL_DIR,
           log_interval=20,
-          full=False):
+          full=False,
+          name='model'):
     """
     This trains a network with our repository dataset. Has to be called within a tf.Session
     :param training_step the function used for the training step.
@@ -56,11 +58,12 @@ def train(training_step,
     loss = []
 
     if full:
-        data = TrainingData().full(batch_size)
+        data = [[TrainingData().full(batch_size)] for i in range(num_batches)]
     else:
-        data = [TrainingData().batch(batch_size) for i in range(num_batches)]
+        data = [[TrainingData().batch(batch_size)] for i in range(num_batches)]
 
     for i, batch in enumerate(data):
+        i += 1
         batch = TrainingData().batch(batch_size)
         input_vect = list(map(lambda x: preprocess(x), batch))
         output_vect = list(map(lambda x: int(x['Category']) - 1, batch))
@@ -73,14 +76,16 @@ def train(training_step,
         print('Training step %d/%d: %f%% Accuracy' % (i, num_batches, acc[-1] * 100))
 
         # Logging and backup
-        if i % log_interval == 0:
+        if i % log_interval == 0 and not full:
 
-            checkpoint = saver.save(session, os.path.join(save_dir, 'model'), global_step=i)
+            checkpoint = saver.save(session, os.path.join(save_dir, name), global_step=i)
 
         logger.set_training_acc(acc)
         logger.set_cost(loss)
 
     print("Training finished")
+    if full:
+        checkpoint = saver.save(session, os.path.join(model_path, name))
 
     return checkpoint
 

@@ -9,7 +9,7 @@ from .settings import *
 
 VAL_SIZE = 50
 SAVE_INTERVAL = 20
-CHECKPOINT_PATH = "out/CNN"
+CHECKPOINT_PATH = "out/C-LSTM"
 NETWORK_PATH = 'classification/networks/GlovedCNN/TextCNN.py'
 TITLE = 'TextCNN'
 COMMENT = """sequence_length=%d
@@ -21,10 +21,23 @@ COMMENT = """sequence_length=%d
         neurons_hidden=%s
 """ % (SEQUENCE_LENGTH, FILTER_SIZES, NUM_FILTERS, NUM_BATCHES, BATCH_SIZE, LEARNING_RATE, NEURONS_HIDDEN)
 
+#
+# def preprocess(x, sequence_length=SEQUENCE_LENGTH):
+#     return GloveWrapper().tokenize(x['Readme'], sequence_length)
+
+# def preprocess(x, sequence_length=SEQUENCE_LENGTH):
+#     text = ""
+#     for i in x["Files"]:
+#         text += ' ' + i
+#
+#     return GloveWrapper().tokenize(text, sequence_length)
 
 def preprocess(x, sequence_length=SEQUENCE_LENGTH):
-    return GloveWrapper().tokenize(x['Readme'], sequence_length)
+    commits = ""
 
+    for i in x['CommitMessages']:
+        commits += i
+    return GloveWrapper().tokenize(commits, sequence_length)
 
 def main():
     cnn = TextCNN(sequence_length=SEQUENCE_LENGTH,
@@ -56,7 +69,8 @@ def main():
                 cnn.input_vect: in_batch,
                 cnn.target_vect: target_batch,
                 cnn.dropout_keep_prob: 0.5,
-                cnn.class_weights: TrainingData().factors
+                cnn.class_weights: TrainingData().factors,
+                cnn.batch_size: len(in_batch)
             }
             _, acc, cost, summary = session.run([cnn.train_op, cnn.accuracy, cnn.loss, cnn.merged],
                                                 feed_dict=feed_dict)
@@ -66,7 +80,8 @@ def main():
             feed_dict = {
                 cnn.input_vect: in_batch,
                 cnn.target_vect: target_batch,
-                cnn.dropout_keep_prob: 1.0
+                cnn.dropout_keep_prob: 1.0,
+                cnn.batch_size: len(in_batch)
             }
             acc = session.run(cnn.accuracy, feed_dict)
             return acc
@@ -78,8 +93,7 @@ def main():
               collection_hook,
               logger,
               CHECKPOINT_PATH,
-              name='CNN',
-              full=True)
+              name='C-LSTM')
 
         validate(val_step, preprocess, VAL_SIZE, logger)
 

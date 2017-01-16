@@ -65,8 +65,16 @@ def main():
             acc = session.run(rnn.accuracy, feed_dict)
             return acc
 
-        train(train_step, preprocess, NUM_BATCHES,
-              BATCH_SIZE, collection_hook, logger, CHECKPOINT_PATH, 50)
+        train(train_step,
+              preprocess,
+              NUM_BATCHES,
+              BATCH_SIZE,
+              collection_hook,
+              logger,
+              CHECKPOINT_PATH,
+              log_interval=50,
+              name='RNN',
+              full=True)
 
         validate(val_step, preprocess, BATCH_SIZE, logger)
 

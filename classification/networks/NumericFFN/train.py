@@ -67,8 +67,15 @@ def main():
             acc = session.run(ffn.accuracy, feed_dict)
             return acc
 
-        train(train_step, preprocess, NUM_BATCHES,
-              BATCH_SIZE, collection_hook, logger, CHECKPOINT_PATH, L2_REG)
+        train(train_step,
+              preprocess,
+              NUM_BATCHES,
+              BATCH_SIZE,
+              collection_hook,
+              logger,
+              CHECKPOINT_PATH,
+              name='FFN',
+              full=True)
 
         validate(val_step, preprocess, BATCH_SIZE, logger)
 

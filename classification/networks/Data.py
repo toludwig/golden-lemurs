@@ -1,17 +1,18 @@
 import random
-import math
 import simplejson as json
 import re
 from gensim.models.word2vec import Word2Vec
 import numpy as np
 import calendar as cal
 from datetime import datetime
+from os.path import join
+from .. import DATA_DIR
 
 
-class Extension_Vectorizer:
+class ExtensionVectorizer:
 
     def __init__(self):
-       with open('data/extensions.json') as f:
+       with open(join(DATA_DIR, 'extensions.json')) as f:
            self.extensions = json.load(f)
 
     def vectorize(self, repo):
@@ -45,7 +46,7 @@ class GloveWrapper(object, metaclass=Singleton):
     def __init__(self):
         super(GloveWrapper, self).__init__()
         print('Loading GloVe-Vectors. This will take a while...', end='', flush=True)
-        self.data = Word2Vec.load_word2vec_format('./data/GoogleNews-vectors-negative300.bin', binary=True)
+        self.data = Word2Vec.load_word2vec_format(join(DATA_DIR, 'GoogleNews-vectors-negative300.bin'), binary=True)
         print('done.')
 
     def lookup_word(self, word):
@@ -53,7 +54,7 @@ class GloveWrapper(object, metaclass=Singleton):
             return [0 for i in range(300)]
         try:
             return self.data[word]
-        except:
+        except Exception:
             return [0 for i in range(300)]
 
     def tokenize(self, text, length=200):
@@ -67,12 +68,12 @@ class TrainingData(object, metaclass=Singleton):
     def __init__(self):
         super(TrainingData, self).__init__()
         print('Constructing training data...', end='', flush=True)
-        f1 = json.load(open('data/dev.json'))
-        f6 = json.load(open('data/data.json'))
-        f4 = json.load(open('data/docs.json'))
-        f5 = json.load(open('data/web.json'))
-        f3 = json.load(open('data/edu.json'))
-        f2 = json.load(open('data/homework.json'))
+        f1 = json.load(open(join(DATA_DIR, 'dev.json')))
+        f6 = json.load(open(join(DATA_DIR, 'data.json')))
+        f4 = json.load(open(join(DATA_DIR, 'docs.json')))
+        f5 = json.load(open(join(DATA_DIR, 'web.json')))
+        f3 = json.load(open(join(DATA_DIR, 'edu.json')))
+        f2 = json.load(open(join(DATA_DIR, 'homework.json')))
         self.train = []
         self.val = []
         self.total_length = 0
@@ -97,8 +98,11 @@ class TrainingData(object, metaclass=Singleton):
         return [self.val[x:x+size] for x in range(0, len(self.val), size)]
 
     def full(self, size):
-        data = self.val + self.train
-        return [data[x:x + size] for x in range(0, len(data), size)]
+        combined = self.val + self.train
+        indices = random.sample(range(len(combined)), size)
+        data = [combined[index] for index in indices]
+        random.shuffle(data)
+        return data
 
 
 def clean_str(string):
@@ -126,7 +130,7 @@ def clean_str(string):
 
 def commit_time_profile(commit_times,
                         binsize=1,
-                        period='week',
+                        period='month',
                         normed=False):
     '''
     From a list of commit times, make a histogram list with
@@ -172,10 +176,3 @@ def commit_time_profile(commit_times,
         data.append(bins)
     data = sum(data, [])
     return data
-
-if __name__ == '__main__':
-    import json
-    with open('data/dev_full.json', 'r') as f:
-        j = json.load(f)
-    test = commit_time_profile(j[15]['CommitTimes'])
-    print(test)

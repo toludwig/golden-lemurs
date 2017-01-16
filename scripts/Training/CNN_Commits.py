@@ -1,17 +1,30 @@
+#!/usr/bin/env python
 import tensorflow as tf
-from ..Logger import Logger
-from ..Data import TrainingData, GloveWrapper
-from .. import TELEGRAM_API, TELEGRAM_TARGETS
-from ..GlovedCNN.TextCNN import TextCNN
-from ..Training import train, validate, TrainingData
-from .settings import *
+import sys
+import os
 
+sys.path.insert(0, os.path.abspath('../..'))
+from classification.networks.Logger import Logger
+from classification.networks.Data import GloveWrapper
+from classification.networks.GlovedCNN.TextCNN import TextCNN
+from classification.networks.Training import train, validate, TrainingData
+
+
+SEQUENCE_LENGTH = 300
+FILTER_SIZES = [3, 4, 5]
+NUM_FILTERS = 200
+BATCH_SIZE = 200
+NUM_BATCHES = 200
+LEARNING_RATE = 1e-3
+NEURONS_HIDDEN = [100]
+L2_REG = 0.01
+EMBEDDING_SIZE = 300
 
 VAL_SIZE = 50
 SAVE_INTERVAL = 20
-CHECKPOINT_PATH = "out/CNN_Commits"
-NETWORK_PATH = 'classification/networks/GlovedCNN/TextCNN.py'
-TITLE = 'TextCNN'
+CHECKPOINT_PATH = "../../out/CNN_Commits"
+NETWORK_PATH = '../../classification/networks/GlovedCNN/TextCNN.py'
+TITLE = 'Commits'
 COMMENT = """sequence_length=%d
         filter_sizes=%s
         num_filters=%d
@@ -20,6 +33,9 @@ COMMENT = """sequence_length=%d
         learning rate=%f
         neurons_hidden=%s
 """ % (SEQUENCE_LENGTH, FILTER_SIZES, NUM_FILTERS, NUM_BATCHES, BATCH_SIZE, LEARNING_RATE, NEURONS_HIDDEN)
+
+
+TRAIN_ON_FULL_DATA = True
 
 
 def preprocess(x, sequence_length=SEQUENCE_LENGTH):
@@ -75,10 +91,21 @@ def main():
             acc = session.run(cnn.accuracy, feed_dict)
             return acc
 
-        train(train_step, preprocess, NUM_BATCHES,
-              BATCH_SIZE, collection_hook, logger, CHECKPOINT_PATH, L2_REG)
+        train(training_step=train_step,
+              preprocess=preprocess,
+              num_batches=NUM_BATCHES,
+              batch_size=BATCH_SIZE,
+              collection_hook=collection_hook,
+              logger=logger,
+              checkpoint_path=CHECKPOINT_PATH,
+              name=TITLE,
+              full=TRAIN_ON_FULL_DATA)
 
-        validate(val_step, preprocess, VAL_SIZE, logger)
+        if not TRAIN_ON_FULL_DATA:
+            validate(validation_step=val_step,
+                     preprocess=preprocess,
+                     batch_size=BATCH_SIZE,
+                     logger=logger)
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import sys
 import json
-import clipboard
+#import clipboard
 from optparse import OptionParser
 from .GitHelper import Git
 from random import sample
@@ -13,6 +13,8 @@ def load_data(repos, results, category, size=100):
     data = _load(repos)
     if data == []:
         return False
+    if size > len(data):
+        size = len(data)
     new = _load(results)
     try:
         with Pool(processes=8) as executor:
@@ -151,39 +153,39 @@ def _save(data, file):
         json.dump(data, f, sort_keys=True, indent=4 * " ")
 
 
-def rate_interactive(file):
-    results = _load(file)
-    last_url = ''
-    try:
-        clipboard.copy('')
-
-        while True:
-            url = ""
-            while url == '':
-                url = clipboard.paste()
-            print("URL: %s" % url)
-            last_url = url
-
-            trying = True
-            while trying:
-                c = input(
-                    "Ratings: [1] DEV [2] HW [3] EDU [4] DOCS [5] WEB [6] DATA [7] OTHER [S]kip [Q]uit\n")
-                if c in ['q', 'Q']:
-                    _save(results, file)
-                    return
-                elif c in ['s', 'S']:
-                    trying = False
-                elif c in ['1', '2', '3', '4', '5', '6', '7']:
-                    trying = False
-                    cur_obj = download_fields(url)
-                    if cur_obj is not None:
-                        cur_obj["Category"] = c
-                        results.append(cur_obj)
-                    else:
-                        print("Repo invalid: %s" % url)
-    except (KeyboardInterrupt, Exception):
-        _save(results, file + '.bak')
-        raise Exception("Crawler interrupted @ %s" % last_url).with_traceback(sys.exc_info()[2])
+# def rate_interactive(file):
+#     results = _load(file)
+#     last_url = ''
+#     try:
+#         clipboard.copy('')
+#
+#         while True:
+#             url = ""
+#             while url == '':
+#                 url = clipboard.paste()
+#             print("URL: %s" % url)
+#             last_url = url
+#
+#             trying = True
+#             while trying:
+#                 c = input(
+#                     "Ratings: [1] DEV [2] HW [3] EDU [4] DOCS [5] WEB [6] DATA [7] OTHER [S]kip [Q]uit\n")
+#                 if c in ['q', 'Q']:
+#                     _save(results, file)
+#                     return
+#                 elif c in ['s', 'S']:
+#                     trying = False
+#                 elif c in ['1', '2', '3', '4', '5', '6', '7']:
+#                     trying = False
+#                     cur_obj = download_fields(url)
+#                     if cur_obj is not None:
+#                         cur_obj["Category"] = c
+#                         results.append(cur_obj)
+#                     else:
+#                         print("Repo invalid: %s" % url)
+#     except (KeyboardInterrupt, Exception):
+#         _save(results, file + '.bak')
+#         raise Exception("Crawler interrupted @ %s" % last_url).with_traceback(sys.exc_info()[2])
 
 
 def main():

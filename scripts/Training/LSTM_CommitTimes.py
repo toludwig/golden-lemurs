@@ -75,17 +75,20 @@ def main():
             acc = session.run(rnn.accuracy, feed_dict)
             return acc
 
-        train(train_step,
-              preprocess,
-              NUM_BATCHES,
-              BATCH_SIZE,
-              collection_hook,
-              logger,
-              log_interval=50,
-              name='RNN',
-              full=True)
+        train(training_step=train_step,
+              preprocess=preprocess,
+              num_batches=NUM_BATCHES,
+              batch_size=BATCH_SIZE,
+              collection_hook=collection_hook,
+              logger=logger,
+              name=TITLE,
+              full=True,
+              log_interval=50)
 
-        validate(val_step, preprocess, BATCH_SIZE, logger)
+        validate(validation_step=val_step,
+                 preprocess=preprocess,
+                 batch_size=BATCH_SIZE,
+                 logger=logger)
 
 
 if __name__ == '__main__':

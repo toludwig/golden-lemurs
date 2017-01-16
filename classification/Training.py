@@ -1,8 +1,9 @@
 """
-Provides a general interface for Training and Validating Neural Networks
+Provides a general interface for Training and Validating Networks
 """
 
 import os
+from os.path import join
 import time
 
 import numpy as np
@@ -18,11 +19,9 @@ def train(training_step,
           batch_size,
           collection_hook,
           logger,
-          log_interval=20,
+          name,
           full=False,
-          name='model',
-          checkpoint_path=OUT_DIR,
-          model_path=MODEL_DIR):
+          log_interval=20):
     """
     This trains a network with our repository dataset. Has to be called within a tf.Session
     :param training_step the function used for the training step.
@@ -38,6 +37,8 @@ def train(training_step,
     """
 
     print("Started Training...")
+
+    checkpoint_path = join(OUT_DIR, name)
 
     now = time.strftime("%c")
     sum_dir = os.path.join(checkpoint_path, 'summary', now)
@@ -88,7 +89,7 @@ def train(training_step,
 
     print("Training finished")
     if full:
-        checkpoint = saver.save(session, os.path.join(model_path, name))
+        checkpoint = saver.save(session, os.path.join(MODEL_DIR, name))
 
     return checkpoint
 

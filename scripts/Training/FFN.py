@@ -77,16 +77,20 @@ def main():
             acc = session.run(ffn.accuracy, feed_dict)
             return acc
 
-        train(train_step,
-              preprocess,
-              NUM_BATCHES,
-              BATCH_SIZE,
-              collection_hook,
-              logger,
-              name='FFN',
+        train(training_step=train_step,
+              preprocess=preprocess,
+              num_batches=NUM_BATCHES,
+              batch_size=BATCH_SIZE,
+              collection_hook=collection_hook,
+              logger=logger,
+              name=TITLE,
               full=True)
 
-        validate(val_step, preprocess, BATCH_SIZE, logger)
+        validate(
+            validation_step=val_step,
+            preprocess=preprocess,
+            batch_size=BATCH_SIZE,
+            logger=logger)
 
 
 if __name__ == '__main__':

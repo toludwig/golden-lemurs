@@ -21,7 +21,6 @@ NEURONS_HIDDEN = [100]
 EMBEDDING_SIZE = 300
 L2_REG = 0.01
 
-VAL_SIZE = 50
 SAVE_INTERVAL = 20
 TITLE = 'TextCNN'
 COMMENT = """sequence_length=%d
@@ -83,16 +82,19 @@ def main():
             acc = session.run(cnn.accuracy, feed_dict)
             return acc
 
-        train(train_step,
-              preprocess,
-              NUM_BATCHES,
-              BATCH_SIZE,
-              collection_hook,
-              logger,
+        train(training_step=train_step,
+              preprocess=preprocess,
+              num_batches=NUM_BATCHES,
+              batch_size=BATCH_SIZE,
+              collection_hook=collection_hook,
+              logger=logger,
               name='CNN',
               full=True)
 
-        validate(val_step, preprocess, VAL_SIZE, logger)
+        validate(validation_step=val_step,
+                 preprocess=preprocess,
+                 batch_size=BATCH_SIZE,
+                 logger=logger)
 
 
 if __name__ == '__main__':

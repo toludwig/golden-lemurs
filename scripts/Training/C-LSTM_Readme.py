@@ -20,7 +20,6 @@ NEURONS_HIDDEN = [100]
 EMBEDDING_SIZE = 300
 L2_REG = 0.01
 
-VAL_SIZE = 50
 SAVE_INTERVAL = 20
 TITLE = 'C-LSTM-Readme'
 COMMENT = """sequence_length=%d
@@ -58,7 +57,7 @@ def main():
             tf.add_to_collection('features', cnn.h_pool_flat)
             tf.add_to_collection('input', cnn.input_vect)
             tf.add_to_collection('dropout_keep_prop', cnn.dropout_keep_prob)
-            tf.add_to_collection('sequence_length', SEQUENCE_LENGTH)
+            tf.add_to_collection('readme_sequence_length', SEQUENCE_LENGTH)
             tf.add_to_collection('scores', cnn.scores)
             tf.add_to_collection('predictions', cnn.predictions)
 
@@ -84,15 +83,19 @@ def main():
             acc = session.run(cnn.accuracy, feed_dict)
             return acc
 
-        train(train_step,
-              preprocess,
-              NUM_BATCHES,
-              BATCH_SIZE,
-              collection_hook,
-              logger,
-              name=TITLE)
+        train(training_step=train_step,
+              preprocess=preprocess,
+              num_batches=NUM_BATCHES,
+              batch_size=BATCH_SIZE,
+              collection_hook=collection_hook,
+              logger=logger,
+              name=TITLE,
+              full=True)
 
-        validate(val_step, preprocess, VAL_SIZE, logger)
+        validate(validation_step=val_step,
+                 preprocess=preprocess,
+                 batch_size=BATCH_SIZE,
+                 logger=logger)
 
 
 if __name__ == '__main__':

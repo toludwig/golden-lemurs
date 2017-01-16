@@ -1,13 +1,14 @@
 #!/usr/bin/env python
-import tensorflow as tf
 import os
 import sys
 
+import tensorflow as tf
+
 sys.path.insert(0, os.path.abspath('../..'))
-from classification.networks.Logger import Logger
-from classification.networks.Data import ExtensionVectorizer
-from classification.networks.NumericFFN.NumericFFN import NumericFFN
-from classification.networks.Training import train, validate, TrainingData
+from classification.Logger import Logger
+from classification.Data import ExtensionVectorizer
+from classification.networks.NumericFFN import NumericFFN
+from classification.Training import train, validate, TrainingData
 
 
 TRAIN_ON_FULL_DATA = False
@@ -21,9 +22,7 @@ L2_REG = 0.01
 Parameters = 300
 
 SAVE_INTERVAL = 20
-CHECKPOINT_PATH = "../../out/Files"
-NETWORK_PATH = '../../classification/networks/NumericFFN/NumericFFN.py'
-TITLE = 'FFN'
+TITLE = 'BoW'
 COMMENT = """neurons_hidden=%s
         num_batches=%d
         batch_size=%d
@@ -41,7 +40,7 @@ def main():
     vectorizer = ExtensionVectorizer()
 
     logger = Logger(TITLE, COMMENT)
-    logger.set_source(NETWORK_PATH)
+    logger.set_source(net)
 
     with tf.Session() as session:
 
@@ -78,7 +77,6 @@ def main():
               batch_size=BATCH_SIZE,
               collection_hook=collection_hook,
               logger=logger,
-              checkpoint_path=CHECKPOINT_PATH,
               name=TITLE,
               full=TRAIN_ON_FULL_DATA)
 

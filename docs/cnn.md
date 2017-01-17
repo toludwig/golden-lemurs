@@ -18,14 +18,14 @@ All these are characteristic functions of **CNN**s  and are achieved by so-calle
 **convolutions** and **pooling**. A convolution is
 basically a filter (aka. kernel) sliding over a whole image, like in the
 following nice simulation [^1]:
-![picture source: http://deeplearning.stanford.edu/wiki/index.php/Feature_extraction_using_convolution](./Convolution_schematic.gif)
+![picture of convolution](assets/docs/img/Convolution_schematic.gif)
 
 By applying this with several filters you obtain multiple Convolutional Layers
 extracting different features of the image. 
 Further location invariance is added by Pooling where some feature
 information is thrown away again. For example take max-pooling: there you just take maximum
 of your neighbours at each pixel [^2].
-![picture source: https://en.wikipedia.org/wiki/Convolutional_neural_network#/media/File:Max_pooling.png](./Max_pooling.png)
+![picture of pooling](/assets/docs/img/Max_pooling.png)
 
 While these concepts are very vivid in the case of images, they are not yet for language, let us see...
 
@@ -81,7 +81,7 @@ Our CNN for Word Vectors
 
 Now for the actual neural net. We construct a Convolutional Neural Network of multiple
 convolutional and pooling layers. Its topology looks like this [^3]:
-![picture of cnn topology](./cnn_topology.png)
+![picture of cnn topology](assets/docs/img/cnn_topology.png)
 
 The size of the input matrix is 300 words of the mentioned dimensionality 300.
 
@@ -89,7 +89,7 @@ For the convolutional layer, we use one-dimensional filters (because we operate 
 with sizes of _k_ out of [3, 4, 5, 6].
 For each filter we have 164 instances of initially random weights which are learned in the training, depicted here for _k_=3:
 
-![picture of filter matrix](./filter_matrix.png)
+![picture of filter matrix](assets/docs/img/filter_matrix.png)
 
 The strides with which the filters are sliding equal 1 for all filter sizes,
 hence they are of course overlapping.

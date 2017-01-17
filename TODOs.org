@@ -1,30 +1,30 @@
 * TOC
-** TODO abstract
+** TODO Abstract
 *** TODO idea
 *** TODO results
-** DONE data
-*** DONE training data mining
-*** DONE information expectation
-*** DONE data format
-** DONE ffn
-*** DONE topology
-*** DONE softmax
-*** DONE activation function
-** TODO rnn
+** DONE Approach
+*** Features we consider important
+*** Classifiers we will use
+*** Training data mining
+** DONE FFN
+*** DONE Softmax
+*** DONE Activation function
+** TODO RNN
 *** TODO background
 *** TODO topology
-** TODO cnn
+** TODO CNN
 *** DONE cv background
 *** DONE word vector explanation
 *** TODO topology
-** TODO ensemble
+** TODO Ensemble
 *** TODO stacking
-** TODO training
+** TODO Training
 *** TODO dropout
 *** TODO cross entropy loss
 *** TODO accuracy
 *** TODO mini batches
 *** TODO adam optimizer
 *** ...
-** TODO tensorboard
-*** TODO relevant data
+** TODO Results
+*** TODO tensorboard
+** TODO Discussion

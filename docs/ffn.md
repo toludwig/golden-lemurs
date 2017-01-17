@@ -2,10 +2,11 @@ Feed Forward Neural Networks
 ============================
 
 Feed Forward Neural Networks (FFNs) are simple networks of 'neurons' that
-take an input, propagate it through some hidden layers
+take an input, _propagate_ it through some hidden layers
 and give you an output for each individual class you specify.
+In a way, this structure resembles neurons in the brain, connected by one-way synapses.
 
-![picture of FFN topology](./ffn.png)
+![picture of FFN topology](/assets/docs/img/ffn.png)
 
 The topology we use for this is the following:
 

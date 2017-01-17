@@ -1,21 +1,22 @@
-  <md-toolbar color="primary">
+<md-toolbar color="primary">
 
-    <span style='position: relative; left: 30%;'> {{ title }} - {{ subtitle }} </span>
-  </md-toolbar>
-      <md-tab-group dynamicHeight="true" (selectChange)="saveTab($event)" [selectedIndex]="tabIndex">
-          <md-tab label="Classify">
-             <!-- <app-classify></app-classify> -->
-          </md-tab>
-         <md-tab label="Docs" >
-             <!-- <app-docs></app-docs> -->
-         </md-tab>
-         <md-tab label="Tensorboard">
-             <!-- <iframe src="http://localhost:6006"></iframe> -->
-         </md-tab>
-         <md-tab label="Dashboard">
-             <!-- <app-network></app-network> --> </md-tab>
-         <md-tab label="Explore data">
-             <!-- <app-data></app-data> -->
-         </md-tab>
-      </md-tab-group>
-      <router-outlet></router-outlet>
+  <span style='position: relative; left: 30%;'> {{ title }} - {{ subtitle }} </span>
+</md-toolbar>
+<md-tab-group dynamicHeight="true" (selectChange)="saveTab($event)" [selectedIndex]="tabIndex">
+  <md-tab label="Classifier">
+    <!-- <app-classify></app-classify> -->
+  </md-tab>
+  <md-tab label="Documentation">
+    <!-- <app-docs></app-docs> -->
+  </md-tab>
+  <md-tab label="Tensorboard">
+    <!-- <iframe src="http://localhost:6006"></iframe> -->
+  </md-tab>
+  <md-tab label="Network Dashboard">
+    <!-- <app-network></app-network> -->
+  </md-tab>
+  <md-tab label="Data exploration">
+    <!-- <app-data></app-data> -->
+  </md-tab>
+</md-tab-group>
+<router-outlet></router-outlet>

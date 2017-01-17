@@ -1,5 +1,4 @@
-<md-grid-list cols="3" rowHeight="200px">
-  <md-grid-tile *ngFor="let card of dashboard" [colspan]="card.cols" [rowspan]="card.rows">
+<!--   <md-grid-tile *ngFor="let card of dashboard" [colspan]="card.cols" [rowspan]="card.rows">
     <md-card>
       <md-card-header>
         <md-card-title>{{card.title}}</md-card-title>
@@ -10,4 +9,19 @@
       </md-card-content>
     </md-card>
   </md-grid-tile>
+  -->
+
+<md-grid-list cols="3" rowHeight="fit">
+    <md-grid-tile rowspan="3">
+        <app-repo [repo]="repo"></app-repo>
+    </md-grid-tile>
+    <md-grid-tile colspan="2">
+        FFN
+    </md-grid-tile>
+    <md-grid-tile colspan="2">
+        RNN
+    </md-grid-tile>
+    <md-grid-tile colspan="2">
+
+    </md-grid-tile>
 </md-grid-list>

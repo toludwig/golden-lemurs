@@ -13,12 +13,12 @@ import { NetworkComponent } from './network/network.component';
 import { DataComponent } from './data/data.component';
 
 import { MarkdownToHtmlPipe } from 'markdown-to-html-pipe';
+import { RepoComponent } from './repo/repo.component';
 
 const routes = [
   { path: '', pathMatch: 'full', redirectTo: 'classify' },
   { path: 'classify', component: ClassifyComponent },
-  { path: 'network', component: NetworkComponent },
-  { path: 'docs', component: DocsComponent },
+  { path: 'docs/:page', component: DocsComponent },
   { path: 'dashboard', component: NetworkComponent },
   { path: 'data', component: DataComponent },
   { path: '**', component: ClassifyComponent }
@@ -31,7 +31,8 @@ const routes = [
     DocsComponent,
     NetworkComponent,
     DataComponent,
-    MarkdownToHtmlPipe
+    MarkdownToHtmlPipe,
+    RepoComponent
   ],
   imports: [
     BrowserModule,

@@ -28,7 +28,7 @@ On this input $x$ they apply the following activation function:
 $$y_j = \mathrm{max}(0, x_j)$$
 
 There are other activation functions which are non-linear but sigmoid like $\mathrm{tanh}$
-but this kind of functions lead to the problem of so-called [_vanishing gradients_](https://en.wikipedia.org/wiki/Vanishing_gradient_problem) 
+but this kind of functions lead to the problem of so-called [_vanishing gradients_](https://en.wikipedia.org/wiki/Vanishing_gradient_problem)
 and hence ReLUs are better suited to our needs.
 
 
@@ -45,5 +45,3 @@ $$y_j = \frac{e^{x_j}}{\sum_{k=1}^K e^{x_k}}$$
 
 What it does is normalizing the inputs so that the outputs sum up to one
 and we get nice percentages.
-
-

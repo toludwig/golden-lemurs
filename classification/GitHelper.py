@@ -1,12 +1,12 @@
 #!/usr/bin/python3
-
+"""
+Wrapper around the github api.
+"""
 from github3 import login
 from markdown import markdown
 from bs4 import BeautifulSoup
 from random import randint
 import requests
-
-# keys = ['9e484681cd48b198297bb0de032445f92a962282']
 
 keys = ['9e484681cd48b198297bb0de032445f92a962282',
  '360e0d54fe6c4e1e944bcb6c2ed0533389683758',
@@ -49,21 +49,23 @@ graph_ql_query = """query RepoInfo($owner:String!, $name:String!) {
 
 selected_token = randint(0, len(tokens) - 1)
 
+
 def _token(as_key=False):
     global selected_token
     if tokens[selected_token].rate_limit()['resources']['core']['remaining'] > 0:
-        return (tokens[selected_token] if not as_key else keys[selected_token])
+        return tokens[selected_token] if not as_key else keys[selected_token]
     else:
         selected_token = None
         while selected_token is None:
             selected_token = randint(0, len(tokens) - 1)
             if not tokens[selected_token].rate_limit()['resources']['core']['remaining'] > 0:
                 selected_token = None
-        return (tokens[selected_token] if not as_key else keys[selected_token])
+        return tokens[selected_token] if not as_key else keys[selected_token]
 
 
 def _commit_info(commit):
-    return commit.author["date"], commit.message
+
+    return commit.commit.author["date"], commit.commit.message
 
 
 class Git:
@@ -118,7 +120,8 @@ class Git:
 
     def get_commits(self):
         repo = list(self.repo.iter_commits())
-        return len(repo), list(map(lambda x: _commit_info(x), repo))
+        temp = list(map(lambda x: _commit_info(x), repo))
+        return len(repo), [commit[0] for commit in temp], [commit[1] for commit in temp]
 
     def get_issues(self):
         repo = list(self.repo.iter_issues())
@@ -132,16 +135,19 @@ class Git:
         return created, last
 
     def get_files(self):
-        vars = {}
+        debug = {}
         try:
             header = { 'Authorization': 'token %s' % _token(as_key=True)}
             api = 'https://api.github.com/repos/%s/%s' % (self.user, self.title)
             commits = requests.get('%s/commits' % api,
                 headers=header)
-            vars['commits'] = commits.json()
+            debug['commits'] = commits.json()
             sha = commits.json()[0]['sha']
             tree = requests.get('%s/git/trees/%s' % (api, sha), params={'recursive': '1'}, headers=header)
-            vars['tree'] = tree.json()
+            debug['tree'] = tree.json()
             names = list(map(lambda entry: entry['path'], tree.json()['tree']))
             return names
-        except Exception: raise
+        except Exception as e:
+            print(e)
+            print(debug)
+            raise e

@@ -5,7 +5,7 @@ div#plot {
   margin-right: 200px;
 }
 
-div#repo {
+app-repo {
     width: 500px;
     float: right;
 }
@@ -16,15 +16,6 @@ md-select#y {
   top: 700px;
   width: 100px;
   height: 28px;
-}
-#repo md-list {
-    width: 200px;
-}
-md-card-content > p {
-    position: relative;
-    top: 35px;
-    clear: both;
-    margin-bottom: 50px;
 }
 
 md-select#x {

@@ -11,8 +11,7 @@ export class AppComponent {
   subtitle = 'InformatiCup 2016';
 
   public constructor(private router: Router, private route: ActivatedRoute) {
-      this.route.url.subscribe(url => {
-          console.log(url.join(''));
+      this.router.events.subscribe( () => {
           let tab = this.tabs.find(tab => this.router.isActive(tab, false));
           this.tabIndex = this.tabs.indexOf(tab);
           if (this.tabIndex == -1)
@@ -21,11 +20,14 @@ export class AppComponent {
   }
 
   private tabs = ['classify', 'docs', 'tensorboard', 'dashboard', 'data']
+  private entries = ['classify', 'docs/intro', 'tensorboard', 'dashboard', 'data']
 
   @Output() public tabIndex: number;
 
   public saveTab(tab: { index: number} ){
-      this.tabIndex = tab.index;
-      this.router.navigateByUrl(`/${this.tabs[tab.index]}`);
+      if (this.tabIndex != tab.index) {
+          this.tabIndex = tab.index;
+          this.router.navigateByUrl(`/${this.entries[tab.index]}`);
+      }
   }
 }

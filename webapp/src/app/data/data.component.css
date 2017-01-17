@@ -5,7 +5,7 @@ div#plot {
   margin-right: 200px;
 }
 
-div#repo {
+app-repo {
     width: 500px;
     float: right;
 }

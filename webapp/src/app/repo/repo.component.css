@@ -1,0 +1,10 @@
+
+ md-list {
+    width: 45%;
+}
+md-card-content > p {
+    position: relative;
+    top: 35px;
+    clear: both;
+    margin-bottom: 50px;
+}

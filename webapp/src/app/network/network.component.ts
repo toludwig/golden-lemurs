@@ -5,7 +5,7 @@ import { NETWORK } from './architecture';
 @Component({
   selector: 'app-network',
   templateUrl: './network.component.html',
-  styleUrls: ['./network.component.css', './github-pandoc.css']
+  styleUrls: ['./network.component.css']
 })
 export class NetworkComponent implements AfterViewInit {
 

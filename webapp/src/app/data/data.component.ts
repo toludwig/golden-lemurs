@@ -1,24 +1,7 @@
 import { Component, AfterViewInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 import * as d3 from 'd3';
+import { Repo } from '../repo/repo.component';
 
-interface Repo {
-  NumberOfContributors: number;
-  //NumberOfIssues: number;
-  Branches: number;
-  Forks: number;
-  Stars: number;
-  Pulls: number;
-  Subscribers: number;
-  NumberOfCommits: number;
-  User: string;
-  Title: string;
-  Readme: string;
-  CommitMessages: string[];
-  Times: [string, string];
-  CommitTimes: string[];
-  Files: string[];
-  Category: string;
-}
 
 @Component({
   selector: 'app-data',

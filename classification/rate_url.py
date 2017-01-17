@@ -1,33 +1,10 @@
-#!/usr/bin/python3
 import sys
 import json
-#import clipboard
+import clipboard
 from optparse import OptionParser
 from .GitHelper import Git
-from random import sample
 from time import sleep
 from multiprocessing import Pool
-
-
-def load_data(repos, results, category, size=100):
-    data = _load(repos)
-    if data == []:
-        return False
-    if size > len(data):
-        size = len(data)
-    new = _load(results)
-    try:
-        with Pool(processes=8) as executor:
-            new += list(executor.imap(download_fields, data[:size]))
-        for repo in new:
-            if repo is not None:
-                repo["Category"] = category
-    except (KeyboardInterrupt, Exception):
-        raise Exception("Crawler interrupted").with_traceback(sys.exc_info()[2])
-    downloaded = [i for i, elem in enumerate(new) if new[i] is not None]
-    _save([data[i] for i, elem in enumerate(data) if i not in downloaded], repos)
-    _save(list(filter(None, new)), results)
-    return True
 
 
 def get_files(repo):
@@ -79,9 +56,7 @@ def enrich_entry(repo, action):
 
 
 def _options():
-    parser = OptionParser()
-    parser.add_option("-f", "--file", dest="out", action="store",
-                      type="string", default='./results.json', help="file with results")
+
     parser.add_option("-r", "--repos", dest="list", action="store",
                       type="string", default='./list.json', help="file with repo urls; default: reads clipboard")
     parser.add_option("-c", "--category", dest="category", action="store", type="string", default='0',
@@ -105,6 +80,11 @@ def _split_url(url):
 
 
 def download_fields(url):
+    """
+    Gets all data for the repository belonging to the url
+    :param url: the url of the repository to get
+    :return: dict containing the repository data
+    """
     user, title = _split_url(url)
 
     # Api rate limit might have been reached
@@ -139,6 +119,11 @@ def download_fields(url):
 
 
 def _load(file):
+    """
+    loads a file as json or creates it if it doesnt exist
+    :param file: the file to open
+    :return: contents of file or empty list if it doesnt exist
+    """
     try:
         with open(file, 'r') as f:
             return json.load(f)
@@ -148,66 +133,61 @@ def _load(file):
 
 
 def _save(data, file):
+    """
+    save json data to file in prettyprint
+    :param data: the data to save
+    :param file: the file to use
+    """
     with open(file, "w") as f:
         json.dump(data, f, sort_keys=True, indent=4 * " ")
 
 
-# def rate_interactive(file):
-#     results = _load(file)
-#     last_url = ''
-#     try:
-#         clipboard.copy('')
-#
-#         while True:
-#             url = ""
-#             while url == '':
-#                 url = clipboard.paste()
-#             print("URL: %s" % url)
-#             last_url = url
-#
-#             trying = True
-#             while trying:
-#                 c = input(
-#                     "Ratings: [1] DEV [2] HW [3] EDU [4] DOCS [5] WEB [6] DATA [7] OTHER [S]kip [Q]uit\n")
-#                 if c in ['q', 'Q']:
-#                     _save(results, file)
-#                     return
-#                 elif c in ['s', 'S']:
-#                     trying = False
-#                 elif c in ['1', '2', '3', '4', '5', '6', '7']:
-#                     trying = False
-#                     cur_obj = download_fields(url)
-#                     if cur_obj is not None:
-#                         cur_obj["Category"] = c
-#                         results.append(cur_obj)
-#                     else:
-#                         print("Repo invalid: %s" % url)
-#     except (KeyboardInterrupt, Exception):
-#         _save(results, file + '.bak')
-#         raise Exception("Crawler interrupted @ %s" % last_url).with_traceback(sys.exc_info()[2])
+def rate_interactive(file):
+    """
+    Gets the current url from clipboard, downloads the corresponding repository and queries the user for the category
+    :param file: the file to save to
+    """
+    results = _load(file)
+    last_url = ''
+    try:
+        clipboard.copy('')
+
+        while True:
+            url = ""
+            while url == '':
+                url = clipboard.paste()
+            print("URL: %s" % url)
+            last_url = url
+
+            trying = True
+            while trying:
+                c = input(
+                    "Ratings: [1] DEV [2] HW [3] EDU [4] DOCS [5] WEB [6] DATA [7] OTHER [S]kip [Q]uit\n")
+                if c in ['q', 'Q']:
+                    _save(results, file)
+                    return
+                elif c in ['s', 'S']:
+                    trying = False
+                elif c in ['1', '2', '3', '4', '5', '6', '7']:
+                    trying = False
+                    cur_obj = download_fields(url)
+                    if cur_obj is not None:
+                        cur_obj["Category"] = c
+                        results.append(cur_obj)
+                    else:
+                        print("Repo invalid: %s" % url)
+    except (KeyboardInterrupt, Exception):
+        _save(results, file + '.bak')
+        raise Exception("Crawler interrupted @ %s" % last_url).with_traceback(sys.exc_info()[2])
 
 
 def main():
-    (options, args) = _options()
+    parser = OptionParser()
+    parser.add_option("-f", "--file", dest="out", action="store",
+                      type="string", default='./results.json', help="file with results")
+    (options, args) = parser.parse_args()
 
-    if options.category != '0':  # category given, automatic
-        load_data(options.list, options.out, options.category, options.number)
-    else:  # wait on paste
-        rate_interactive(options.out)
-
-
-# legacy, needed?
-# def extend_fields(in_file):
-#     '''
-#     Function for adding the downloaded fields
-#     for classified JSON data with only URL and Category
-#     '''
-#     with open(in_file, 'r') as f:
-#         results = json.load(f)
-#     # download fields for each object
-#     for i, obj in enumerate(results):
-#         results[i] = download_fields(obj['URL'])
-#     return results
+    rate_interactive(options.out)
 
 if __name__ == "__main__":
     main()

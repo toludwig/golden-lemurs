@@ -1,16 +1,17 @@
 #!/usr/bin/env python
-import tensorflow as tf
-import sys
 import os
+import sys
+
+import tensorflow as tf
 
 sys.path.insert(0, os.path.abspath('../..'))
-from classification.networks.Logger import Logger
-from classification.networks.Data import GloveWrapper
-from classification.networks.GlovedCNN.TextCNN import TextCNN
-from classification.networks.Training import train, validate, TrainingData
+from classification.Logger import Logger
+from classification.Data import GloveWrapper
+from classification.networks.TextCNN import TextCNN
+from classification.Training import train, validate, TrainingData
 
 
-SEQUENCE_LENGTH = 300
+SEQUENCE_LENGTH = 400
 FILTER_SIZES = [3, 4, 5]
 NUM_FILTERS = 200
 BATCH_SIZE = 200
@@ -20,10 +21,6 @@ NEURONS_HIDDEN = [100]
 L2_REG = 0.01
 EMBEDDING_SIZE = 300
 
-VAL_SIZE = 50
-SAVE_INTERVAL = 20
-CHECKPOINT_PATH = "../../out/CNN_Commits"
-NETWORK_PATH = '../../classification/networks/GlovedCNN/TextCNN.py'
 TITLE = 'Commits'
 COMMENT = """sequence_length=%d
         filter_sizes=%s
@@ -57,7 +54,7 @@ def main():
                   reg_lambda=L2_REG)
 
     logger = Logger(TITLE, COMMENT)
-    logger.set_source(NETWORK_PATH)
+    logger.set_source(cnn)
 
     with tf.Session() as session:
 
@@ -97,7 +94,6 @@ def main():
               batch_size=BATCH_SIZE,
               collection_hook=collection_hook,
               logger=logger,
-              checkpoint_path=CHECKPOINT_PATH,
               name=TITLE,
               full=TRAIN_ON_FULL_DATA)
 

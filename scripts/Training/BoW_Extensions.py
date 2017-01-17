@@ -1,29 +1,26 @@
 #!/usr/bin/env python
-import tensorflow as tf
 import os
 import sys
 
+import tensorflow as tf
+
 sys.path.insert(0, os.path.abspath('../..'))
-from classification.networks.Logger import Logger
-from classification.networks.Data import ExtensionVectorizer
-from classification.networks.NumericFFN.NumericFFN import NumericFFN
-from classification.networks.Training import train, validate, TrainingData
+from classification.Logger import Logger
+from classification.Data import ExtensionVectorizer
+from classification.networks.NumericFFN import NumericFFN
+from classification.Training import train, validate, TrainingData
 
 
 TRAIN_ON_FULL_DATA = False
 
-NUM_EXTENSIONS = 300
+NUM_EXTENSIONS = 300  # Number of extensions that we search the repository for. don't change
 BATCH_SIZE = 200
 NUM_BATCHES = 300
 LEARNING_RATE = 1e-3
-NEURONS_HIDDEN = [100, 100]
-L2_REG = 0.01
-Parameters = 300
+NEURONS_HIDDEN = [100, 100]  # Number of neurons in each hidden layer. layers are dynamically generated
+L2_REG = 0.01  # L2 Regularization Lambda
 
-SAVE_INTERVAL = 20
-CHECKPOINT_PATH = "../../out/Files"
-NETWORK_PATH = '../../classification/networks/NumericFFN/NumericFFN.py'
-TITLE = 'FFN'
+TITLE = 'BoW'
 COMMENT = """neurons_hidden=%s
         num_batches=%d
         batch_size=%d
@@ -41,12 +38,13 @@ def main():
     vectorizer = ExtensionVectorizer()
 
     logger = Logger(TITLE, COMMENT)
-    logger.set_source(NETWORK_PATH)
+    logger.set_source(net)
 
     with tf.Session() as session:
 
         session.run(tf.initialize_all_variables())
 
+        # this is helpful should we later include this in an ensemble
         def collection_hook():
             tf.add_to_collection('dropout_keep_prop', net.dropout_keep_prob)
             tf.add_to_collection('scores', net.scores)
@@ -78,7 +76,6 @@ def main():
               batch_size=BATCH_SIZE,
               collection_hook=collection_hook,
               logger=logger,
-              checkpoint_path=CHECKPOINT_PATH,
               name=TITLE,
               full=TRAIN_ON_FULL_DATA)
 

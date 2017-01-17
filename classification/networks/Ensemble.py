@@ -1,58 +1,49 @@
+"""
+Network that uses two C-LSTM networks as its input. One trained on Readmes and the other on the CommitMessages.
+The performance is superior to the performance of the individual nets.
+Formally this is a special case of Ensemble Averaging, where we use a nonlinear classifier instead of simply averaging.
+"""
+
 import numpy as np
 import tensorflow as tf
 
-from scripts.Training.CNN_Commits import preprocess as preprocess_commits
-from .Data import GloveWrapper, TrainingData
-from .GlovedCNN.train import preprocess as preprocess_cnn
-from .LSTM.train import preprocess as preprocess_rnn
-from .Logger import Logger
-from .NumericFFN.NumericFFN import NumericFFN
-from .NumericFFN.train import NETWORK_PATH
-from .NumericFFN.train import preprocess as preprocess_ffn
-from .Training import train, validate
+from classification.Data import GloveWrapper, TrainingData
+from os.path import join
+from .. import MODEL_DIR
 
-CNN_PATH = 'models/CNN'
-COMMITS_PATH = 'models/Commits'
-RNN_PATH = 'models/RNN'
-FFN_PATH = 'models/FFN'
-ENSEMBLE_PATH = 'models/Ensemble'
 
-NEURONS_HIDDEN = [100, 100]
-BATCH_SIZE = 300
-NUM_BATCHES = 100
-LEARNING_RATE = 1e-3
-SAVE_INTERVAL = 50
-NUM_FEATURES = 24
-L2_REG = 0.01
+NET_README_PATH = join(MODEL_DIR, 'C-LSTM-Readme')
+NET_COMMITS_PATH = join(MODEL_DIR, 'C-LSTM-Commits')
 
-CHECKPOINT_PATH = "out/Ensemble"
-TITLE = 'Ensemble'
-COMMENT = 'Placeholder'
+ENSEMBLE_PATH = join(MODEL_DIR, 'Ensemble')
 
 
 def rebuild_subnets():
     """
-    loads the pretrained CNN and RNN for evaluation. Must be given a tf.Session to restore to
+    loads the pretrained CNN and RNN for evaluation. Must be given a tf.Session to restore to.
+    All nets used by subnet eval must be restored here.
     """
 
     session = tf.get_default_session()
 
-    tf.train.import_meta_graph(CNN_PATH + '.meta', import_scope='CNN').restore(session, CNN_PATH)
-    tf.train.import_meta_graph(COMMITS_PATH + '.meta', import_scope='Commits').restore(session, COMMITS_PATH)
-    tf.train.import_meta_graph(RNN_PATH + '.meta', import_scope='RNN').restore(session, RNN_PATH)
-    tf.train.import_meta_graph(FFN_PATH + '.meta', import_scope='FFN').restore(session, FFN_PATH)
+    tf.train.import_meta_graph(NET_README_PATH + '.meta', import_scope='Readme').restore(session, NET_README_PATH)
+    tf.train.import_meta_graph(NET_COMMITS_PATH + '.meta', import_scope='Commits').restore(session, NET_COMMITS_PATH)
 
 
 def rebuild_full():
+    """
+    Loads all Subnets and the Ensemble into the current tf.Session
+    """
     session = tf.get_default_session()
+    rebuild_subnets()
     tf.train.import_meta_graph(ENSEMBLE_PATH + '.meta').restore(session, ENSEMBLE_PATH)
     GloveWrapper()
 
 
 def ensemble_eval(repos):
     session = tf.get_default_session()
-    in_vect = get_subnet_features(repos)
-    # These give me variables or tensors I explicitly stored in the models. refer to the train files for the names.
+    in_vect = get_subnet_votes(repos)
+    # These give variables or tensors explicitly stored in the models. refer to the train files for the names.
     input = tf.get_collection('input', scope='Ensemble')[0]
     predictions = tf.get_collection('predictions', scope='Ensemble')[0]
     dropout = tf.get_collection("dropout_keep_prop", scope='Ensemble')[0]
@@ -65,23 +56,7 @@ def ensemble_eval(repos):
     return session.run(predictions, feed_dict)
 
 
-def cnn_eval(batch):
-    session = tf.get_default_session()
-    input = tf.get_collection('input', scope='CNN')[0]
-    features = tf.get_collection('features', scope='CNN')[0]
-    dropout = tf.get_collection("dropout_keep_prop", scope='CNN')[0]
-    scores = tf.get_collection("scores", scope='CNN')[0]
-    sequence_length = tf.get_collection('sequence_length')[0]
-    predictions = tf.get_collection('predictions', scope='CNN')[0]
-
-    feed_dict = {
-        input: list(map(lambda x: preprocess_cnn(x, sequence_length), batch)),
-        dropout: 1
-    }
-    return session.run(predictions, feed_dict)
-
-
-def get_subnet_features(batch):
+def get_subnet_votes(batch):
     """
     Evaluates the input on the subnets and returns features for further classification.
     in_batch has to be a list.
@@ -90,17 +65,24 @@ def get_subnet_features(batch):
 
     session = tf.get_default_session()
 
-    def cnn_eval(batch):
-        input = tf.get_collection('input', scope='CNN')[0]
-        features = tf.get_collection('features', scope='CNN')[0]
-        dropout = tf.get_collection("dropout_keep_prop", scope='CNN')[0]
-        scores = tf.get_collection("scores", scope='CNN')[0]
-        sequence_length = tf.get_collection('sequence_length')[0]
-        predictions = tf.get_collection('predictions', scope='CNN')[0]
+    def readme_eval(batch):
+
+        # Get all variables/Tensors needed for operation
+        input = tf.get_collection('input', scope='Readme')[0]
+        features = tf.get_collection('features', scope='Readme')[0]
+        dropout = tf.get_collection("dropout_keep_prop", scope='Readme')[0]
+        scores = tf.get_collection("scores", scope='Readme')[0]
+        sequence_length = tf.get_collection('readme_sequence_length')[0]
+        predictions = tf.get_collection('predictions', scope='Readme')[0]
+        batch_size = tf.get_collection('batch_size', scope="Readme")[0]
+
+        def preprocess(x, sequence_length):
+            return GloveWrapper().tokenize(x['Readme'], sequence_length)
 
         feed_dict = {
-            input: list(map(lambda x: preprocess_cnn(x, sequence_length), batch)),
-            dropout: 1
+            input: list(map(lambda x: preprocess(x, sequence_length), batch)),
+            dropout: 1,
+            batch_size: len(batch)
         }
         return session.run(predictions, feed_dict)
 
@@ -109,95 +91,24 @@ def get_subnet_features(batch):
         features = tf.get_collection('features', scope='Commits')[0]
         dropout = tf.get_collection("dropout_keep_prop", scope='Commits')[0]
         scores = tf.get_collection("scores", scope='Commits')[0]
-        sequence_length = tf.get_collection('sequence_length_commits')[0]
+        sequence_length = tf.get_collection('commits_sequence_length')[0]
+        batch_size = tf.get_collection('batch_size', scope="Commits")[0]
         predictions = tf.get_collection('predictions', scope='Commits')[0]
 
-        feed_dict = {
-            input: list(map(lambda x: preprocess_commits(x, sequence_length), batch)),
-            dropout: 1
-        }
-        return session.run(predictions, feed_dict)
+        def preprocess(x, sequence_length):
+            commits = ""
 
-    def rnn_eval(batch):
-        input = tf.get_collection('input', scope='RNN')[0]
-        features = tf.get_collection('features', scope='RNN')[0]
-        dropout = tf.get_collection("dropout_keep_prop", scope='RNN')[0]
-        sequence_length = tf.get_collection('series_length')[0]
-        batch_size = tf.get_collection('batch_size')[0]
-        scores = tf.get_collection("scores", scope='RNN')[0]
-        predictions = tf.get_collection('predictions', scope='RNN')[0]
+            for i in x['CommitMessages']:
+                commits += i
+            return GloveWrapper().tokenize(commits, sequence_length)
 
         feed_dict = {
-            input: list(map(lambda x: preprocess_rnn(x), batch)),
+            input: list(map(lambda x: preprocess(x, sequence_length), batch)),
             dropout: 1,
             batch_size: len(batch)
         }
         return session.run(predictions, feed_dict)
 
-    def fnn_eval(batch):
-        input = tf.get_collection('input', scope='FFN')[0]
-        dropout = tf.get_collection("dropout_keep_prop", scope='FFN')[0]
-        predictions = tf.get_collection('predictions', scope='FFN')[0]
-        scores = tf.get_collection("score", scope='FFN')[0]
-
-        feed_dict = {
-            input: list(map(lambda x: preprocess_ffn(x), batch)),
-            dropout: 1,
-        }
-        return session.run(predictions, feed_dict)
-
     # This just evaluates the input on both networks and concatenates the features extracted
-    return np.column_stack((commits_eval(batch),
-                            np.column_stack((fnn_eval(batch),
-                                             np.column_stack((cnn_eval(batch),
-                                                              rnn_eval(batch)))))))
+    return np.column_stack((commits_eval(batch), readme_eval(batch)))
 
-
-def main():
-    with tf.Session() as session:
-
-        with tf.name_scope('Ensemble'):
-            ffn = NumericFFN(NUM_FEATURES, NEURONS_HIDDEN, 6, LEARNING_RATE, L2_REG)
-
-        session.run(tf.initialize_all_variables())
-        rebuild_subnets()
-
-        logger = Logger(TITLE, COMMENT)
-        logger.set_source(NETWORK_PATH)
-
-        def collection_hook():
-            tf.add_to_collection('score', ffn.scores,)
-            tf.add_to_collection('input', ffn.in_vector)
-            tf.add_to_collection('dropout_keep_prop', ffn.dropout_keep_prob)
-            tf.add_to_collection('predictions', ffn.predictions)
-            tf.add_to_collection('category', ffn.category)
-
-        def train_step(in_batch, target_batch):
-            feed_dict = {
-                ffn.in_vector: get_subnet_features(in_batch),
-                ffn.target_vect: target_batch,
-                ffn.dropout_keep_prob: 0.5,
-                ffn.class_weights: TrainingData().factors
-            }
-            _, acc, cost, summary = session.run([ffn.train_op, ffn.accuracy, ffn.loss, ffn.merged],
-                                                feed_dict=feed_dict)
-            return acc, cost, summary
-
-        def val_step(in_batch, target_batch):
-            feed_dict = {
-                ffn.in_vector: get_subnet_features(in_batch),
-                ffn.target_vect: target_batch,
-                ffn.dropout_keep_prob: 1.0
-            }
-            acc = session.run(ffn.accuracy, feed_dict)
-            return acc
-
-        train(train_step, lambda x: x, NUM_BATCHES,
-              BATCH_SIZE, collection_hook, logger, CHECKPOINT_PATH,
-              name='Ensemble', full=True)
-
-        validate(val_step, lambda x: x, BATCH_SIZE, logger)
-
-
-if __name__ == '__main__':
-    main()

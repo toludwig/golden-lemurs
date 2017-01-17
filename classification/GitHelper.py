@@ -1,12 +1,12 @@
 #!/usr/bin/python3
-
+"""
+Wrapper around the github api.
+"""
 from github3 import login
 from markdown import markdown
 from bs4 import BeautifulSoup
 from random import randint
 import requests
-
-# keys = ['9e484681cd48b198297bb0de032445f92a962282']
 
 keys = ['9e484681cd48b198297bb0de032445f92a962282',
  '360e0d54fe6c4e1e944bcb6c2ed0533389683758',

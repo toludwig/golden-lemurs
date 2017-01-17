@@ -1,10 +1,5 @@
 #!/usr/bin/env python
-import os
-import sys
-
 import tensorflow as tf
-
-sys.path.insert(0, os.path.abspath('../..'))
 from classification.Logger import Logger
 from classification.Data import GloveWrapper
 from classification.networks.TextCNN import TextCNN

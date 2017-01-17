@@ -1,29 +1,25 @@
 import asyncio
 # import websockets
 import simplejson as json
-from .rate_url import download_fields
+from .rate_url import download_fields, enrich_entry
 from .networks.Ensemble import rebuild_full, ensemble_eval
 import tensorflow as tf
 import time
 from flask import Flask
 app = Flask(__name__)
+import sys
+import logging
 
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
+logger = logging.getLogger(__name__)
 
-def retryUntilTimeout(function):
-    def f(*args, **kwargs):
-        timeout = time.time() + 60
-        while True:
-            if time.time() > timeout:
-                raise Exception("Unable to get repo.")
-            try:
-                result = function(*args, **kwargs)
-                if result is not None:
-                    return result
-            except Exception:
-                time.sleep(0.5)
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 
 def start_eval_server():
@@ -32,14 +28,14 @@ def start_eval_server():
     """
     server = Flask(__name__)
 
-    @server.route('rate/<path:repo>')
-    def consult(repo):
-        data = download_fields(repo)
-        data["Category"] = ensemble_eval([data])[0].tolist()
-        print(data)
-        print('\n')
-        print(data["Category"])
-        return json.dumps(repo)
+    async def consult(websocket, path):
+        message = await websocket.recv()
+        message = json.loads(message)
+        repo = enrich_entry(message, download_fields)
+        logger.info('evaluating %s...' % repo)
+        repo["Category"] = ensemble_eval([repo])[0].tolist()
+        logger.info('result for %s: %s' % (repo['Url'], repo["Category"]))
+        await websocket.send(json.dumps(repo))
 
     with tf.Session() as session:
         rebuild_full()

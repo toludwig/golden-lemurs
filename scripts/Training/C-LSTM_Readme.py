@@ -1,10 +1,5 @@
 #!/usr/bin/env python
-import os
-import sys
-
 import tensorflow as tf
-
-sys.path.insert(0, os.path.abspath('../..'))
 from classification.Logger import Logger
 from classification.Data import GloveWrapper
 from classification.networks.CLSTM import CLSTM
@@ -18,7 +13,7 @@ NUM_FILTERS = 164
 BATCH_SIZE = 200
 NUM_BATCHES = 220
 LEARNING_RATE = 1e-3
-NEURONS_HIDDEN = [100]
+NEURONS_HIDDEN = 100
 EMBEDDING_SIZE = 300
 L2_REG = 0.01
 

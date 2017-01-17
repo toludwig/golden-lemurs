@@ -1,10 +1,5 @@
 #!/usr/bin/env python
-import os
-import sys
-
 import tensorflow as tf
-
-sys.path.insert(0, os.path.abspath('../..'))
 from classification.Logger import Logger
 from classification.networks.Ensemble import get_subnet_votes, rebuild_subnets
 from classification.networks.NumericFFN import NumericFFN

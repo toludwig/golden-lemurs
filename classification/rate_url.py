@@ -57,7 +57,7 @@ def download_fields(url):
         repo["Files"] = git.get_files()
     except TimeoutError:
         logging.exception('Could not get all data for %s' % url)
-        raise
+        return None
     return repo
 
 

@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from random import randint
 import requests
 import logging
-import types
+import inspect
 import time
 
 logger = logging.getLogger(__name__)
@@ -73,34 +73,31 @@ def _commit_info(commit):
     return commit.commit.author["date"], commit.commit.message
 
 
-class DecoratorMeta(type):
-    def __new__(cls, clsname, bases, attribs):
-
-        for name, value in attribs.items():
-            if isinstance(value, types.FunctionType):
-                attribs[name] = cls.decorate(value)
-
-        return type(clsname, bases, attribs)
-
-    @classmethod
-    def decorate(cls, function):
-        def f(*args, **kwargs):
-            timeout = time.time() + 120
-            while True:
-                if time.time() > timeout:
-                    logger.exception("Timeout while executing %s" % function.__name__)
-                    raise TimeoutError
-                try:
-                    result = function(*args, **kwargs)
-                    return result
-                except Exception as err:
-                    logger.info('Exception in %s: %s' % (function.__name__, err))
-                    time.sleep(5)
-
-        return f
+def class_decorator(cls):
+    for name, method in inspect.getmembers(cls, inspect.isfunction):
+        print(name)
+        setattr(cls, name, _retry_deco(method))
+    return cls
 
 
-class Git(object, metaclass=DecoratorMeta):
+def _retry_deco(function):
+    def f(*args, **kwargs):
+        timeout = time.time() + 120
+        while True:
+            if time.time() > timeout:
+                logger.exception("Timeout while executing %s" % function.__name__)
+                raise TimeoutError
+            try:
+                result = function(*args, **kwargs)
+                return result
+            except Exception as err:
+                logger.info('Exception in %s: %s' % (function.__name__, err))
+                time.sleep(5)
+    return f
+
+
+@class_decorator
+class Git(object):
     """docstring for Git."""
     def __init__(self, user, title):
         self.api = _token()

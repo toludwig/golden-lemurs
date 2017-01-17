@@ -33,7 +33,7 @@ RUN ["npm", "install", "-g", "angular-cli"]
 
 WORKDIR /home/app
 COPY requirements.txt "/home/app/"
-RUN ["pip3", "install", "-e", "."]
+# RUN ["pip3", "install", "-e", "."]
 # RUN ["pip3", "install", "--upgrade", "https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.11.0-cp34-cp34m-linux_x86_64.whl"]
 
 

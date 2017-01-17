@@ -18,7 +18,7 @@ RUN apt-get install -y --no-install-recommends nodejs
 
 COPY classification /home/app/classification/
 COPY data /home/app/data/
-# COPY docs /home/app/docs/ # symlink in web app
+COPY docs /home/app/webapp/src/assets/docs/ # symlink in web app
 COPY models /home/app/models/
 COPY webapp /home/app/webapp/
 

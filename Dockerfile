@@ -18,9 +18,9 @@ RUN apt-get install -y --no-install-recommends nodejs
 
 COPY classification /home/app/classification/
 COPY data /home/app/data/
+COPY webapp /home/app/webapp/
 COPY docs /home/app/webapp/src/assets/docs/ # symlink in web app
 COPY models /home/app/models/
-COPY webapp /home/app/webapp/
 
 # Word2Vec
 COPY "word2vec/GoogleNews-vectors-negative300.bin.gz" "/home/app/data/GoogleNews-vectors-negative300.bin.gz"

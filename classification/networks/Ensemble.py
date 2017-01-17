@@ -8,9 +8,6 @@ import numpy as np
 import tensorflow as tf
 
 from classification.Data import GloveWrapper, TrainingData
-from classification.Logger import Logger
-from classification.Training import train, validate
-from classification.networks.NumericFFN import NumericFFN
 from os.path import join
 from .. import MODEL_DIR
 
@@ -38,6 +35,7 @@ def rebuild_full():
     Loads all Subnets and the Ensemble into the current tf.Session
     """
     session = tf.get_default_session()
+    rebuild_subnets()
     tf.train.import_meta_graph(ENSEMBLE_PATH + '.meta').restore(session, ENSEMBLE_PATH)
     GloveWrapper()
 

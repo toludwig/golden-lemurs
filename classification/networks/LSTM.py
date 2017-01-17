@@ -8,7 +8,6 @@ from tensorflow.contrib.layers import l2_regularizer
 class LSTM:
 
     def __init__(self,
-                 num_layers,
                  hidden_size,
                  num_classes,
                  series_length,
@@ -20,26 +19,27 @@ class LSTM:
         self.batch_size = tf.placeholder(tf.int32, name='batch_size')
         self.class_weights = tf.placeholder(tf.float32, [num_classes], name='class_weights')
 
+        # transform data into format needed by tensorflow rnns
+        sequence = tf.unstack(tf.expand_dims(self.input_vect, axis=2), axis=1)
+
         # LSTM Layers
         with tf.name_scope('LSTM'):
-            cell = tf.nn.rnn_cell.LSTMCell(hidden_size,
-                                           initializer=tf.contrib.layers.xavier_initializer())
+            # We use a bidirectional LSTM net
+            forward_cell = tf.nn.rnn_cell.LSTMCell(hidden_size, initializer=tf.contrib.layers.xavier_initializer())
+            backward_cell = tf.nn.rnn_cell.LSTMCell(hidden_size, initializer=tf.contrib.layers.xavier_initializer())
             """
             No need for regularization here as the LSTMs inner architecture prevents gradient vanishing. exploding
             gradients are dealt with by gradient clipping.
             """
 
-            cell = tf.nn.rnn_cell.DropoutWrapper(cell, output_keep_prob=self.dropout_keep_prob)
-            multi_cell = tf.nn.rnn_cell.MultiRNNCell([cell] * num_layers)  # This creates deep rnn layers
-            initial_state = multi_cell.zero_state(self.batch_size, tf.float32) # Non stateful
-            self.lstm, _ = multi_cell(self.input_vect, initial_state)
+            self.lstm, _, _ = tf.nn.bidirectional_rnn(forward_cell, backward_cell, sequence, dtype=tf.float32)  # Non stateful
 
         # Output Layer
         with tf.name_scope("output"):
-            w = tf.get_variable('W', shape=[hidden_size, num_classes],
+            w = tf.get_variable('W', shape=[hidden_size * 2, num_classes],
                                 initializer=tf.contrib.layers.xavier_initializer())
             b = tf.Variable(tf.constant(0.1, shape=[num_classes]), name="b")
-            self.scores = tf.nn.xw_plus_b(self.lstm, w, b, name="scores")
+            self.scores = tf.nn.xw_plus_b(self.lstm[-1], w, b, name="scores")
             self.predictions = tf.nn.softmax(self.scores, name='predictions')
 
         # CalculateMean cross-entropy loss

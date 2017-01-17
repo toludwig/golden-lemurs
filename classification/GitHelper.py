@@ -1,12 +1,17 @@
 #!/usr/bin/python3
 """
-Wrapper around the github api.
+Wrapper around the github api. The functionality is tested, but all functions in this class will just pass any Exceptions
+they encounter up from the github3 api.
 """
 from github3 import login
-from markdown import markdown
 from bs4 import BeautifulSoup
 from random import randint
 import requests
+import logging
+import types
+import time
+
+logger = logging.getLogger(__name__)
 
 keys = ['9e484681cd48b198297bb0de032445f92a962282',
  '360e0d54fe6c4e1e944bcb6c2ed0533389683758',
@@ -68,14 +73,39 @@ def _commit_info(commit):
     return commit.commit.author["date"], commit.commit.message
 
 
-class Git:
-    """docstring for Git."""
+class DecoratorMeta(type):
+    def __new__(cls, clsname, bases, attribs):
 
+        for name, value in attribs.items():
+            if isinstance(value, types.FunctionType):
+                attribs[name] = cls.decorate(value)
+
+        return type(clsname, bases, attribs)
+
+    @classmethod
+    def decorate(cls, function):
+        def f(*args, **kwargs):
+            timeout = time.time() + 120
+            while True:
+                if time.time() > timeout:
+                    logger.exception("Timeout while executing %s" % function.__name__)
+                    raise TimeoutError
+                try:
+                    result = function(*args, **kwargs)
+                    return result
+                except Exception as err:
+                    logger.info('Exception in %s: %s' % (function.__name__, err))
+                    time.sleep(5)
+
+        return f
+
+
+class Git(object, metaclass=DecoratorMeta):
+    """docstring for Git."""
     def __init__(self, user, title):
         self.api = _token()
         self.user = user
         self.title = title
-        # repo may not exist
         self.repo = self.api.repository(user, title)
 
     def valid(self):
@@ -100,14 +130,16 @@ class Git:
     def number_branches(self):
         try:
             return len(list(self.repo.branches()))
-        except Exception:
-            return 1
+        except AttributeError:
+            logger.info('No branches found. returning 0')
+            return 0
 
     def number_forks(self):
         try:
-            return len(list(self.repo.forks()))
-        except Exception:
-            return 1
+            return len(list(self.repo.iter_forks()))
+        except AttributeError:
+            logger.info('No forks found. returning 0')
+            return 0
 
     def number_pull_requests(self):
         return len(list(self.repo.iter_pulls(state='all')))
@@ -136,18 +168,12 @@ class Git:
 
     def get_files(self):
         debug = {}
-        try:
-            header = { 'Authorization': 'token %s' % _token(as_key=True)}
-            api = 'https://api.github.com/repos/%s/%s' % (self.user, self.title)
-            commits = requests.get('%s/commits' % api,
-                headers=header)
-            debug['commits'] = commits.json()
-            sha = commits.json()[0]['sha']
-            tree = requests.get('%s/git/trees/%s' % (api, sha), params={'recursive': '1'}, headers=header)
-            debug['tree'] = tree.json()
-            names = list(map(lambda entry: entry['path'], tree.json()['tree']))
-            return names
-        except Exception as e:
-            print(e)
-            print(debug)
-            raise e
+        header = {'Authorization': 'token %s' % _token(as_key=True)}
+        api = 'https://api.github.com/repos/%s/%s' % (self.user, self.title)
+        commits = requests.get('%s/commits' % api, headers=header)
+        debug['commits'] = commits.json()
+        sha = commits.json()[0]['sha']
+        tree = requests.get('%s/git/trees/%s' % (api, sha), params={'recursive': '1'}, headers=header)
+        debug['tree'] = tree.json()
+        names = list(map(lambda entry: entry['path'], tree.json()['tree']))
+        return names

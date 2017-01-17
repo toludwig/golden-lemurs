@@ -40,8 +40,6 @@ def train(training_step,
     :return the path to the latest checkpoint.
     """
 
-    print("Started Training...")
-
     checkpoint_path = join(OUT_DIR, name)
 
     now = time.strftime("%c")
@@ -65,10 +63,14 @@ def train(training_step,
     acc = []
     loss = []
 
+    data = TrainingData()
+
+    print("Started Training...")
+
     if full:
-        data = [[TrainingData().full(batch_size)] for i in range(num_batches)]
+        data = [[data.full(batch_size)] for i in range(num_batches)]
     else:
-        data = [[TrainingData().batch(batch_size)] for i in range(num_batches)]
+        data = [[data.batch(batch_size)] for i in range(num_batches)]
 
     for i, batch in enumerate(data):
         i += 1
@@ -110,11 +112,11 @@ def validate(validation_step,
     :param logger a mongodb logger to use
     :return the path to the latest checkpoint.
     """
-    print("Starting Validation...")
 
     validation_data = TrainingData().validation(batch_size)
-
     acc = []
+
+    print("Starting Validation...", end="")
 
     for batch in validation_data:
         input_vect = list(map(lambda x: preprocess(x), batch))
@@ -128,6 +130,6 @@ def validate(validation_step,
     logger.set_test_acc(acc)
     logger.set_score(score)
 
-    print("Validation finished. Accuracy was %f%%" % (score * 100))
+    print("done.\nValidation finished. Accuracy was %f%%" % (score * 100))
 
     return score

@@ -1,36 +1,29 @@
 #!/usr/bin/env python
-import os
-import sys
-
 import tensorflow as tf
-
-sys.path.insert(0, os.path.abspath('../..'))
 from classification.Logger import Logger
 from classification.Data import commit_time_profile
 from classification.networks.LSTM import LSTM
 from classification.Training import train, validate, TrainingData
 
 
-TRAIN_ON_FULL_DATA = True
+TRAIN_ON_FULL_DATA = False
 
 
 LEARNING_RATE = 1e-3
-NUM_LAYERS = 3
 NUM_BATCHES = 500
 BATCH_SIZE = 120
 SERIES_LENGTH = 744
-HIDDEN_UNITS = 300
+HIDDEN_UNITS = 75
 
 
 SAVE_INTERVAL = 200  # LSTMs profit from small batch sizes. This limits the amount of saving going on
 TITLE = 'RNN'
 COMMENT = """learning_rate=%f
-             num_layers=%d
              num_batches=%d
              batch_size=%d
              series_length=%d
              hidden_units=%d
-""" % (LEARNING_RATE, NUM_LAYERS, NUM_BATCHES, BATCH_SIZE, SERIES_LENGTH, HIDDEN_UNITS)
+""" % (LEARNING_RATE, NUM_BATCHES, BATCH_SIZE, SERIES_LENGTH, HIDDEN_UNITS)
 
 
 def preprocess(x):
@@ -38,7 +31,7 @@ def preprocess(x):
 
 
 def main():
-    rnn = LSTM(NUM_LAYERS, HIDDEN_UNITS, 6, SERIES_LENGTH, LEARNING_RATE)
+    rnn = LSTM(HIDDEN_UNITS, 6, SERIES_LENGTH, LEARNING_RATE)
 
     logger = Logger(TITLE, COMMENT)
     logger.set_source(rnn)
@@ -48,7 +41,6 @@ def main():
         session.run(tf.initialize_all_variables())
 
         def collection_hook():
-            tf.add_to_collection('features', rnn.lstm)
             tf.add_to_collection('input', rnn.input_vect)
             tf.add_to_collection('dropout_keep_prop', rnn.dropout_keep_prob)
             tf.add_to_collection('batch_size', rnn.batch_size)

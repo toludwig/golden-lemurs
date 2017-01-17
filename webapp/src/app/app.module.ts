@@ -18,7 +18,6 @@ import { RepoComponent } from './repo/repo.component';
 const routes = [
   { path: '', pathMatch: 'full', redirectTo: 'classify' },
   { path: 'classify', component: ClassifyComponent },
-  { path: 'network', component: NetworkComponent },
   { path: 'docs/:page', component: DocsComponent },
   { path: 'dashboard', component: NetworkComponent },
   { path: 'data', component: DataComponent },

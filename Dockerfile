@@ -15,29 +15,17 @@ RUN curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
 
 RUN apt-get install -y --no-install-recommends nodejs
 
-# Word2Vec
-
-#git lfs
-RUN build_deps="curl ca-certificates" && \
-    apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ${build_deps} && \
-    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git-lfs && \
-    git lfs install && \
-    DEBIAN_FRONTEND=noninteractive apt-get purge -y --auto-remove ${build_deps} && \
-    rm -r /var/lib/apt/lists/*
-
-# download
-RUN ["mkdir", "/home/app"]
-WORKDIR /home/app
-RUN ["git", "clone", "https://github.com/mmihaltz/word2vec-GoogleNews-vectors.git", "word2vec"]
 
 COPY classification /home/app/classification/
 COPY data /home/app/data/
-RUN ["gunzip", "-c", "word2vec/GoogleNews-vectors-negative300.bin.gz", ">data/GoogleNews-vectors-negative300.bin"]
 # COPY docs /home/app/docs/ # symlink in web app
-COPY models /home/app/models
+COPY models /home/app/models/
 COPY webapp /home/app/webapp/
+
+# Word2Vec
+COPY "word2vec/GoogleNews-vectors-negative300.bin.gz" "/home/app/data/GoogleNews-vectors-negative300.bin.gz"
+WORKDIR /home/app/data/
+RUN ["gunzip", "GoogleNews-vectors-negative300.bin.gz"]
 
 WORKDIR /home/app/webapp
 RUN ["npm", "install"]

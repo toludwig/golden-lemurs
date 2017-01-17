@@ -1,6 +1,7 @@
 import { Component, AfterViewInit, ViewChild, Output, EventEmitter } from '@angular/core';
 
 import { NETWORK } from './architecture';
+import { Repo } from './../repo/repo.component';
 
 @Component({
   selector: 'app-network',
@@ -11,7 +12,7 @@ export class NetworkComponent implements AfterViewInit {
 
   @Output() public dashboard = NETWORK;
 
-  repo = 'https://github.com/mschuwalow/StudDP'; // TODO: map to url
+  repo = new EventEmitter<Repo>(); // TODO: map to url
   constructor() { }
 
   ngAfterViewInit() {

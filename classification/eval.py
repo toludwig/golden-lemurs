@@ -1,11 +1,16 @@
 import asyncio
-import websockets
+# import websockets
 import simplejson as json
 from .rate_url import download_fields
 from .networks.Ensemble import rebuild_full, ensemble_eval
 import tensorflow as tf
 import time
+from flask import Flask
+app = Flask(__name__)
 
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
 
 def retryUntilTimeout(function):
     def f(*args, **kwargs):
@@ -25,23 +30,20 @@ def start_eval_server():
     """
     Starts an evaluation Server that waits to receive a Url and returns an populated json object
     """
+    server = Flask(__name__)
 
-    async def consult(websocket, path):
-        message = await websocket.recv()
-        message = json.loads(message)
-        repo = download_fields(message['Url'])
-        repo["Category"] = ensemble_eval([repo])[0].tolist()
-        print(repo)
+    @server.route('rate/<path:repo>')
+    def consult(repo):
+        data = download_fields(repo)
+        data["Category"] = ensemble_eval([data])[0].tolist()
+        print(data)
         print('\n')
-        print(repo["Category"])
-        await websocket.send(json.dumps(repo))
+        print(data["Category"])
+        return json.dumps(repo)
 
     with tf.Session() as session:
         rebuild_full()
-        start_server = websockets.serve(consult, 'localhost', 8765)
-        print('Started listening on localhost:8765')
-        asyncio.get_event_loop().run_until_complete(start_server)
-        asyncio.get_event_loop().run_forever()
+        start_server = server.run()
 
 
 if __name__ == '__main__':

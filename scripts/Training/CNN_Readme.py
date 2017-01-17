@@ -11,6 +11,9 @@ from classification.networks.TextCNN import TextCNN
 from classification.Training import train, validate, TrainingData
 
 
+TRAIN_ON_FULL_DATA = True
+
+
 SEQUENCE_LENGTH = 300
 FILTER_SIZES = [3, 4, 5]
 NUM_FILTERS = 164
@@ -89,12 +92,13 @@ def main():
               collection_hook=collection_hook,
               logger=logger,
               name='CNN',
-              full=True)
+              full=TRAIN_ON_FULL_DATA)
 
-        validate(validation_step=val_step,
-                 preprocess=preprocess,
-                 batch_size=BATCH_SIZE,
-                 logger=logger)
+        if not TRAIN_ON_FULL_DATA:
+            validate(validation_step=val_step,
+                     preprocess=preprocess,
+                     batch_size=BATCH_SIZE,
+                     logger=logger)
 
 
 if __name__ == '__main__':

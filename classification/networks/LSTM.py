@@ -31,8 +31,8 @@ class LSTM:
 
             cell = tf.nn.rnn_cell.DropoutWrapper(cell, output_keep_prob=self.dropout_keep_prob)
             multi_cell = tf.nn.rnn_cell.MultiRNNCell([cell] * num_layers)  # This creates deep rnn layers
-            state = multi_cell.zero_state(self.batch_size, tf.float32)
-            self.lstm, state = multi_cell(self.input_vect, state)
+            initial_state = multi_cell.zero_state(self.batch_size, tf.float32) # Non stateful
+            self.lstm, _ = multi_cell(self.input_vect, initial_state)
 
         # Output Layer
         with tf.name_scope("output"):

@@ -80,8 +80,9 @@ class CLSTM:
 
             cell = tf.nn.rnn_cell.DropoutWrapper(cell, output_keep_prob=self.dropout_keep_prob)
             multi_cell = tf.nn.rnn_cell.MultiRNNCell([cell] * num_layers)  # This creates deep rnn layers
-            state = multi_cell.zero_state(self.batch_size, tf.float32)
-            self.lstm, state = multi_cell(self.h_pool_flat, state)
+            initial_state = multi_cell.zero_state(self.batch_size, tf.float32) # Non stateful
+            self.lstm, _ = multi_cell(self.h_pool_flat, initial_state)
+
 
         with tf.variable_scope("output"):
             w = tf.get_variable('W',

@@ -10,11 +10,14 @@ from classification.networks.Ensemble import get_subnet_votes, rebuild_subnets
 from classification.networks.NumericFFN import NumericFFN
 from classification.Training import train, validate, TrainingData
 
+
+TRAIN_ON_FULL_DATA = True
+
+
 NEURONS_HIDDEN = [100, 100]
 BATCH_SIZE = 300
 NUM_BATCHES = 100
 LEARNING_RATE = 1e-3
-SAVE_INTERVAL = 50
 NUM_FEATURES = 12
 L2_REG = 0.01
 
@@ -68,12 +71,13 @@ def main():
               collection_hook=collection_hook,
               logger=logger,
               name=TITLE,
-              full=True)
+              full=TRAIN_ON_FULL_DATA)
 
-        validate(validation_step=val_step,
-                 preprocess=lambda x: x,
-                 batch_size=BATCH_SIZE,
-                 logger=logger)
+        if not TRAIN_ON_FULL_DATA:
+            validate(validation_step=val_step,
+                     preprocess=lambda x: x,
+                     batch_size=BATCH_SIZE,
+                     logger=logger)
 
 
 if __name__ == '__main__':

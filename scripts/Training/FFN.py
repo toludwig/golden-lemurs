@@ -10,6 +10,8 @@ from classification.networks.NumericFFN import NumericFFN
 from classification.Data import TrainingData
 from classification.Training import train, validate
 
+TRAIN_ON_FULL_DATA = True
+
 NEURONS_HIDDEN = [100, 600]
 BATCH_SIZE = 300
 NUM_BATCHES = 400
@@ -17,10 +19,9 @@ LEARNING_RATE = 1e-3
 GRADIENT_NORM = 5
 L2_REG = 0.01
 
+# What features of the repositories to feed into the network
 FEATURES = ['Branches', 'Forks', 'NumberOfCommits', 'NumberOfContributors', 'Pulls', 'Stars', 'Subscribers']
 
-VAL_SIZE = 50
-SAVE_INTERVAL = 20
 TITLE = 'FFN'
 COMMENT = """neurons_hidden=%s
         num_batches=%d
@@ -84,13 +85,14 @@ def main():
               collection_hook=collection_hook,
               logger=logger,
               name=TITLE,
-              full=True)
+              full=TRAIN_ON_FULL_DATA)
 
-        validate(
-            validation_step=val_step,
-            preprocess=preprocess,
-            batch_size=BATCH_SIZE,
-            logger=logger)
+        if not TRAIN_ON_FULL_DATA:
+            validate(
+                validation_step=val_step,
+                preprocess=preprocess,
+                batch_size=BATCH_SIZE,
+                logger=logger)
 
 
 if __name__ == '__main__':

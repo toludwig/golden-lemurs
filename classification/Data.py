@@ -10,12 +10,19 @@ from classification import DATA_DIR
 
 
 class ExtensionVectorizer:
-
+    """
+    Uses a list of extensions to create a bog of words vector from text
+    """
     def __init__(self):
        with open(join(DATA_DIR, 'extensions.json')) as f:
            self.extensions = json.load(f)
 
     def vectorize(self, repo):
+        """
+        get the vector representation of the files of this repo
+        :param repo: the repo to vectorize
+        :return: a vector of length 300 where every index is a word and the value is its frequency
+        """
         text = ""
         for file in repo['Files']:
             text += " " + file
@@ -50,6 +57,11 @@ class GloveWrapper(object, metaclass=Singleton):
         print('done.')
 
     def lookup_word(self, word):
+        """
+        return the vector representation of a word. falls back to a zero vector if no match was found
+        :param word: the word to lookup
+        :return: the vector representation
+        """
         if word == '//pad//':
             return [0 for i in range(300)]
         try:
@@ -58,6 +70,12 @@ class GloveWrapper(object, metaclass=Singleton):
             return [0 for i in range(300)]
 
     def tokenize(self, text, length=200):
+        """
+        transforms a text to vector representations up to a max length. shorter texts are padded
+        :param text: the text to vectorize
+        :param length: the max length
+        :return: a list of vectors
+        """
         tokens = clean_str(text).split()
         tokens += ['//pad//'] * (length - len(tokens))
         return [self.lookup_word(word) for word in tokens[:length]]
@@ -89,12 +107,22 @@ class TrainingData(object, metaclass=Singleton):
         print('done')
 
     def batch(self, size):
+        """
+        Provides a batch of Trainingdata
+        :param size: size of batch
+        :return: the batch
+        """
         indices = random.sample(range(len(self.train)), size)
         data = [self.train[index] for index in indices]
         random.shuffle(data)
         return data
 
     def validation(self, size):
+        """
+        returns the entire validation data as sublists
+        :param size: length of sublists
+        :return: the validation data
+        """
         return [self.val[x:x+size] for x in range(0, len(self.val), size)]
 
     def full(self, size):
@@ -134,7 +162,7 @@ def commit_time_profile(commit_times,
                         normed=False):
     '''
     From a list of commit times, make a histogram list with
-    bins of size [1h | 2h | 3h | 4h | 6h | 12h | 1d | 2d | 3d]
+    bins of size binsize
     with respect to a period of one [week | month].
     Thus you get an activity profile of the period averaged over all times.
     If normed, the number of commits ber bin will be percentages.

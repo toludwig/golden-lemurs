@@ -10,8 +10,10 @@ from classification.Data import GloveWrapper
 from classification.networks.CLSTM import CLSTM
 from classification.Training import train, validate, TrainingData
 
+TRAIN_ON_FULL_DATA = True
+
 SEQUENCE_LENGTH = 300
-FILTER_SIZES = [3, 4, 5, 6]
+FILTER_SIZES = [3, 4, 5]
 NUM_FILTERS = 164
 BATCH_SIZE = 200
 NUM_BATCHES = 220
@@ -20,7 +22,6 @@ NEURONS_HIDDEN = [100]
 EMBEDDING_SIZE = 300
 L2_REG = 0.01
 
-SAVE_INTERVAL = 20
 TITLE = 'C-LSTM-Readme'
 COMMENT = """sequence_length=%d
         filter_sizes=%s
@@ -58,6 +59,7 @@ def main():
             tf.add_to_collection('input', cnn.input_vect)
             tf.add_to_collection('dropout_keep_prop', cnn.dropout_keep_prob)
             tf.add_to_collection('readme_sequence_length', SEQUENCE_LENGTH)
+            tf.add_to_collection('batch_size', cnn.batch_size)
             tf.add_to_collection('scores', cnn.scores)
             tf.add_to_collection('predictions', cnn.predictions)
 
@@ -90,12 +92,13 @@ def main():
               collection_hook=collection_hook,
               logger=logger,
               name=TITLE,
-              full=True)
+              full=TRAIN_ON_FULL_DATA)
 
-        validate(validation_step=val_step,
-                 preprocess=preprocess,
-                 batch_size=BATCH_SIZE,
-                 logger=logger)
+        if not TRAIN_ON_FULL_DATA:
+            validate(validation_step=val_step,
+                     preprocess=preprocess,
+                     batch_size=BATCH_SIZE,
+                     logger=logger)
 
 
 if __name__ == '__main__':

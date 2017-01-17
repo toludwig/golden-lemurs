@@ -30,7 +30,7 @@ def start_eval_server():
         message = await websocket.recv()
         message = json.loads(message)
         repo = download_fields(message['Url'])
-        repo["Category"] = cnn_eval([repo])[0].tolist()
+        repo["Category"] = ensemble_eval([repo])[0].tolist()
         print(repo)
         print('\n')
         print(repo["Category"])

@@ -11,23 +11,26 @@ from classification.networks.LSTM import LSTM
 from classification.Training import train, validate, TrainingData
 
 
+TRAIN_ON_FULL_DATA = True
+
+
 LEARNING_RATE = 1e-3
 NUM_LAYERS = 3
 NUM_BATCHES = 500
 BATCH_SIZE = 120
 SERIES_LENGTH = 744
-NEURONS_HIDDEN = 100
+HIDDEN_UNITS = 300
 
 
-SAVE_INTERVAL = 200
+SAVE_INTERVAL = 200  # LSTMs profit from small batch sizes. This limits the amount of saving going on
 TITLE = 'RNN'
 COMMENT = """learning_rate=%f
              num_layers=%d
              num_batches=%d
              batch_size=%d
              series_length=%d
-             neurons_hidden=%d
-""" % (LEARNING_RATE, NUM_LAYERS, NUM_BATCHES, BATCH_SIZE, SERIES_LENGTH, NEURONS_HIDDEN)
+             hidden_units=%d
+""" % (LEARNING_RATE, NUM_LAYERS, NUM_BATCHES, BATCH_SIZE, SERIES_LENGTH, HIDDEN_UNITS)
 
 
 def preprocess(x):
@@ -35,7 +38,7 @@ def preprocess(x):
 
 
 def main():
-    rnn = LSTM(NUM_LAYERS, NEURONS_HIDDEN, 6, SERIES_LENGTH, LEARNING_RATE)
+    rnn = LSTM(NUM_LAYERS, HIDDEN_UNITS, 6, SERIES_LENGTH, LEARNING_RATE)
 
     logger = Logger(TITLE, COMMENT)
     logger.set_source(rnn)
@@ -82,13 +85,14 @@ def main():
               collection_hook=collection_hook,
               logger=logger,
               name=TITLE,
-              full=True,
-              log_interval=50)
+              full=TRAIN_ON_FULL_DATA,
+              log_interval=SAVE_INTERVAL)
 
-        validate(validation_step=val_step,
-                 preprocess=preprocess,
-                 batch_size=BATCH_SIZE,
-                 logger=logger)
+        if not TRAIN_ON_FULL_DATA:
+            validate(validation_step=val_step,
+                     preprocess=preprocess,
+                     batch_size=BATCH_SIZE,
+                     logger=logger)
 
 
 if __name__ == '__main__':

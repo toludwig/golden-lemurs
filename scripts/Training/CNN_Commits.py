@@ -11,7 +11,7 @@ from classification.networks.TextCNN import TextCNN
 from classification.Training import train, validate, TrainingData
 
 
-SEQUENCE_LENGTH = 300
+SEQUENCE_LENGTH = 400
 FILTER_SIZES = [3, 4, 5]
 NUM_FILTERS = 200
 BATCH_SIZE = 200
@@ -21,8 +21,6 @@ NEURONS_HIDDEN = [100]
 L2_REG = 0.01
 EMBEDDING_SIZE = 300
 
-VAL_SIZE = 50
-SAVE_INTERVAL = 20
 TITLE = 'Commits'
 COMMENT = """sequence_length=%d
         filter_sizes=%s

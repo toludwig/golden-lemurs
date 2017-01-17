@@ -24,7 +24,6 @@ EMBEDDING_SIZE = 300
 L2_REG = 0.01
 
 
-SAVE_INTERVAL = 20
 TITLE = 'CNN-Files'
 COMMENT = """neurons_hidden=%s
         num_batches=%d

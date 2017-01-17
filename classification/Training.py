@@ -1,5 +1,8 @@
 """
-Provides a general interface for Training and Validating Networks
+Provides a general interface for Training and Validating Networks.
+
+This script runs the provided preprocess over the training data and uses training step to create a proper feed dict
+and so on.
 """
 
 import os
@@ -31,7 +34,8 @@ def train(training_step,
     :param batch_size size of batches to use
     :param collection_hook the function to call for session collection setup
     :param logger a mongodb logger to use
-    :param checkpoit_path directory to use for checkpoints and tensorboard logs
+    :param name the name to use when saving checkpoints
+    :param full if set to true no validation set will be reserved and the finished model will be saved to the models folder.
     :param log_interval logging interval in batches
     :return the path to the latest checkpoint.
     """

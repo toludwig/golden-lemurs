@@ -7,15 +7,20 @@ import calendar as cal
 from datetime import datetime
 from os.path import join
 from classification import DATA_DIR
+import logging
 
+
+logger = logging.getLogger(__name__)
+
+Word2Vec_PATH = join(DATA_DIR, 'GoogleNews-vectors-negative300.bin')
 
 class ExtensionVectorizer:
     """
     Uses a list of extensions to create a bog of words vector from text
     """
     def __init__(self):
-       with open(join(DATA_DIR, 'extensions.json')) as f:
-           self.extensions = json.load(f)
+        with open(join(DATA_DIR, 'extensions.json')) as f:
+            self.extensions = json.load(f)
 
     def vectorize(self, repo):
         """
@@ -33,6 +38,7 @@ class ExtensionVectorizer:
                 index = self.extensions[word]
                 vector[index] += 1
             except KeyError:
+                logger.debug("Word %s not found" % word)
                 pass
         return vector
 
@@ -53,7 +59,11 @@ class GloveWrapper(object, metaclass=Singleton):
     def __init__(self):
         super(GloveWrapper, self).__init__()
         print('Loading GloVe-Vectors. This will take a while...', end='', flush=True)
-        self.data = Word2Vec.load_word2vec_format(join(DATA_DIR, 'GoogleNews-vectors-negative300.bin'), binary=True)
+        try:
+            self.data = Word2Vec.load_word2vec_format(Word2Vec_PATH, binary=True)
+        except FileNotFoundError:
+            logger.exception('Could not find Word2Vec data at %s' % Word2Vec_PATH)
+            raise
         print('done.')
 
     def lookup_word(self, word):
@@ -67,6 +77,7 @@ class GloveWrapper(object, metaclass=Singleton):
         try:
             return self.data[word]
         except Exception:
+            logger.debug("Word %s not found" % word)
             return [0 for i in range(300)]
 
     def tokenize(self, text, length=200):
@@ -86,12 +97,16 @@ class TrainingData(object, metaclass=Singleton):
     def __init__(self):
         super(TrainingData, self).__init__()
         print('Constructing training data...', end='', flush=True)
-        f1 = json.load(open(join(DATA_DIR, 'dev.json')))
-        f6 = json.load(open(join(DATA_DIR, 'data.json')))
-        f4 = json.load(open(join(DATA_DIR, 'docs.json')))
-        f5 = json.load(open(join(DATA_DIR, 'web.json')))
-        f3 = json.load(open(join(DATA_DIR, 'edu.json')))
-        f2 = json.load(open(join(DATA_DIR, 'homework.json')))
+        try:
+            f1 = json.load(open(join(DATA_DIR, 'dev.json')))
+            f6 = json.load(open(join(DATA_DIR, 'data.json')))
+            f4 = json.load(open(join(DATA_DIR, 'docs.json')))
+            f5 = json.load(open(join(DATA_DIR, 'web.json')))
+            f3 = json.load(open(join(DATA_DIR, 'edu.json')))
+            f2 = json.load(open(join(DATA_DIR, 'homework.json')))
+        except FileNotFoundError:
+            logger.exception("Could not find training data in %s" % DATA_DIR)
+            raise
         self.train = []
         self.val = []
         self.total_length = 0

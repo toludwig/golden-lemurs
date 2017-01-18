@@ -1,14 +1,20 @@
 #!/usr/bin/python3
 """
-Wrapper around the github api.
+Wrapper around the github api. The functionality is tested, but all functions in this class will just pass any Exceptions
+they encounter up from the github3 api.
 """
 from github3 import login
-from markdown import markdown
 from bs4 import BeautifulSoup
 from random import randint
 import requests
 import json
 import urllib3
+import logging
+import inspect
+import time
+from more_itertools import ilen
+
+logger = logging.getLogger(__name__)
 
 # keys = ['9e484681cd48b198297bb0de032445f92a962282',
 #         '360e0d54fe6c4e1e944bcb6c2ed0533389683758',
@@ -271,15 +277,41 @@ def _commit_info(commit):
     return commit.commit.author["date"], commit.commit.message
 
 
+def class_decorator(cls):
+    for name, method in inspect.getmembers(cls, inspect.isfunction):
+        setattr(cls, name, _retry_deco(method, 90))
+    return cls
+
+
+def _retry_deco(function, delta):
+    def f(self, *args, **kwargs):
+        try:
+            timeout = getattr(self, 'timeout')
+        except Exception:
+            timeout = time.time() + delta
+            setattr(self, 'timeout', timeout)
+        while True:
+            if time.time() > timeout:
+                logger.exception("Timeout while executing %s" % function.__name__)
+                raise TimeoutError
+            try:
+                result = function(self, *args, **kwargs)
+                return result
+            except Exception as err:
+                logger.info('Exception in %s: %s' % (function.__name__, err))
+                time.sleep(5)
+    return f
+
+
+@class_decorator
 class Git:
     """docstring for Git."""
-
     def __init__(self, user, title):
         self.api = _token()
         self.user = user
         self.title = title
-        # repo may not exist
         self.repo = self.api.repository(user, title)
+        logger.info('crawling %s/%s' % (user, title))
 
     def valid(self):
         return False if self.repo is None else True
@@ -288,7 +320,7 @@ class Git:
         return self.repo.fork
 
     def number_contributors(self):
-        return len(list(self.repo.iter_contributors()))
+        return ilen(self.repo.iter_contributors())
 
     def get_readme(self):
         readme = self.repo.readme()
@@ -298,22 +330,24 @@ class Git:
         return ''
 
     def number_issues(self):
-        return len(list(self.repo.iter_issues()))
+        return ilen(self.repo.iter_issues())
 
     def number_branches(self):
         try:
-            return len(list(self.repo.branches()))
-        except Exception:
-            return 1
+            return ilen(self.repo.branches())
+        except AttributeError:
+            logger.info('No branches found. returning 0')
+            return 0
 
     def number_forks(self):
         try:
-            return len(list(self.repo.forks()))
-        except Exception:
-            return 1
+            return ilen(self.repo.iter_forks())
+        except AttributeError:
+            logger.info('No forks found. returning 0')
+            return 0
 
     def number_pull_requests(self):
-        return len(list(self.repo.iter_pulls(state='all')))
+        return ilen(self.repo.iter_pulls(state='all'))
 
     def number_stars(self):
         return len(list(self.repo.iter_stargazers()))
@@ -321,9 +355,9 @@ class Git:
     def number_subscribers(self):
         return len(list(self.repo.iter_subscribers()))
 
-    def get_commits(self):
+    def get_commits(self, limit=400):
         repo = list(self.repo.iter_commits())
-        temp = list(map(lambda x: _commit_info(x), repo))
+        temp = list(map(lambda x: _commit_info(x), repo))[:limit]
         return len(repo), [commit[0] for commit in temp], [commit[1] for commit in temp]
 
     def get_issues(self):

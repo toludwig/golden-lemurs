@@ -28,6 +28,7 @@ setup(
                     'uritemplate.py == 3.0.2',
                     'tensorflow >= 0.11.0',
                     'flask == 0.12',
+                    'urllib3 == 1.19.1'
     ],
     zip_safe=False,
     entry_points={

@@ -3,7 +3,6 @@ Features we consider important
 We decided to focus on the following data fields, which can be grouped into
 numerical, textual and temporal ones:
 * numerical
-  - number of branches
   - number of commits
   - number of contributors
   - number of forks

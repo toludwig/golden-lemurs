@@ -55,7 +55,7 @@ It is trained on the whole **Google News** corpus (_n_=100 billion) and is [avai
     
 For further theoretical explanation see [the original paper](http://arxiv.org/pdf/1310.4546.pdf)
 by Google's group around Thomas Mikolov.
-You may also want to check [this blog post](http://www.foldl.me/2014/glove-python/) on GloVe,
+You may also want to check [this Blog post](http://www.foldl.me/2014/glove-python/) on GloVe,
 a similiar vector database (which we chose first, but failed to download).
 
 Data preprocessing
@@ -66,11 +66,13 @@ indicating the position of the word within the vector space.
 
 Now, if we want to apply this on a README to extract (hopefully) the topic of the repository,
 we need to be aware of two things:
-* First, the repo might not have a README at all (or, say it is empty). In this case classification
+
+1. First, the repo might not have a README at all (or, say it is empty). In this case classification
 seems to be futile, but nethertheless it tells us something. We observed, for example that
 homework repos often lack a README (for obvious reasons).
   * Solution: we provide an empty vector (filled with 300 zeros) as a dummy for classification.
-* Second, texts are cluttered by punctuation signs and other 'text mess'. We don't want to have
+
+2. Second, texts are cluttered by punctuation signs and other 'text mess'. We don't want to have
 this in our learning input, because there are no representations in the database for them,
 and they don't carry semantic information.
   * Solution: parse and extract those signs (see `classification.Data.clean_str`)
@@ -97,12 +99,9 @@ hence they are of course overlapping.
 After we applied these convolutions one layer of pooling follows.
 
 
-_________________________
+[^1]: source: [http://deeplearning.stanford.edu/wiki/index.php/Feature_extraction_using_convolution
 
-[^1]: picture source: http://deeplearning.stanford.edu/wiki/index.php/Feature_extraction_using_convolution
+[^2]: source: [https://en.wikipedia.org/wiki/Convolutional_neural_network#/media/File:Max_pooling.png]
 
-[^2]: picture source: https://en.wikipedia.org/wiki/Convolutional_neural_network#/media/File:Max_pooling.png
-
-[^3]: picture source: http://www.wildml.com/2015/12/implementing-a-cnn-for-text-classification-in-tensorflow/
-
-The latter blog served us as a great tutorial for the whole CNN implementation.
+[^3]: source: [http://www.wildml.com/2015/12/implementing-a-cnn-for-text-classification-in-tensorflow/]
+This Blog served us as a great tutorial for the whole CNN implementation.

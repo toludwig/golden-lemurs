@@ -38,6 +38,7 @@ RUN ["pip3", "install", "--upgrade", "https://storage.googleapis.com/tensorflow/
 
 EXPOSE 8080 8080
 EXPOSE 8081 8081
+EXPOSE 6006 6006
 
 COPY run.sh "/home/app/"
 

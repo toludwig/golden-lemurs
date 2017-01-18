@@ -14,12 +14,14 @@ import { DataComponent } from './data/data.component';
 
 import { MarkdownToHtmlPipe } from 'markdown-to-html-pipe';
 import { RepoComponent } from './repo/repo.component';
+import { TensorboardComponent } from './tensorboard/tensorboard.component';
 
 const routes = [
   { path: '', pathMatch: 'full', redirectTo: 'classify' },
   { path: 'classify', component: ClassifyComponent },
   { path: 'docs/:page', component: DocsComponent },
   { path: 'dashboard', component: NetworkComponent },
+  { path: 'tensorboard', component: TensorboardComponent },
   { path: 'data', component: DataComponent },
   { path: '**', component: ClassifyComponent }
 ];
@@ -32,7 +34,8 @@ const routes = [
     NetworkComponent,
     DataComponent,
     MarkdownToHtmlPipe,
-    RepoComponent
+    RepoComponent,
+    TensorboardComponent
   ],
   imports: [
     BrowserModule,

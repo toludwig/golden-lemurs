@@ -9,20 +9,20 @@ logger = logging.getLogger(__name__)
 
 def add_enrichment(file, out, size, action):
     data = _load(file)
-    if data == []:
-        return False
     new = _load(out)
-    addition = []
-    try:
-        with Pool(processes=8) as executor:
-            addition += list(executor.imap(action, data[:size]))
-    except Exception:
-        logger.exception('Unhandled exception in action. Data was not saved')
-        raise
-    downloaded = [i for i, elem in enumerate(addition) if addition[i] is not None]
-    _save([data[i] for i, elem in enumerate(data) if i not in downloaded], file)
-    _save(new + list(filter(None, addition)), out)
-    return True
+    for batch in [data[i:i+size] for i in range(0, len(data), size)]:
+        addition = []
+        try:
+            with Pool(processes=8) as executor:
+                addition += list(executor.imap(action, batch))
+        except Exception:
+            logger.exception('Unhandled exception in action. Data was not saved')
+            raise
+        downloaded = [i for i, elem in enumerate(addition) if addition[i] is not None]
+        data = [data[i] for i, elem in enumerate(data) if i not in downloaded]
+        new += list(filter(None, addition))
+        _save(data, file)
+        _save(new, out)
 
 
 def _split_url(url):
@@ -86,8 +86,7 @@ def _save(data, file):
 
 
 def from_url_list(file, out, category):
-    while add_enrichment(file, out, 50, download_fields):
-        pass
+    add_enrichment(file, out, 24, download_fields)
     data = _load(out)
     for repo in data:
         repo['Category'] = category

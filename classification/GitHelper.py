@@ -10,6 +10,7 @@ import requests
 import logging
 import inspect
 import time
+from more_itertools import ilen
 
 logger = logging.getLogger(__name__)
 
@@ -75,20 +76,23 @@ def _commit_info(commit):
 
 def class_decorator(cls):
     for name, method in inspect.getmembers(cls, inspect.isfunction):
-        print(name)
-        setattr(cls, name, _retry_deco(method))
+        setattr(cls, name, _retry_deco(method, 90))
     return cls
 
 
-def _retry_deco(function):
-    def f(*args, **kwargs):
-        timeout = time.time() + 120
+def _retry_deco(function, delta):
+    def f(self, *args, **kwargs):
+        try:
+            timeout = getattr(self, 'timeout')
+        except Exception:
+            timeout = time.time() + delta
+            setattr(self, 'timeout', timeout)
         while True:
             if time.time() > timeout:
                 logger.exception("Timeout while executing %s" % function.__name__)
                 raise TimeoutError
             try:
-                result = function(*args, **kwargs)
+                result = function(self, *args, **kwargs)
                 return result
             except Exception as err:
                 logger.info('Exception in %s: %s' % (function.__name__, err))
@@ -97,13 +101,14 @@ def _retry_deco(function):
 
 
 @class_decorator
-class Git(object):
+class Git:
     """docstring for Git."""
     def __init__(self, user, title):
         self.api = _token()
         self.user = user
         self.title = title
         self.repo = self.api.repository(user, title)
+        logger.info('crawling %s/%s' % (user, title))
 
     def valid(self):
         return False if self.repo is None else True
@@ -112,7 +117,7 @@ class Git(object):
         return self.repo.fork
 
     def number_contributors(self):
-        return len(list(self.repo.iter_contributors()))
+        return ilen(self.repo.iter_contributors())
 
     def get_readme(self):
         readme = self.repo.readme()
@@ -122,24 +127,24 @@ class Git(object):
         return ''
 
     def number_issues(self):
-        return len(list(self.repo.iter_issues()))
+        return ilen(self.repo.iter_issues())
 
     def number_branches(self):
         try:
-            return len(list(self.repo.branches()))
+            return ilen(self.repo.branches())
         except AttributeError:
             logger.info('No branches found. returning 0')
             return 0
 
     def number_forks(self):
         try:
-            return len(list(self.repo.iter_forks()))
+            return ilen(self.repo.iter_forks())
         except AttributeError:
             logger.info('No forks found. returning 0')
             return 0
 
     def number_pull_requests(self):
-        return len(list(self.repo.iter_pulls(state='all')))
+        return ilen(self.repo.iter_pulls(state='all'))
 
     def number_stars(self):
         return len(list(self.repo.iter_stargazers()))
@@ -147,9 +152,9 @@ class Git(object):
     def number_subscribers(self):
         return len(list(self.repo.iter_subscribers()))
 
-    def get_commits(self):
+    def get_commits(self, limit=400):
         repo = list(self.repo.iter_commits())
-        temp = list(map(lambda x: _commit_info(x), repo))
+        temp = list(map(lambda x: _commit_info(x), repo))[:limit]
         return len(repo), [commit[0] for commit in temp], [commit[1] for commit in temp]
 
     def get_issues(self):

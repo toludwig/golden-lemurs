@@ -7,7 +7,7 @@ setup(
     author_email='mschuwalow@uos.de',
     packages=['classification'],
     install_requires=["beautifulsoup4 == 4.5.3",
-                    "boto == 2.45.0"
+                    'boto == 2.45.0',
                     'bs4 == 0.0.1',
                     'bson == 0.4.3',
                     'bz2file == 0.98',
@@ -26,7 +26,8 @@ setup(
                     'smart-open == 1.3.5',
                     'uritemplate == 3.0.0',
                     'uritemplate.py == 3.0.2',
-                    'tensorflow >= 0.11.0',
+                    # 'tensorflow == 0.12.1', not in pip for ubuntu
+                    'more-itertools == 2.5.0',
                     'flask == 0.12',
                     'urllib3 == 1.19.1'
     ],

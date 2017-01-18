@@ -373,10 +373,8 @@ class Git:
         header = {'Authorization': 'token %s' % _token(as_key=True)}
         api = 'https://api.github.com/repos/%s/%s' % (self.user, self.title)
         if id is None:
-            commits = requests.get('%s/commits' % api,
-                                   headers=header)
+            commits = requests.get('%s/commits' % api, headers=header)
             id = commits.json()[0]['sha']
-        tree = requests.get('%s/git/trees/%s' % (api, id),
-                            params={'recursive': '1'}, headers=header)
+        tree = requests.get('%s/git/trees/%s' % (api, id), params={'recursive': '1'}, headers=header)
         names = list(map(lambda entry: entry['path'], tree.json()['tree']))
         return names

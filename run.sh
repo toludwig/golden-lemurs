@@ -2,12 +2,14 @@
 
 # start python server
 
-echo "todo: starting python server with trained network"
+echo "starting server..."
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+exec python3 -m "classification.eval" &
 
 echo "starting server with webapp"
 cd /home/app/webapp
-exec ng serve --host 0.0.0.0 --port 4200
+exec ng serve --prod --host 0.0.0.0 --port 8080 &
 
 echo "Finished."
-
-while true; end;
+wait

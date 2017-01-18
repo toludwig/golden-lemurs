@@ -32,12 +32,12 @@ RUN ["npm", "install"]
 RUN ["npm", "install", "-g", "angular-cli"]
 
 WORKDIR /home/app
-COPY requirements.txt "/home/app/"
-# RUN ["pip3", "install", "-e", "."]
-# RUN ["pip3", "install", "--upgrade", "https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.11.0-cp34-cp34m-linux_x86_64.whl"]
+COPY setup.py "/home/app/"
+RUN ["pip3", "install", "-e", "."]
+RUN ["pip3", "install", "--upgrade", "https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.1-cp34-cp34m-linux_x86_64.whl"]
 
-
-EXPOSE 4200 4200
+EXPOSE 8080 8080
+EXPOSE 8081 8081
 
 COPY run.sh "/home/app/"
 

@@ -3,7 +3,6 @@ Features we consider important
 We decided to focus on the following data fields, which can be grouped into
 numerical, textual and temporal ones:
 * numerical
-  - number of branches
   - number of commits
   - number of contributors
   - number of forks
@@ -38,9 +37,9 @@ more frequent updates.
 Classifiers we will use
 =======================
 We want to work with **Neural Networks**. They are very addaptive
-classifiers and model the way humans solve such tasks.
-Also there are many possible architectures for such nets, that reflect
-the grouping we did above. We will use
+classifiers which have some biological, cognitive foundation.
+Also there are many possible architectures for such nets with state-of-the-art
+applications. To reflect the grouping we did above, we will use...
 
 * a simple **Feed Forward Network** (FFN) for the numerical data,
 * a **Recurrent Neural Network** (RNN) for temporal analysis of commit times, and
@@ -48,21 +47,27 @@ the grouping we did above. We will use
 
 In this way we employ networks of increasing complexity. Instead of
 having traditional expert systems, we demonstrate the applicability
-and variability of Neural Networks. However, our nets are specialised
+and variability of Neural Networks for parameters known to be working
+very well for the respective architectures. Hence, our nets are specialised
 each in its input group and yield independent, possible different
 category predicitons. To obtain a single prediction for a given repo,
 we use yet another network,
 
 * an **ensemble network** that combines the output of the upper ones.
 
-Each of the classifiers, the topologies and the training mechanism
-used is described separately in the following sections.
-
 For the implementation we use the Python based **Tensorflow** Framework
 for Machine Learning. For a quick introduction, see the excellent
 [Tensorflow Tutorials](https://www.tensorflow.org/tutorials/) and of course
 the respective parts of our code documentation, especially in `NumericFFN.py`.
 
+Each of the classifiers, the topologies and the training mechanism
+used is described separately in the following sections.
+In fact, we tried many different topologies for each architecture
+and obviously cannot report everything. Also, in the course of development
+certain nets (e.g. the FFN) proved not to show the expected performance.
+We decided to focus on adjusting the working ones, but nethertheless
+not to drop the others, but rather having them contribute a few percentages
+to the final accuracy.
 
 Training data mining
 ====================

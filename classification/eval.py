@@ -6,8 +6,10 @@ from .networks.Ensemble import rebuild_full, ensemble_eval
 import tensorflow as tf
 import time
 from flask import Flask
+from flask_cors import CORS
 import sys
 import logging
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -24,14 +26,16 @@ def start_eval_server():
     Starts an evaluation Server that waits to receive a Url and returns an populated json object
     """
     server = Flask(__name__)
+    CORS(server)
 
     @server.route('/rate/<name>/<title>/')
     def rate(name, title):
         logger.info('downloading %s/%s...' % (name, title))
         data = fetch_repo(name, title)
         logger.info('evaluating %s/%s...' % (name, title))
-        data["Category"] = ensemble_eval([data])[0].tolist()
-        logger.info('result for %s/%s: %s' % (name, title, data["Category"]))
+        rating = ensemble_eval([data])[0].tolist()
+        data['Category'] = '%d' % (np.argmax(rating) + 1)
+        logger.info('result for %s/%s: %s' % (name, title, rating))
         res = server.make_response(json.dumps(data))
         res.mimetype = 'application/json'
         return res

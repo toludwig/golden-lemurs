@@ -1,4 +1,6 @@
-import { Component, OnInit, Input, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import * as d3 from 'd3';
+import * as MarkdownIt from 'markdown-it';
 
 export interface Repo {
   NumberOfContributors: number;
@@ -26,9 +28,19 @@ export interface Repo {
 })
 export class RepoComponent implements OnInit {
 
-    @Input() repo: EventEmitter<Repo>;
+  @Output() colors = d3.scaleOrdinal(d3.schemeCategory10);
+  @Input() repo: EventEmitter<Repo>;
+
+  markdown = new MarkdownIt();
 
   constructor() { }
+
+  public md2html(md: string): string {
+      if (md != null)
+          return this.markdown.render(md);
+      else
+          return '';
+  }
 
   ngOnInit() {
   }

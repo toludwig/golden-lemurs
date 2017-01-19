@@ -21,6 +21,7 @@ COPY data /home/app/data/
 COPY webapp /home/app/webapp/
 COPY docs /home/app/docs/
 COPY models /home/app/models/
+COPY scripts /home/app/scripts/
 
 # Word2Vec
 COPY "word2vec/GoogleNews-vectors-negative300.bin.gz" "/home/app/data/GoogleNews-vectors-negative300.bin.gz"
@@ -41,5 +42,6 @@ EXPOSE 8081 8081
 EXPOSE 6006 6006
 
 COPY run.sh "/home/app/"
+COPY classify.sh "/home/app"
 
 CMD "./run.sh"

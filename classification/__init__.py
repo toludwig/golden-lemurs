@@ -5,7 +5,7 @@ import logging
 from logging import NullHandler
 
 logging.getLogger(__name__).addHandler(NullHandler())
-logging.basicConfig(stream=sys.stdout, level=logging.INFO,
+logging.basicConfig(stream=sys.stderr, level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data'))

@@ -145,8 +145,10 @@ tokens = list(map(lambda key: login(token=key), keys))
 
 http = urllib3.PoolManager()
 
-
 def _graphql(api, data, token):
+    """
+    send queries to githubs graphql api and return parsed result
+    """
     encoded_data = json.dumps(data).encode('utf-8')
     headers = {'Content-Type': 'application/json',
                'Authorization': 'bearer %s' % token, 'User-Agent': 'crawler'}
@@ -156,9 +158,14 @@ def _graphql(api, data, token):
 
 
 def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
+    """
+    query all relevant data for evaluation via graphql (faster, less queries)
+    pack data into right format
+    """
     api = 'https://api.github.com/graphql'
-    MAX_FIRST = 100
+    MAX_FIRST = 100 # api limit for pagesize
 
+    # build request to graphql endpoint
     request = {}
     request['operationName'] = "RepoInfo"
     request['query'] = query
@@ -167,8 +174,8 @@ def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
     request['variables'] = json.dumps( {"owner": user, "name": name, "commitLimit": c_lim}) #, "issueLimit": i_lim})
 
     response = _graphql(api, request, _token(as_key=True))
-    print(response)
 
+    # unpack data
     result = response['data']['repository']
     repo = {}
     repo['User'] = user
@@ -181,8 +188,14 @@ def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
     repo['Times'] = result['createdAt'], result['updatedAt']
     #issues = result['issues']['nodes']
     repo['NumberOfIssues'] = result['issues']['totalCount']
-    commits = result['commits']['target']['history']['edges']
-    sha = result['commits']['target']['tree']['oid']
+    c_cursor = None
+    commits = []
+    sha = None
+    # deal with empty repos
+    if 'commits' in result and result['commits'] is not None:
+        commits = result['commits']['target']['history']['edges']
+        sha = result['commits']['target']['tree']['oid']
+        c_cursor = result['commits']['target']['history']['pageInfo']['endCursor']
 
     # paginated content
     remaining_commits = 0
@@ -205,10 +218,10 @@ def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
     #         remaining_issues = issue_limit - len(issues)
     #     return remaining_issues > 0 and i_cursor is not None and result['issues']['pageInfo']['hasNextPage']
 
-    c_cursor = result['commits']['target']['history']['pageInfo']['endCursor']
     # i_cursor = result['issues']['pageInfo']['endCursor']
 
     while commits_left():
+        # build requests starting from last page, save current page
         request = {}
         request['operationName'] = "Commits"
         request['query'] = stream_commits
@@ -218,6 +231,7 @@ def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
             "commitCursor": c_cursor})
 
         response = _graphql(api, request, _token(as_key=True))
+        # accumulate data
         result = response['data']['repository']
         commits += result['commits']['target']['history']['edges']
         c_cursor = result['commits']['target']['history']['pageInfo']['endCursor']
@@ -240,6 +254,7 @@ def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
     #     i_cursor = result['issues']['pageInfo']['endCursor']
 
 
+    # extract and unpack commits
     repo['CommitTimes'] = list(
         map(lambda c: c['node']['author']['date'], commits))
     repo['CommitMessages'] = list(map(lambda c: c['node']['message'], commits))
@@ -251,7 +266,10 @@ def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
     # fetch remaining content
     git = Git(user, name)
     repo["Readme"] = git.get_readme()
-    repo["Files"] = git.get_files(id=sha)
+    if sha is not None:
+        repo["Files"] = git.get_files(id=sha)
+    else:
+        repo["Files"] = []
 
     return repo
 
@@ -260,6 +278,9 @@ selected_token = randint(0, len(tokens) - 1)
 
 
 def _token(as_key=False):
+    """
+    uses tokens as long as requests remaining, then picks new
+    """
     global selected_token
     if tokens[selected_token].rate_limit()['resources']['core']['remaining'] > 0:
         return tokens[selected_token] if not as_key else keys[selected_token]

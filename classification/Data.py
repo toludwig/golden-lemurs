@@ -58,13 +58,13 @@ class GloveWrapper(object, metaclass=Singleton):
 
     def __init__(self):
         super(GloveWrapper, self).__init__()
-        print('Loading GloVe-Vectors. This will take a while...', end='', flush=True)
+        # print('Loading GloVe-Vectors. This will take a while...', end='', flush=True)
         try:
             self.data = Word2Vec.load_word2vec_format(Word2Vec_PATH, binary=True)
         except FileNotFoundError:
             logger.exception('Could not find Word2Vec data at %s' % Word2Vec_PATH)
             raise
-        print('done.')
+        # print('done.')
 
     def lookup_word(self, word):
         """

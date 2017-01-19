@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewChild } from '@angular/core';
 import * as d3 from 'd3';
 import * as MarkdownIt from 'markdown-it';
 
@@ -19,6 +19,48 @@ export interface Repo {
   CommitTimes: string[];
   Files: string[];
   Category: string;
+  Rating: number[];
+}
+
+
+function pieChart(values: number[], w: number, h: number, element) {
+
+  let color = d3.scaleOrdinal(d3.schemeCategory10);
+
+  let canvas = d3.select(element).append('canvas').node() as HTMLCanvasElement;
+  let context = canvas.getContext('2d');
+
+  canvas.width = w;
+  canvas.height = h;
+  let radius = Math.min(w, h) / 2;
+
+  let colors = d3.scaleOrdinal(d3.schemeCategory10);
+
+  var arc = d3.arc()
+    .outerRadius(radius - 10)
+    .innerRadius(radius - 30)
+    .padAngle(0.1)
+    .context(context);
+
+  var pie = d3.pie();
+
+  var arcs = pie(values);
+
+  context.translate(w / 2, h / 2);
+
+  context.globalAlpha = 0.5;
+  arcs.forEach(function(d, i) {
+    context.beginPath();
+    arc(d as any);
+    context.fillStyle = colors('' + (i + 1));
+    context.fill();
+  });
+
+  context.globalAlpha = 1;
+  context.beginPath();
+  arcs.forEach(arc as any);
+  context.lineWidth = 1.5;
+  context.stroke();
 }
 
 @Component({
@@ -30,6 +72,7 @@ export class RepoComponent implements OnInit {
 
   @Output() colors = d3.scaleOrdinal(d3.schemeCategory10);
   @Input() repo: EventEmitter<Repo>;
+  @ViewChild('rating') rating;
 
   markdown = new MarkdownIt();
 
@@ -43,6 +86,14 @@ export class RepoComponent implements OnInit {
   }
 
   ngOnInit() {
+      this.repo.subscribe( (repo) => {
+          if (repo.Rating != null) {
+              pieChart(repo.Rating, 100, 100, this.rating.nativeElement);
+          } else {
+              let elem = this.rating.nativeElement;
+              while(elem.firstChild) elem.removeChild(elem.firstChild);
+          }
+      });
   }
 
 }

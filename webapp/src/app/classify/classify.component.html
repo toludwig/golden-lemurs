@@ -4,5 +4,7 @@
   <button id='submit' md-raised-button color='primary' (click)='classify()' [disabled]='!repoValid()'>{{action}}</button>
 </div>
 <md-progress-spinner mode='indeterminate' *ngIf='fetching'></md-progress-spinner>
+<div #rating>
+</div>
 <app-repo  [repo]="result" [style.display]='fetching || (result | async) == null ? "none": "block"'></app-repo>
 </div>

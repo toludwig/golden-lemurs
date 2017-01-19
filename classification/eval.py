@@ -35,6 +35,7 @@ def start_eval_server():
         logger.info('evaluating %s/%s...' % (name, title))
         rating = ensemble_eval([data])[0].tolist()
         data['Category'] = '%d' % (np.argmax(rating) + 1)
+        data['Rating'] = rating
         logger.info('result for %s/%s: %s' % (name, title, rating))
         res = server.make_response(json.dumps(data))
         res.mimetype = 'application/json'

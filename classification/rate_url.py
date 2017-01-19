@@ -25,7 +25,7 @@ def add_enrichment(file, out, size, action):
         _save(new, out)
 
 
-def _split_url(url):
+def split_url(url):
     """
     Splits an URL into username and repo title.
     Correct behaviour is only guarenteed for URLs pointing to the index
@@ -39,7 +39,7 @@ def _split_url(url):
 
 def download_fields(url):
     repo = {}
-    repo["User"], repo["Title"] = _split_url(url)
+    repo["User"], repo["Title"] = split_url(url)
     logging.info('crawling %s/%s.' % (repo['User'], repo['Title']))
     try:
         git = Git(repo["User"], repo["Title"])

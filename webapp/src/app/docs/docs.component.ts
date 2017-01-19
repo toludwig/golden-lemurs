@@ -1,12 +1,12 @@
-import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { html } from 'd3';
 
 @Component({
   selector: 'app-docs',
   templateUrl: './docs.component.html',
-  styleUrls: ['./docs.component.css', './github-pandoc.css']
-  // encapsulation: ViewEncapsulation.Native
+  styleUrls: ['./docs.component.css', './github-pandoc.css'],
+  encapsulation: ViewEncapsulation.Native
 })
 export class DocsComponent {
   @ViewChild('docs') docs;

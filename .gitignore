@@ -2,7 +2,9 @@
 data/*.json
 
 *.idea
-out/
+out/*
+!out/*.sh
+
 
 # remote credentials
 .remote-sync.json

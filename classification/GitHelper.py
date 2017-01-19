@@ -146,6 +146,65 @@ tokens = list(map(lambda key: login(token=key), keys))
 http = urllib3.PoolManager()
 
 
+def _fallback(fallback):
+    def decorator(function):
+        def f(*args, **kwargs):
+            try:
+                result = function(*args, **kwargs)
+                return result
+            except Exception:
+                result = fallback(*args, **kwargs)
+                return result
+        return f
+    return decorator
+
+
+def class_decorator(cls):
+    for name, method in inspect.getmembers(cls, inspect.isfunction):
+        setattr(cls, name, _retry_deco(method, 300))
+    return cls
+
+
+def _retry_deco(function, delta):
+    def f(self, *args, **kwargs):
+        try:
+            timeout = getattr(self, 'timeout')
+        except Exception:
+            timeout = time.time() + delta
+            setattr(self, 'timeout', timeout)
+        while True:
+            if time.time() > timeout:
+                logger.exception("Timeout while executing %s" % function.__name__)
+                raise TimeoutError
+            try:
+                result = function(self, *args, **kwargs)
+                return result
+            except Exception as err:
+                logger.info('Exception in %s: %s' % (function.__name__, err))
+                time.sleep(5)
+    return f
+
+
+def get_all(user, title):
+    repo = {}
+    git = Git(user, title)
+    if not git.valid():
+        return None
+    repo["User"] = user
+    repo["Title"] = title
+    repo["Readme"] = git.get_readme()
+    repo["NumberOfContributors"] = git.number_contributors()
+    repo["Branches"] = git.number_branches()
+    repo["Forks"] = git.number_forks()
+    repo["Stars"] = git.number_stars()
+    repo["Pulls"] = git.number_pull_requests()
+    repo["Subscribers"] = git.number_subscribers()
+    repo["NumberOfCommits"], repo["CommitTimes"], repo["CommitMessages"] = git.get_commits()
+    repo["Times"] = git.get_times()
+    repo["Files"] = git.get_files()
+    return repo
+
+
 def _graphql(api, data, token):
     encoded_data = json.dumps(data).encode('utf-8')
     headers = {'Content-Type': 'application/json',
@@ -155,6 +214,7 @@ def _graphql(api, data, token):
     return res
 
 
+@_fallback(get_all)
 def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
     api = 'https://api.github.com/graphql'
     MAX_FIRST = 100
@@ -275,32 +335,6 @@ def _token(as_key=False):
 def _commit_info(commit):
 
     return commit.commit.author["date"], commit.commit.message
-
-
-def class_decorator(cls):
-    for name, method in inspect.getmembers(cls, inspect.isfunction):
-        setattr(cls, name, _retry_deco(method, 90))
-    return cls
-
-
-def _retry_deco(function, delta):
-    def f(self, *args, **kwargs):
-        try:
-            timeout = getattr(self, 'timeout')
-        except Exception:
-            timeout = time.time() + delta
-            setattr(self, 'timeout', timeout)
-        while True:
-            if time.time() > timeout:
-                logger.exception("Timeout while executing %s" % function.__name__)
-                raise TimeoutError
-            try:
-                result = function(self, *args, **kwargs)
-                return result
-            except Exception as err:
-                logger.info('Exception in %s: %s' % (function.__name__, err))
-                time.sleep(5)
-    return f
 
 
 @class_decorator

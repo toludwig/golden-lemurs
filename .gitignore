@@ -14,7 +14,8 @@ out/*
 *.bin
 *.bak
 *.gz
-*.zip
+data/*
+!data/*.zip
 
 # Byte-compiled / optimized / DLL files
 *__pycache__

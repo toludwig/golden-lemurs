@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 Word2Vec_PATH = join(DATA_DIR, 'GoogleNews-vectors-negative300.bin')
 
+
 class ExtensionVectorizer:
     """
     Uses a list of extensions to create a bog of words vector from text

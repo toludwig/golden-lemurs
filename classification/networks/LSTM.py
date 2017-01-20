@@ -1,17 +1,28 @@
 import tensorflow as tf
-
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import clip_ops
-from tensorflow.contrib.layers import l2_regularizer
 
 
 class LSTM:
+    """
+    Long Short Term Memory Network for time series classification. In this case we used the summed up months of
+    a repositories as our input sequence. We traverse this sequence with an bidirectional lstm (meaning one lstm cell
+    moving past->future and one moving future->past).
+    We hoped that the workflow of the group working on the repository would be reflected in this feature, which could result
+    in quite a strong classifier.
+    """
 
     def __init__(self,
                  hidden_size,
                  num_classes,
                  series_length,
                  learning_rate):
+        """
+        :param hidden_size: Number of hidden units in the lstm cells
+        :param num_classes: Number of classes in the output layer
+        :param series_length: Number of bins in the time series
+        :param learning_rate: learning rate
+        """
 
         self.input_vect = tf.placeholder(tf.float32, [None, series_length], name='input')
         self.target_vect = tf.placeholder(tf.int64, [None], name='labels')

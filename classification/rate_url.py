@@ -1,19 +1,27 @@
 import json
-from .GitHelper import Git, fetch_repo
+from .GitHelper import fetch_repo
 from multiprocessing import Pool
 import logging
-import time
 
 logger = logging.getLogger(__name__)
 
 
 def add_enrichment(file, out, size, action):
+    """
+    Read from a file containing a list, apply a given operation on every entry, save the result to a file
+    after n timesteps.
+    :param file: the file to read from
+    :param out: the file to save to
+    :param size: saving interval/ size of processing batch
+    :param action: the function to perform on every entry
+    :return:
+    """
     data = _load(file)
     new = _load(out)
     for batch in [data[i:i+size] for i in range(0, len(data), size)]:
         addition = []
         try:
-            with Pool(processes=4) as executor:
+            with Pool(processes=8) as executor:
                 addition += list(executor.imap(action, batch))
         except Exception:
             logger.exception('Unhandled exception in action. Data was not saved')
@@ -39,7 +47,11 @@ def split_url(url):
 
 
 def download_fields(url):
-    repo = {}
+    """
+    Gets a repo for a given url
+    :param url: the url
+    :return: dict representing the repo
+    """
     user, title = split_url(url)
     logging.info('crawling %s/%s.' % (user, title))
     try:
@@ -75,7 +87,7 @@ def _save(data, file):
 
 
 def from_url_list(file, out, category):
-    add_enrichment(file, out, 4, download_fields)
+    add_enrichment(file, out, 32, download_fields)
     data = _load(out)
     for repo in data:
         repo['Category'] = category

@@ -6,7 +6,7 @@ from classification.networks.NumericFFN import NumericFFN
 from classification.Training import train, validate, TrainingData
 
 
-TRAIN_ON_FULL_DATA = True
+TRAIN_ON_FULL_DATA = False
 
 
 NEURONS_HIDDEN = [100, 100]

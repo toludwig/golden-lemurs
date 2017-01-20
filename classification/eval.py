@@ -41,16 +41,6 @@ def start_eval_server():
         res.mimetype = 'application/json'
         return res
 
-
-    # async def consult(websocket, path):
-    #     message = await websocket.recv()
-    #     message = json.loads(message)
-    #     repo = enrich_entry(message, download_fields)
-    #     logger.info('evaluating %s...' % repo)
-    #     repo["Category"] = ensemble_eval([repo])[0].tolist()
-    #     logger.info('result for %s: %s' % (repo['Url'], repo["Category"]))
-    #     await websocket.send(json.dumps(repo))
-
     with tf.Session() as session:
         rebuild_full()
         print("Starting server...", end='\t')

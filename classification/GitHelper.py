@@ -1,7 +1,8 @@
-#!/usr/bin/python3
 """
-Wrapper around the github api. The functionality is tested, but all functions in this class will just pass any Exceptions
-they encounter up from the github3 api.
+Wrapper around the github api. The function to use here is fetch repo which downloads all data of a repository using
+Githubs experimental GraphQl api. Should this fail (for example because the rate limit for our keys were reached)
+the function will automatically fallback to a downloader based on pygithub3.py. This in turn will retry the query
+until a timeout is reached and then raise a TimeoutError.
 """
 from github3 import login
 from bs4 import BeautifulSoup
@@ -13,6 +14,9 @@ import logging
 import inspect
 import time
 from more_itertools import ilen
+
+TIMEOUT = 300  # Timeout in seconds to use. Set this high because crawling all Commits of React without GraphQL takes a while
+
 
 logger = logging.getLogger(__name__)
 
@@ -147,6 +151,10 @@ http = urllib3.PoolManager()
 
 
 def _fallback(fallback):
+    """
+    function decorator that causes a function to fallback to another function should if fail
+    :param fallback: the function to fallback to
+    """
     def decorator(function):
         def f(*args, **kwargs):
             try:
@@ -160,6 +168,13 @@ def _fallback(fallback):
 
 
 def _retry_with_timeout(timeout):
+    """
+    class decorator that dectorates all functions in a class with a decorator that causes a timeout to be set
+    when a method of an instance is called for the first time. After timeout time has passed all methods of that instance
+    will raise a TimeoutError
+    :param timeout:
+    :return:
+    """
     def class_decorator(cls):
         def _retry_deco(function, delta):
             def f(self, *args, **kwargs):
@@ -186,10 +201,15 @@ def _retry_with_timeout(timeout):
     return class_decorator
 
 
-
-def get_all(user, title):
+def _get_all(user, title):
+    """
+    Small Wrapper around the _Git class that downloads all fields for a repository
+    :param user: username belonging to the repository
+    :param title: title of the repository
+    :return:
+    """
     repo = {}
-    git = Git(user, title)
+    git = _Git(user, title)
     if not git.valid():
         return None
     repo["User"] = user
@@ -219,7 +239,7 @@ def _graphql(api, data, token):
     return res
 
 
-@_fallback(get_all)
+@_fallback(_get_all)
 def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
     """
     query all relevant data for evaluation via graphql (faster, less queries)
@@ -328,7 +348,7 @@ def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
     # repo['IssueMessages'] = list(map(lambda i: i['title'], issues))
 
     # fetch remaining content
-    git = Git(user, name)
+    git = _Git(user, name)
     repo["Readme"] = git.get_readme()
     if sha is not None:
         repo["Files"] = git.get_files(id=sha)
@@ -363,9 +383,18 @@ def _commit_info(commit):
 
 
 @_retry_with_timeout(300)
-class Git:
-    """docstring for Git."""
+class _Git:
+    """
+       Wrapper around pygithub3.py
+       Most of the methods should be
+       self-explaining
+    """
     def __init__(self, user, title):
+        """
+
+        :param user: username of the repos owner
+        :param title: title of the repository
+        """
         self.api = _token()
         self.user = user
         self.title = title
@@ -373,6 +402,10 @@ class Git:
         logger.info('crawling %s/%s' % (user, title))
 
     def valid(self):
+        """
+        Checks if repo exists
+        :return: true if repo exists, false otherwise
+        """
         return False if self.repo is None else True
 
     def is_fork(self):

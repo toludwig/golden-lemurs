@@ -3,7 +3,6 @@ from .GitHelper import fetch_repo
 from .rate_url import split_url
 from .networks.Ensemble import rebuild_full, ensemble_eval
 import tensorflow as tf
-import time
 import sys
 import logging
 import numpy as np

@@ -1,28 +1,13 @@
 import tensorflow as tf
-import math
-from tensorflow.contrib.layers import xavier_initializer_conv2d as xavier_conv2d
 from tensorflow.contrib.layers import xavier_initializer as xavier
 from tensorflow.contrib.layers import l2_regularizer
-
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import clip_ops
-
-'''
-A simple FF net for the numerical fields of a repo, i.e.
-- number of branches
-- number of contributors
-- number of commits
-- number of issues
-- number of forks
-- number of pulls
-- number of stars
-- number of subscribers
-'''
 
 
 class NumericFFN:
     """
-    Neural Network performing Regression
+    A simple deep feedforward net for general regression
     """
     def __init__(self,
                  parameters,
@@ -30,6 +15,13 @@ class NumericFFN:
                  categories,
                  learning_rate,
                  reg_lambda):
+        """
+        :param parameters: number of features in the input layer
+        :param neurons_hidden: number of hidden units and layers. list of form [num_layer1, num_layer2, ...]
+        :param categories: number of categories in the output layer
+        :param learning_rate: learning rate
+        :param reg_lambda: L2 regularization value
+        """
 
         self.in_vector = tf.placeholder(tf.float32, [None, parameters], name='input')
         self.target_vect = tf.placeholder(tf.int64, [None], name='target')

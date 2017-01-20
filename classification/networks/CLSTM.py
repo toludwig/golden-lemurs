@@ -27,6 +27,16 @@ class CLSTM:
                  embedding_size,
                  reg_lambda,
                  lstm_size):
+        """
+        :param sequence_length: length of the text
+        :param num_classes: number of classes in output layer
+        :param filter_size: size of the convolutional filter
+        :param num_filters: number of convolutional filters
+        :param learning_rate: learning rate
+        :param embedding_size: length of the embedding vector of every word
+        :param reg_lambda: L2 regularization Lambda
+        :param lstm_size: number of hidden units in the lstm cell
+        """
 
         self.input_vect = tf.placeholder(tf.float32, [None, sequence_length, embedding_size], name='input')
         self.target_vect = tf.placeholder(tf.int64, [None], name='target')

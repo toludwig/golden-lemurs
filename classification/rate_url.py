@@ -1,5 +1,5 @@
 import json
-from .GitHelper import Git
+from .GitHelper import Git, fetch_repo
 from multiprocessing import Pool
 import logging
 import time
@@ -13,7 +13,7 @@ def add_enrichment(file, out, size, action):
     for batch in [data[i:i+size] for i in range(0, len(data), size)]:
         addition = []
         try:
-            with Pool(processes=8) as executor:
+            with Pool(processes=4) as executor:
                 addition += list(executor.imap(action, batch))
         except Exception:
             logger.exception('Unhandled exception in action. Data was not saved')
@@ -21,6 +21,7 @@ def add_enrichment(file, out, size, action):
         downloaded = [i for i, elem in enumerate(addition) if addition[i] is not None]
         data = [data[i] for i, elem in enumerate(data) if i not in downloaded]
         new += list(filter(None, addition))
+        logger.info('Saving data.')
         _save(data, file)
         _save(new, out)
 
@@ -39,22 +40,10 @@ def split_url(url):
 
 def download_fields(url):
     repo = {}
-    repo["User"], repo["Title"] = split_url(url)
-    logging.info('crawling %s/%s.' % (repo['User'], repo['Title']))
+    user, title = split_url(url)
+    logging.info('crawling %s/%s.' % (user, title))
     try:
-        git = Git(repo["User"], repo["Title"])
-        if not git.valid():
-            return None
-        repo["Readme"] = git.get_readme()
-        repo["NumberOfContributors"] = git.number_contributors()
-        repo["Branches"] = git.number_branches()
-        repo["Forks"] = git.number_forks()
-        repo["Stars"] = git.number_stars()
-        repo["Pulls"] = git.number_pull_requests()
-        repo["Subscribers"] = git.number_subscribers()
-        repo["NumberOfCommits"], repo["CommitTimes"], repo["CommitMessages"] = git.get_commits()
-        repo["Times"] = git.get_times()
-        repo["Files"] = git.get_files()
+        repo = fetch_repo(user, title)
     except TimeoutError:
         logging.exception('Could not get all data for %s' % url)
         return None
@@ -86,7 +75,7 @@ def _save(data, file):
 
 
 def from_url_list(file, out, category):
-    add_enrichment(file, out, 24, download_fields)
+    add_enrichment(file, out, 4, download_fields)
     data = _load(out)
     for repo in data:
         repo['Category'] = category

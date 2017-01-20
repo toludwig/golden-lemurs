@@ -23,9 +23,7 @@ export interface Repo {
 }
 
 
-function pieChart(values: number[], w: number, h: number, element) {
-
-  let color = d3.scaleOrdinal(d3.schemeCategory10);
+function pieChart(values: number[], w: number, h: number, element, selected) {
 
   let canvas = d3.select(element).append('canvas').node() as HTMLCanvasElement;
   let context = canvas.getContext('2d');
@@ -48,11 +46,14 @@ function pieChart(values: number[], w: number, h: number, element) {
 
   context.translate(w / 2, h / 2);
 
-  context.globalAlpha = 0.5;
   arcs.forEach(function(d, i) {
+      if (i == selected)
+          context.globalAlpha = 1;
+      else
+          context.globalAlpha = 0.3;
     context.beginPath();
     arc(d as any);
-    context.fillStyle = colors('' + (i + 1));
+    context.fillStyle = colors('' + i);
     context.fill();
   });
 
@@ -88,7 +89,7 @@ export class RepoComponent implements OnInit {
   ngOnInit() {
       this.repo.subscribe( (repo) => {
           if (repo.Rating != null) {
-              pieChart(repo.Rating, 100, 100, this.rating.nativeElement);
+              pieChart(repo.Rating, 100, 100, this.rating.nativeElement, +repo.Category - 1);
           } else {
               let elem = this.rating.nativeElement;
               while(elem.firstChild) elem.removeChild(elem.firstChild);

@@ -3,45 +3,6 @@ import * as d3 from 'd3';
 import { Repo } from '../repo/repo.component';
 import { RepositoryService } from '../repository.service';
 
-function pieChart(values: number[], w: number, h: number, element) {
-
-  let color = d3.scaleOrdinal(d3.schemeCategory10);     //builtin range of colors
-
-  let canvas = d3.select(element).append('canvas').node() as HTMLCanvasElement;
-  let context = canvas.getContext('2d');
-
-  canvas.width = w;
-  canvas.height = h;
-  let radius = Math.min(w, h) / 2;
-
-  let colors = d3.scaleOrdinal(d3.schemeCategory10);
-
-  var arc = d3.arc()
-    .outerRadius(radius - 10)
-    .innerRadius(radius - 30)
-    .padAngle(0.1)
-    .context(context);
-
-  var pie = d3.pie();
-
-  var arcs = pie(values);
-
-  context.translate(w / 2, h / 2);
-
-  context.globalAlpha = 0.5;
-  arcs.forEach(function(d, i) {
-    context.beginPath();
-    arc(d as any);
-    context.fillStyle = colors('' + (i + 1));
-    context.fill();
-  });
-
-  context.globalAlpha = 1;
-  context.beginPath();
-  arcs.forEach(arc as any);
-  context.lineWidth = 1.5;
-  context.stroke();
-}
 
 @Component({
   selector: 'app-classify',
@@ -70,7 +31,6 @@ export class ClassifyComponent implements OnInit {
     d3.json(this.api(name, title), (response: Repo) => {
       this.fetching = false;
       this.repositories.save(`https://github.com/${name}/${title}`, response);
-      pieChart(response.Rating, 100, 100, this.rating.nativeElement);
       this.result.emit(response);
     });
   }

@@ -1,6 +1,10 @@
 div#rating {
-    width: 100%;
-    padding: 10px 190px;
+    position: absolute;
+    top: 0px;
+    right: 50px;
+}
+md-chip {
+    color: white !important;
 }
 
  md-list {

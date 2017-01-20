@@ -159,30 +159,32 @@ def _fallback(fallback):
     return decorator
 
 
-def class_decorator(cls):
-    for name, method in inspect.getmembers(cls, inspect.isfunction):
-        setattr(cls, name, _retry_deco(method, 300))
-    return cls
+def _retry_with_timeout(timeout):
+    def class_decorator(cls):
+        def _retry_deco(function, delta):
+            def f(self, *args, **kwargs):
+                try:
+                    timeout = getattr(self, 'timeout')
+                except AttributeError:
+                    timeout = time.time() + delta
+                    setattr(self, 'timeout', timeout)
+                while True:
+                    if time.time() > timeout:
+                        logger.exception("Timeout while executing %s" % function.__name__)
+                        raise TimeoutError
+                    try:
+                        result = function(self, *args, **kwargs)
+                        return result
+                    except Exception as err:
+                        logger.info('Exception in %s: %s' % (function.__name__, err))
+                        time.sleep(5)
+            return f
 
+        for name, method in inspect.getmembers(cls, inspect.isfunction):
+            setattr(cls, name, _retry_deco(method, timeout))
+        return cls
+    return class_decorator
 
-def _retry_deco(function, delta):
-    def f(self, *args, **kwargs):
-        try:
-            timeout = getattr(self, 'timeout')
-        except Exception:
-            timeout = time.time() + delta
-            setattr(self, 'timeout', timeout)
-        while True:
-            if time.time() > timeout:
-                logger.exception("Timeout while executing %s" % function.__name__)
-                raise TimeoutError
-            try:
-                result = function(self, *args, **kwargs)
-                return result
-            except Exception as err:
-                logger.info('Exception in %s: %s' % (function.__name__, err))
-                time.sleep(5)
-    return f
 
 
 def get_all(user, title):
@@ -235,6 +237,7 @@ def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
     request['variables'] = json.dumps( {"owner": user, "name": name, "commitLimit": c_lim}) #, "issueLimit": i_lim})
 
     response = _graphql(api, request, _token(as_key=True))
+    logger.debug(response)
 
     # unpack data
     result = response['data']['repository']
@@ -359,7 +362,7 @@ def _commit_info(commit):
     return commit.commit.author["date"], commit.commit.message
 
 
-@class_decorator
+@_retry_with_timeout(300)
 class Git:
     """docstring for Git."""
     def __init__(self, user, title):

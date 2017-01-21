@@ -8,7 +8,7 @@ fi
 dir=$1
 
 if [[ ! -d $dir ]]; then
-    echo "$dir is not a directory..."
+    echo "$dir is not a dirhectory..."
     exit 1
 fi
 
@@ -21,7 +21,7 @@ for entry in $(ls); do
     fi
 done
 
-if [[ $logdirs -eq "" ]]; then
+if [[ $logdirs == "" ]]; then
     echo "No summary dirs found in subfolders of $dir."
     exit 1
 fi

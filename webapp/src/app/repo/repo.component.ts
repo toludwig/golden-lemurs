@@ -47,10 +47,10 @@ function pieChart(values: number[], w: number, h: number, element, selected) {
   context.translate(w / 2, h / 2);
 
   arcs.forEach(function(d, i) {
-      if (i == selected)
-          context.globalAlpha = 1;
-      else
-          context.globalAlpha = 0.3;
+    if (i == selected)
+      context.globalAlpha = 1;
+    else
+      context.globalAlpha = 0.3;
     context.beginPath();
     arc(d as any);
     context.fillStyle = colors('' + i);
@@ -80,21 +80,20 @@ export class RepoComponent implements OnInit {
   constructor() { }
 
   public md2html(md: string): string {
-      if (md != null)
-          return this.markdown.render(md);
-      else
-          return '';
+    if (md != null)
+      return this.markdown.render(md);
+    else
+      return '';
   }
 
   ngOnInit() {
-      this.repo.subscribe( (repo) => {
-          if (repo.Rating != null) {
-              pieChart(repo.Rating, 100, 100, this.rating.nativeElement, +repo.Category - 1);
-          } else {
-              let elem = this.rating.nativeElement;
-              while(elem.firstChild) elem.removeChild(elem.firstChild);
-          }
-      });
+    this.repo.subscribe((repo) => {
+      let elem = this.rating.nativeElement;
+      while (elem.firstChild) elem.removeChild(elem.firstChild);
+      if (repo.Rating != null) {
+        pieChart(repo.Rating, 100, 100, this.rating.nativeElement, +repo.Category - 1);
+      }
+    });
   }
 
 }

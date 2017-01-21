@@ -8,7 +8,7 @@ fi
 dir=$1
 
 if [[ ! -d $dir ]]; then
-    echo "$dir is not a dirhectory..."
+    echo "$dir is not a directory..."
     exit 1
 fi
 

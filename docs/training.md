@@ -116,7 +116,7 @@ This envolves repeated use of the _chain-rule_ over all the activation functions
 until one arrives at the desired weight.
 Suppose, we have the following chain of neurons $i$, $j$ and $k$ in the net...
 
-![picture of backpropagation](./img/backpropagation.png)
+![picture of backpropagation](/assets/docs/img/backpropagation.png)
 
 In this situation, you would calculate the update $\Delta w_{i,j}$ by:
 $$\Delta w_{i,j} = \frac{\partial CEL}{\partial \sigma(k)} \cdot \frac{\partial \sigma(k)}{\partial relu(j)} \cdot \frac{\partial relu(j)}{\partial relu(i)} \cdot \frac{\partial relu(i)}{\partial w_{i,j}}$$

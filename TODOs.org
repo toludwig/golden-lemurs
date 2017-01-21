@@ -7,24 +7,37 @@
 *** Classifiers we will use
 *** Training data mining
 ** DONE FFN
-*** DONE Softmax
 *** DONE Activation function
-** TODO RNN
-*** TODO background
-*** TODO topology
+*** TODO Bias Neurons
+*** DONE Softmax
 ** TODO CNN
-*** DONE cv background
-*** DONE word vector explanation
-*** TODO topology
+*** DONE Background of convolutions in Computer Vision 
+*** DONE Word Vectors and the intuition behind them
+*** DONE Data preprocessing
+*** TODO Our CNN for Word Vectors
+*** TODO Bag of Words for filenames
+ extensions und filename+extensions
+** TODO RNN
+*** DONE The Long Short-Term Memory
+*** TODO Our LSTM for commit-time analysis
+**** TODO Data preprocessing
+***** TODO make graphs for each category!!
+**** TODO Topology
+*** TODO Our CLSTM
 ** TODO Ensemble
 *** TODO stacking
 ** TODO Training
-*** TODO dropout
-*** TODO cross entropy loss
-*** TODO accuracy
-*** TODO mini batches
-*** TODO adam optimizer
-*** ...
+*** DONE Initializing weights
+*** TODO Mini batches
+*** DONE Gradient descent
+*** DONE Loss function
+*** TODO Accuracy
+*** TODO Adam optimizer
+*** TODO Gradient clipping
+*** TODO Dropout
 ** TODO Results
 *** TODO tensorboard
 ** TODO Discussion
+** TODO References
+*** papers
+*** blogs

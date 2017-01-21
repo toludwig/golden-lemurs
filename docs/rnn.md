@@ -10,7 +10,7 @@ recognition of (handwritten) text and speech, or at the stock market.
 For this they have a special ability, they 'save' previous input.
 As the name suggests, they have recurrent 'synapses', i.e. edges
 going back in circles to the same cell. Here is how it looks if
-you unfold this circle three times [^1]:
+you unfold this circle three times [[1]]:
 
 ![picture of RNN](/assets/docs/img/rnn.jpg)
 
@@ -21,13 +21,13 @@ The Long Short-Term Memory net
 However, the trouble with most types of RNNs is that they are essentially unable
 to remember things in long term, e.g. words that occurred sentences ago.
 This is due to the _vanishing gradients problem_ and was first formerly proven by
-[Hochreiter in 1991](people.idsia.ch/~juergen/SeppHochreiter1991ThesisAdvisorSchmidhuber.pdf).
+[Hochreiter in 1991](http://people.idsia.ch/~juergen/SeppHochreiter1991ThesisAdvisorSchmidhuber.pdf).
 In 1997 appeared an often-cited [followup paper](http://www.mitpressjournals.org/doi/10.1162/neco.1997.9.8.1735#.WH4Lg2c_3qM),
 also by Hochreiter and Schmidhuber, introducing the **Long Short-Term
 Memory (LSTM)** that is designed to tackle this shortcoming.
 
 Its nodes do no longer look like simple neurons, but rather like complex
-**memory cells**, here again unfolded [^2]:
+**memory cells**, here again unfolded [[2]]:
 
 ![picture of LSTM](/assets/docs/img/LSTM.png)
 
@@ -69,14 +69,14 @@ The function for the preprocessing basically does a binning of our list, it
 can be found here: `networks.Data.commit_time_profile`. It yields histograms like
 these for the classes DEV, and ... (TODO)
 
-![/assets/docs/img/]
+![picture of commit profiles](/assets/docs/img/commit_profiles.png)
 
 Topology
 --------
 Now for the specific topology we are using.
 
-[^1]: source: [http://www.nature.com/nature/journal/v521/n7553/abs/nature14539.html]
+[1]: http://www.nature.com/nature/journal/v521/n7553/abs/nature14539.html
 
-[^2]: source: [http://colah.github.io/posts/2015-08-Understanding-LSTMs/]
+[2]: http://colah.github.io/posts/2015-08-Understanding-LSTMs/
 In this Blog by Christopher Olah the data flow within LSTMs is very nicely captured.
 We refer to his post for further details.

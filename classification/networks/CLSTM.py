@@ -5,6 +5,39 @@ from tensorflow.python.ops import clip_ops
 from tensorflow.contrib.layers import l2_regularizer
 
 class CLSTM:
+    def __init__(self,
+                 sequence_length,
+                 num_classes,
+                 filter_size,
+                 num_filters,
+                 learning_rate,
+                 embedding_size,
+                 reg_lambda,
+                 lstm_size):
+        """
+        :param sequence_length: length of the text
+        :param num_classes: number of classes in output layer
+        :param filter_size: size of the convolutional filter
+        :param num_filters: number of convolutional filters
+        :param learning_rate: learning rate
+        :param embedding_size: length of the embedding vector of every word
+        :param reg_lambda: L2 regularization Lambda
+        :param lstm_size: number of hidden units in the lstm cell
+        """
+
+        self.input_vect = tf.placeholder(tf.float32, [None, embedding_size], name='input')
+        self.target_vect = tf.placeholder(tf.int64, [None], name='target')
+        self.dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
+        self.class_weights = tf.placeholder(tf.float32, [num_classes], name='class_weights')
+        self.batch_size = tf.placeholder(tf.int32, name='batch_size')
+
+    def train(self, batches):
+        for batch in batches:
+            for sentence in batch:
+                input =
+
+    def eval():
+
     """
     Network consisting of an CNN and an LSTM for text classification. The LSTM uses features extracted by the CNN in order
     to perform text classification. This achieves better performance then an CNN on its own because the LSTM is able to learn

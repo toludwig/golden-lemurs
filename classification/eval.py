@@ -28,6 +28,17 @@ def start_eval_server():
     server = Flask(__name__)
     CORS(server)
 
+    @server.route('/data/<int:limit>')
+    def data(limit):
+        repos = []
+        for file in ["data.json", "dev.json", "docs.json", "edu.json", "homework.json", "web.json"]:
+            with open('data/%s' % file, 'r') as dataset:
+                repos += json.load(dataset)
+        data = np.random.choice(repos, limit)
+        res = server.make_response(json.dumps(data))
+        res.mimetype = 'application/json'
+        return res
+
     @server.route('/rate/<name>/<title>/')
     def rate(name, title):
         logger.info('downloading %s/%s...' % (name, title))

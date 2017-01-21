@@ -1,0 +1,73 @@
+<h1 id="features-we-consider-important">Features we consider important</h1>
+<p>We decided to focus on the following data fields, which can be grouped into numerical, textual and temporal ones: * numerical - number of commits - number of contributors - number of forks - number of issues - number of pulls - number of stars - number of subscribers * textual - README - filenames and extensions - commits * temporal - times of commits</p>
+<p>Especially for the numerical fields, there is no real justification for each of these items yet. For now we take as much information as we can get and hope that our classifiers selects the relevant ones. The other groups are more deliberately chosen...</p>
+<p>First of all the README obviously carries very much information. This is one of the first things you would check as a human after you have seen the repo name. We will use a classifier to extract not only keywords, but rather the real semantics using <strong>topic modeling</strong>.</p>
+<p>The idea behind the analysis of commit times was, that there are probably certain time profiles (say within a week), that repeat over the lifetime of the repository. This could be characteristic for each category, think of weekly homeworks, as opposed to development repos facing far more frequent updates.</p>
+<h1 id="classifiers-we-will-use">Classifiers we will use</h1>
+<p>We want to work with <strong>Neural Networks</strong>. They are very addaptive classifiers which have some biological, cognitive foundation. Also there are many possible architectures for such nets with state-of-the-art applications. To reflect the grouping we did above, we will use...</p>
+<ul>
+<li>a simple <strong>Feed Forward Network</strong> (FFN) for the numerical data,</li>
+<li>a <strong>Recurrent Neural Network</strong> (RNN) for temporal analysis of commit times, and</li>
+<li>a <strong>Convolutional Neural Network</strong> (CNN) for text mining.</li>
+</ul>
+<p>In this way we employ networks of increasing complexity. Instead of having traditional expert systems, we demonstrate the applicability and variability of Neural Networks for parameters known to be working very well for the respective architectures. Hence, our nets are specialised each in its input group and yield independent, possible different category predicitons. To obtain a single prediction for a given repo, we use yet another network,</p>
+<ul>
+<li>an <strong>ensemble network</strong> that combines the output of the upper ones.</li>
+</ul>
+<p>For the implementation we use the Python based <strong>Tensorflow</strong> Framework for Machine Learning. For a quick introduction, see the excellent <a href="https://www.tensorflow.org/tutorials/">Tensorflow Tutorials</a> and of course the respective parts of our code documentation, especially in <code>NumericFFN.py</code>.</p>
+<p>Each of the classifiers, the topologies and the training mechanism used is described separately in the following sections. In fact, we tried many different topologies for each architecture and obviously cannot report everything. Also, in the course of development certain nets (e.g. the FFN) proved not to show the expected performance. We decided to focus on adjusting the working ones, but nethertheless not to drop the others, but rather having them contribute a few percentages to the final accuracy.</p>
+<h1 id="training-data-mining">Training data mining</h1>
+<p>We started off by writing a python script (<code>rate_url.py</code>) to interactively classify URLs, which we manually browsed for using Google in order to get representative amounts of samples for each class, e.g. by searching for 'github physics homeworks' explicitly. Soon we noticed that this is no satisfactory method to get large amounts of training data, so we automated the procedure.</p>
+<p>We used <a href="http://ghtorrent.org/">GHTorrent</a> to dump a CSV database of <strong>all (!)</strong> Github repositories i.e. <strong>39.7 million</strong>, as of January 2017. This CSV contains all the metadata of every activity on Github, including of course the repository names. However, we ignore the metadata here, and download only the relevant data later via the API (see below).</p>
+<p>Also we had to clean the repository list from forks that have the same READMEs and contents, in order to not overrepresent vastly forked repositories.</p>
+<p>To filter for informative samples for each category we look only at the repository names. Upon this we run a parsing script <code>repo_search.py</code> looking for keywords in their names:</p>
+<table>
+<thead>
+<tr class="header">
+<th>No.</th>
+<th>Category</th>
+<th>Keywords</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>DEV</td>
+<td>app, api, lib</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>HW</td>
+<td>homework, exercise</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>EDU</td>
+<td>lecture, teaching</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>DOCS</td>
+<td>docs</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>WEB</td>
+<td>website, homepage</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>DATA</td>
+<td>dataset, sample</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>OTHER</td>
+<td><em>none</em></td>
+</tr>
+</tbody>
+</table>
+<p>Note that the OTHER category does not need to be learned but rather serves as a uncertainty indicator for our later classifier. Thus we obtained JSON files 'dev.json', ..., 'data.json' containing repository URLs of the same class respectively.</p>
+<p>The next step was to download relevant data fields for each repository to learn upon. Our choice of features we want to train is described the next section.</p>
+<p>To access Github repositories we use a Python wrapper for the Github API: <a href="https://github.com/sigmavirus24/github3.py">github3</a>. This allows us to dump READMEs and all the data fields we specified above.</p>
+<p>With the downloaded data we extend our JSON files to 'dev_full.json' etc. Thus we yield the following training sample format: [ { &quot;Category&quot;:&quot;1&quot;, &quot;URL&quot;:&quot;https://github.com/briantemple/homeworkr&quot;, &quot;...&quot;:&quot;...&quot; }, {...}, ... ]</p>

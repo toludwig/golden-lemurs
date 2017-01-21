@@ -7,6 +7,10 @@ md-chip {
     color: white !important;
 }
 
+p img {
+    max-width: 90%;
+}
+
  md-list {
     width: 45%;
 }

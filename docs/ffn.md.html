@@ -1,0 +1,41 @@
+<h1 id="feed-forward-neural-networks">Feed Forward Neural Networks</h1>
+<p>Feed Forward Neural Networks (FFNs) are simple networks of 'neurons' that take an input, <em>propagate</em> it through some hidden layers and give you an output for each individual class you specify. In a way, this structure resembles neurons in the brain, connected by one-way synapses.</p>
+<div class="figure">
+<img src="/assets/docs/img/ffn.png" alt="picture of FFN topology" />
+<p class="caption">picture of FFN topology</p>
+</div>
+<p>The topology we use for this is the following:</p>
+<table>
+<colgroup>
+<col width="41%" />
+<col width="12%" />
+<col width="12%" />
+<col width="34%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>input</th>
+<th>hidden #1</th>
+<th>hidden #2</th>
+<th>output</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>8 (as many as we have numeric inputs)</td>
+<td>100</td>
+<td>100</td>
+<td>6 (as many as we have classes)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="activation-function">Activation Function</h2>
+<p>What are these neurons, what functions do they perform? Well, in our case they are so-called <strong>Rectified Linear Units</strong> (ReLUs). They get the <em>weighted sum</em> of the output of their predecessor neurons as their input.</p>
+<p><span class="math display">\[x_j = \sum_{k=1}^K w_{i,j} y_i\]</span></p>
+<p>On this input <span class="math inline">\(x\)</span> they apply the following activation function:</p>
+<p><span class="math display">\[y_j = \mathrm{max}(0, x_j)\]</span></p>
+<p>There are other activation functions which are non-linear but sigmoid like <span class="math inline">\(\mathrm{tanh}\)</span> but this kind of functions lead to the problem of so-called <a href="https://en.wikipedia.org/wiki/Vanishing_gradient_problem"><em>vanishing gradients</em></a> and hence ReLUs are better suited to our needs.</p>
+<h2 id="softmax-layer">Softmax Layer</h2>
+<p>The last layer, i.e. the output layer of the net, has a special task: It should give us something like a <strong>confidence</strong> for each class, e.g. 35% for DEV. One could also take only the <em>max</em> of the outputs (and say the most active category yields output one and the others zero) but it is easier to train the network with a derivable function. And this is why you use softmax as the activation function in the last layer:</p>
+<p><span class="math display">\[y_j = \frac{e^{x_j}}{\sum_{k=1}^K e^{x_k}}\]</span></p>
+<p>What it does is normalizing the inputs so that the outputs sum up to one and we get nice percentages.</p>

@@ -19,15 +19,13 @@ export class AppComponent {
       });
   }
 
-  private tabs = ['classify', 'docs', 'tensorboard', 'dashboard', 'data']
-  private entries = ['classify', 'docs/intro', 'tensorboard', 'dashboard', 'data']
+  private tabs = ['classify', 'docs', 'tensorboard', 'data']
+  private entries = ['classify', 'docs/intro', 'tensorboard', 'data'];
 
   @Output() public tabIndex: number;
 
   public saveTab(tab: { index: number} ){
-      if (this.tabIndex != tab.index) {
-          this.tabIndex = tab.index;
-          this.router.navigateByUrl(`/${this.entries[tab.index]}`);
-      }
+      this.tabIndex = tab.index;
+      this.router.navigateByUrl(`/${this.entries[tab.index]}`);
   }
 }

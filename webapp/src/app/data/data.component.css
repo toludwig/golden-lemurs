@@ -18,6 +18,14 @@ md-select#y {
   height: 28px;
 }
 
+md-input#limit {
+    position: absolute;
+    left: 80px;
+    top: 750px;
+    width: 100px;
+    height: 28px;
+}
+
 md-select#x {
   position: absolute;
   left: 205px;

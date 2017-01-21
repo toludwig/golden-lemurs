@@ -8,6 +8,8 @@
     </md-option>
   </md-select>
 
+  <md-input type="number" id="limit" placeholder="Dataset size" [(ngModel)]="limit" (ngModelChange)="loadData()"></md-input>
+
   <md-select [disabled]="!dataLoaded" id="x" placeholder="x-Axis" [(ngModel)]="xAxis" (onClose)="resetScale(); draw()">
     <md-option *ngFor='let category of categoryLabels; let i = index' [value]="categories[i]">
       {{ category }}

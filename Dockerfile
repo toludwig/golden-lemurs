@@ -24,7 +24,7 @@ COPY models /home/app/models/
 COPY scripts /home/app/scripts/
 
 # Word2Vec
-COPY "word2vec/GoogleNews-vectors-negative300.bin.gz" "/home/app/data/GoogleNews-vectors-negative300.bin.gz"
+#COPY "word2vec/GoogleNews-vectors-negative300.bin.gz" "/home/app/data/GoogleNews-vectors-negative300.bin.gz"
 WORKDIR /home/app/data/
 RUN ["gunzip", "GoogleNews-vectors-negative300.bin.gz"]
 

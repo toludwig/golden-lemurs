@@ -12,14 +12,16 @@ import { DocsComponent } from './docs/docs.component';
 import { NetworkComponent } from './network/network.component';
 import { DataComponent } from './data/data.component';
 
-import { MarkdownToHtmlPipe } from 'markdown-to-html-pipe';
 import { RepoComponent } from './repo/repo.component';
+import { TensorboardComponent } from './tensorboard/tensorboard.component';
+import { RepositoryService } from './repository.service';
 
 const routes = [
   { path: '', pathMatch: 'full', redirectTo: 'classify' },
   { path: 'classify', component: ClassifyComponent },
   { path: 'docs/:page', component: DocsComponent },
   { path: 'dashboard', component: NetworkComponent },
+  { path: 'tensorboard', component: TensorboardComponent },
   { path: 'data', component: DataComponent },
   { path: '**', component: ClassifyComponent }
 ];
@@ -31,8 +33,8 @@ const routes = [
     DocsComponent,
     NetworkComponent,
     DataComponent,
-    MarkdownToHtmlPipe,
-    RepoComponent
+    RepoComponent,
+    TensorboardComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +43,7 @@ const routes = [
     RouterModule.forRoot(routes),
     MaterialModule.forRoot()
   ],
-  providers: [],
+  providers: [RepositoryService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

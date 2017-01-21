@@ -6,22 +6,37 @@ from tensorflow.contrib.layers import l2_regularizer
 
 class CLSTM:
     """
-    A CNN for text classification.
-    Uses an embedding layer, followed by a convolutional, max-pooling and softmax layer.
+    Network consisting of an CNN and an LSTM for text classification. The LSTM uses features extracted by the CNN in order
+    to perform text classification. This achieves better performance then an CNN on its own because the LSTM is able to learn
+    global semantics in addition to the local features extracted by the CNN. Orginal description of this architecture can
+    be found in Chunting Zhou, Chonglin Sun, Zhiyuan Liu: “A C-LSTM Neural Network for Text Classification”,
+    2015; [http://arxiv.org/abs/1511.08630 arXiv:1511.08630].
+    We sadly were not able to reproduce a similiar performance gain compared to a CNN as described in the paper.
+    This could be caused by the fact that this network is best suited for finding the global semantic of a text, which
+    is not quite what is needed in this task. A pure CNN based approach acts like a sort of improved bag-of-words
+    which filters for certain local features of the sort 'this dataset'. This might be more powerful here than a better
+    semantic understanding.
     """
 
     def __init__(self,
                  sequence_length,
                  num_classes,
-                 filter_sizes,
+                 filter_size,
                  num_filters,
-                 neurons_hidden,
                  learning_rate,
                  embedding_size,
                  reg_lambda,
-                 num_layers=3,
-                 series_length=0,
-                 lstm_size=100):
+                 lstm_size):
+        """
+        :param sequence_length: length of the text
+        :param num_classes: number of classes in output layer
+        :param filter_size: size of the convolutional filter
+        :param num_filters: number of convolutional filters
+        :param learning_rate: learning rate
+        :param embedding_size: length of the embedding vector of every word
+        :param reg_lambda: L2 regularization Lambda
+        :param lstm_size: number of hidden units in the lstm cell
+        """
 
         self.input_vect = tf.placeholder(tf.float32, [None, sequence_length, embedding_size], name='input')
         self.target_vect = tf.placeholder(tf.int64, [None], name='target')
@@ -31,58 +46,43 @@ class CLSTM:
 
         self.weights = []
 
+        input = tf.nn.dropout(self.input_vect, self.dropout_keep_prob)
+
         with tf.name_scope("embedding"):
             self.embedded_chars_expanded = tf.expand_dims(self.input_vect, -1)
 
         # Convolution and max-pooling Layer
-        pooled_outputs = []
-        for i, filter_size in enumerate(filter_sizes):
-            with tf.variable_scope("conv-maxpool-%s" % i):
+        with tf.variable_scope("convolution"):
 
-                # Convolution Layer
-                filter_shape = [filter_size, embedding_size, 1, num_filters]
-                w = tf.get_variable("W", shape=filter_shape,
-                                    initializer=tf.contrib.layers.xavier_initializer_conv2d())
+            # Convolution Layer
+            filter_shape = [filter_size, embedding_size, num_filters]
+            w = tf.get_variable("W", shape=filter_shape,
+                                initializer=tf.contrib.layers.xavier_initializer_conv2d())
 
-                b = tf.Variable(tf.constant(0.1, shape=[num_filters]), name="b")
+            b = tf.Variable(tf.constant(0.1, shape=[num_filters]), name="b")
 
-                conv = tf.nn.conv2d(
-                    self.embedded_chars_expanded,
-                    w,  # Uses the kernel widths defined in filter sizes
-                    strides=[1, 1, 1, 1],
-                    padding="VALID",
-                    name="conv")
+            conv = tf.nn.conv1d(
+                input,
+                w,  # Uses the kernel widths defined in filter sizes
+                stride=1,
+                padding="VALID",
+                name="conv")
 
-                # Apply relu
-                h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
-
-                # Max-pooling over the outputs
-                pooled = tf.nn.max_pool(
-                    h,
-                    ksize=[1, sequence_length - filter_size + 1, 1, 1],  # Shape is due to valid padding
-                    strides=[1, 1, 1, 1],
-                    padding='VALID',
-                    name="pool")
-                pooled_outputs.append(pooled)
-
-        num_filters_total = num_filters * len(filter_sizes)
-        self.h_pool = tf.concat(3, pooled_outputs)
-        self.h_pool_flat = tf.reshape(self.h_pool, [-1, num_filters_total])
+            # Apply relu
+            features = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
 
         # LSTM Layers
         with tf.name_scope('LSTM'):
+            sequence = tf.unstack(features, axis=1)
             cell = tf.nn.rnn_cell.LSTMCell(lstm_size,
                                            initializer=tf.contrib.layers.xavier_initializer())
             """
             No need for regularization here as the LSTMs inner architecture prevents gradient vanishing. exploding
             gradients are dealt with by gradient clipping.
             """
+            self.lstm, _ = tf.nn.rnn(cell, sequence, dtype=tf.float32)
 
-            cell = tf.nn.rnn_cell.DropoutWrapper(cell, output_keep_prob=self.dropout_keep_prob)
-            multi_cell = tf.nn.rnn_cell.MultiRNNCell([cell] * num_layers)  # This creates deep rnn layers
-            initial_state = multi_cell.zero_state(self.batch_size, tf.float32) # Non stateful
-            self.lstm, _ = multi_cell(self.h_pool_flat, initial_state)
-
+        drop = tf.nn.dropout(self.lstm[-1], self.dropout_keep_prob)
 
         with tf.variable_scope("output"):
             w = tf.get_variable('W',
@@ -90,7 +90,7 @@ class CLSTM:
                                 initializer=tf.contrib.layers.xavier_initializer(),
                                 regularizer=l2_regularizer(reg_lambda))
             b = tf.Variable(tf.constant(0.1, shape=[num_classes]), name="b")
-            self.scores = tf.nn.xw_plus_b(self.lstm, w, b, name="scores")
+            self.scores = tf.nn.xw_plus_b(drop, w, b, name="scores")
             self.predictions = tf.nn.softmax(self.scores, name='predictions')
 
         # CalculateMean cross-entropy loss

@@ -1,7 +1,8 @@
-#!/usr/bin/python3
 """
-Wrapper around the github api. The functionality is tested, but all functions in this class will just pass any Exceptions
-they encounter up from the github3 api.
+Wrapper around the github api. The function to use here is fetch repo which downloads all data of a repository using
+Githubs experimental GraphQl api. Should this fail (for example because the rate limit for our keys were reached)
+the function will automatically fallback to a downloader based on pygithub3.py. This in turn will retry the query
+until a timeout is reached and then raise a TimeoutError.
 """
 from github3 import login
 from bs4 import BeautifulSoup
@@ -13,6 +14,9 @@ import logging
 import inspect
 import time
 from more_itertools import ilen
+
+TIMEOUT = 300  # Timeout in seconds to use. Set this high because crawling all Commits of React without GraphQL takes a while
+
 
 logger = logging.getLogger(__name__)
 
@@ -146,7 +150,87 @@ tokens = list(map(lambda key: login(token=key), keys))
 http = urllib3.PoolManager()
 
 
+def _fallback(fallback):
+    """
+    function decorator that causes a function to fallback to another function should if fail
+    :param fallback: the function to fallback to
+    """
+    def decorator(function):
+        def f(*args, **kwargs):
+            try:
+                result = function(*args, **kwargs)
+                return result
+            except Exception:
+                result = fallback(*args, **kwargs)
+                return result
+        return f
+    return decorator
+
+
+def _retry_with_timeout(timeout):
+    """
+    class decorator that dectorates all functions in a class with a decorator that causes a timeout to be set
+    when a method of an instance is called for the first time. After timeout time has passed all methods of that instance
+    will raise a TimeoutError
+    :param timeout:
+    :return:
+    """
+    def class_decorator(cls):
+        def _retry_deco(function, delta):
+            def f(self, *args, **kwargs):
+                try:
+                    timeout = getattr(self, 'timeout')
+                except AttributeError:
+                    timeout = time.time() + delta
+                    setattr(self, 'timeout', timeout)
+                while True:
+                    if time.time() > timeout:
+                        logger.exception("Timeout while executing %s" % function.__name__)
+                        raise TimeoutError
+                    try:
+                        result = function(self, *args, **kwargs)
+                        return result
+                    except Exception as err:
+                        logger.info('Exception in %s: %s' % (function.__name__, err))
+                        time.sleep(5)
+            return f
+
+        for name, method in inspect.getmembers(cls, inspect.isfunction):
+            setattr(cls, name, _retry_deco(method, timeout))
+        return cls
+    return class_decorator
+
+
+def _get_all(user, title):
+    """
+    Small Wrapper around the _Git class that downloads all fields for a repository
+    :param user: username belonging to the repository
+    :param title: title of the repository
+    :return:
+    """
+    repo = {}
+    git = _Git(user, title)
+    if not git.valid():
+        return None
+    repo["User"] = user
+    repo["Title"] = title
+    repo["Readme"] = git.get_readme()
+    repo["NumberOfContributors"] = git.number_contributors()
+    repo["Branches"] = git.number_branches()
+    repo["Forks"] = git.number_forks()
+    repo["Stars"] = git.number_stars()
+    repo["Pulls"] = git.number_pull_requests()
+    repo["Subscribers"] = git.number_subscribers()
+    repo["NumberOfCommits"], repo["CommitTimes"], repo["CommitMessages"] = git.get_commits()
+    repo["Times"] = git.get_times()
+    repo["Files"] = git.get_files()
+    return repo
+
+
 def _graphql(api, data, token):
+    """
+    send queries to githubs graphql api and return parsed result
+    """
     encoded_data = json.dumps(data).encode('utf-8')
     headers = {'Content-Type': 'application/json',
                'Authorization': 'bearer %s' % token, 'User-Agent': 'crawler'}
@@ -155,10 +239,16 @@ def _graphql(api, data, token):
     return res
 
 
+@_fallback(_get_all)
 def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
+    """
+    query all relevant data for evaluation via graphql (faster, less queries)
+    pack data into right format
+    """
     api = 'https://api.github.com/graphql'
-    MAX_FIRST = 100
+    MAX_FIRST = 100 # api limit for pagesize
 
+    # build request to graphql endpoint
     request = {}
     request['operationName'] = "RepoInfo"
     request['query'] = query
@@ -167,8 +257,9 @@ def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
     request['variables'] = json.dumps( {"owner": user, "name": name, "commitLimit": c_lim}) #, "issueLimit": i_lim})
 
     response = _graphql(api, request, _token(as_key=True))
-    print(response)
+    logger.debug(response)
 
+    # unpack data
     result = response['data']['repository']
     repo = {}
     repo['User'] = user
@@ -181,8 +272,14 @@ def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
     repo['Times'] = result['createdAt'], result['updatedAt']
     #issues = result['issues']['nodes']
     repo['NumberOfIssues'] = result['issues']['totalCount']
-    commits = result['commits']['target']['history']['edges']
-    sha = result['commits']['target']['tree']['oid']
+    c_cursor = None
+    commits = []
+    sha = None
+    # deal with empty repos
+    if 'commits' in result and result['commits'] is not None:
+        commits = result['commits']['target']['history']['edges']
+        sha = result['commits']['target']['tree']['oid']
+        c_cursor = result['commits']['target']['history']['pageInfo']['endCursor']
 
     # paginated content
     remaining_commits = 0
@@ -205,10 +302,10 @@ def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
     #         remaining_issues = issue_limit - len(issues)
     #     return remaining_issues > 0 and i_cursor is not None and result['issues']['pageInfo']['hasNextPage']
 
-    c_cursor = result['commits']['target']['history']['pageInfo']['endCursor']
     # i_cursor = result['issues']['pageInfo']['endCursor']
 
     while commits_left():
+        # build requests starting from last page, save current page
         request = {}
         request['operationName'] = "Commits"
         request['query'] = stream_commits
@@ -218,6 +315,7 @@ def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
             "commitCursor": c_cursor})
 
         response = _graphql(api, request, _token(as_key=True))
+        # accumulate data
         result = response['data']['repository']
         commits += result['commits']['target']['history']['edges']
         c_cursor = result['commits']['target']['history']['pageInfo']['endCursor']
@@ -240,6 +338,7 @@ def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
     #     i_cursor = result['issues']['pageInfo']['endCursor']
 
 
+    # extract and unpack commits
     repo['CommitTimes'] = list(
         map(lambda c: c['node']['author']['date'], commits))
     repo['CommitMessages'] = list(map(lambda c: c['node']['message'], commits))
@@ -249,9 +348,12 @@ def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
     # repo['IssueMessages'] = list(map(lambda i: i['title'], issues))
 
     # fetch remaining content
-    git = Git(user, name)
+    git = _Git(user, name)
     repo["Readme"] = git.get_readme()
-    repo["Files"] = git.get_files(id=sha)
+    if sha is not None:
+        repo["Files"] = git.get_files(id=sha)
+    else:
+        repo["Files"] = []
 
     return repo
 
@@ -260,6 +362,9 @@ selected_token = randint(0, len(tokens) - 1)
 
 
 def _token(as_key=False):
+    """
+    uses tokens as long as requests remaining, then picks new
+    """
     global selected_token
     if tokens[selected_token].rate_limit()['resources']['core']['remaining'] > 0:
         return tokens[selected_token] if not as_key else keys[selected_token]
@@ -277,36 +382,19 @@ def _commit_info(commit):
     return commit.commit.author["date"], commit.commit.message
 
 
-def class_decorator(cls):
-    for name, method in inspect.getmembers(cls, inspect.isfunction):
-        setattr(cls, name, _retry_deco(method, 90))
-    return cls
-
-
-def _retry_deco(function, delta):
-    def f(self, *args, **kwargs):
-        try:
-            timeout = getattr(self, 'timeout')
-        except Exception:
-            timeout = time.time() + delta
-            setattr(self, 'timeout', timeout)
-        while True:
-            if time.time() > timeout:
-                logger.exception("Timeout while executing %s" % function.__name__)
-                raise TimeoutError
-            try:
-                result = function(self, *args, **kwargs)
-                return result
-            except Exception as err:
-                logger.info('Exception in %s: %s' % (function.__name__, err))
-                time.sleep(5)
-    return f
-
-
-@class_decorator
-class Git:
-    """docstring for Git."""
+@_retry_with_timeout(300)
+class _Git:
+    """
+       Wrapper around pygithub3.py
+       Most of the methods should be
+       self-explaining
+    """
     def __init__(self, user, title):
+        """
+
+        :param user: username of the repos owner
+        :param title: title of the repository
+        """
         self.api = _token()
         self.user = user
         self.title = title
@@ -314,6 +402,10 @@ class Git:
         logger.info('crawling %s/%s' % (user, title))
 
     def valid(self):
+        """
+        Checks if repo exists
+        :return: true if repo exists, false otherwise
+        """
         return False if self.repo is None else True
 
     def is_fork(self):
@@ -373,10 +465,8 @@ class Git:
         header = {'Authorization': 'token %s' % _token(as_key=True)}
         api = 'https://api.github.com/repos/%s/%s' % (self.user, self.title)
         if id is None:
-            commits = requests.get('%s/commits' % api,
-                                   headers=header)
+            commits = requests.get('%s/commits' % api, headers=header)
             id = commits.json()[0]['sha']
-        tree = requests.get('%s/git/trees/%s' % (api, id),
-                            params={'recursive': '1'}, headers=header)
+        tree = requests.get('%s/git/trees/%s' % (api, id), params={'recursive': '1'}, headers=header)
         names = list(map(lambda entry: entry['path'], tree.json()['tree']))
         return names

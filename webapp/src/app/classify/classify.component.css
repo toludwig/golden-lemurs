@@ -4,6 +4,13 @@
 #submit {
     width: 20%;
 }
+md-progress-spinner {
+    width: 30%;
+    margin: 10px 30%;
+}
+app-repo {
+    width: 90%;
+}
 #main {
     width: 50%;
     margin: 10% 25%;

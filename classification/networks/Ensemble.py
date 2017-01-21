@@ -1,5 +1,5 @@
 """
-Network that uses two C-LSTM networks as its input. One trained on Readmes and the other on the CommitMessages.
+Network that uses two CNN networks as its input. One trained on Readmes and the other on the CommitMessages.
 The performance is superior to the performance of the individual nets.
 Formally this is a special case of Ensemble Averaging, where we use a nonlinear classifier instead of simply averaging.
 """
@@ -12,8 +12,8 @@ from os.path import join
 from .. import MODEL_DIR
 
 
-NET_README_PATH = join(MODEL_DIR, 'C-LSTM-Readme')
-NET_COMMITS_PATH = join(MODEL_DIR, 'C-LSTM-Commits')
+NET_README_PATH = join(MODEL_DIR, 'CNN')
+NET_COMMITS_PATH = join(MODEL_DIR, 'Commits')
 
 ENSEMBLE_PATH = join(MODEL_DIR, 'Ensemble')
 
@@ -41,6 +41,11 @@ def rebuild_full():
 
 
 def ensemble_eval(repos):
+    """
+    evaluates the repo in the two subnets and then on the final classifier
+    :param repos: the list of repos to evaluate
+    :return: the softmaxed prediction values of the final layer
+    """
     session = tf.get_default_session()
     in_vect = get_subnet_votes(repos)
     # These give variables or tensors explicitly stored in the models. refer to the train files for the names.
@@ -72,9 +77,9 @@ def get_subnet_votes(batch):
         features = tf.get_collection('features', scope='Readme')[0]
         dropout = tf.get_collection("dropout_keep_prop", scope='Readme')[0]
         scores = tf.get_collection("scores", scope='Readme')[0]
-        sequence_length = tf.get_collection('readme_sequence_length')[0]
+        sequence_length = tf.get_collection('sequence_length')[0]
         predictions = tf.get_collection('predictions', scope='Readme')[0]
-        batch_size = tf.get_collection('batch_size', scope="Readme")[0]
+        #batch_size = tf.get_collection('batch_size', scope="Readme")[0]
 
         def preprocess(x, sequence_length):
             return GloveWrapper().tokenize(x['Readme'], sequence_length)
@@ -82,7 +87,7 @@ def get_subnet_votes(batch):
         feed_dict = {
             input: list(map(lambda x: preprocess(x, sequence_length), batch)),
             dropout: 1,
-            batch_size: len(batch)
+            #batch_size: len(batch)
         }
         return session.run(predictions, feed_dict)
 
@@ -91,8 +96,8 @@ def get_subnet_votes(batch):
         features = tf.get_collection('features', scope='Commits')[0]
         dropout = tf.get_collection("dropout_keep_prop", scope='Commits')[0]
         scores = tf.get_collection("scores", scope='Commits')[0]
-        sequence_length = tf.get_collection('commits_sequence_length')[0]
-        batch_size = tf.get_collection('batch_size', scope="Commits")[0]
+        sequence_length = tf.get_collection('sequence_length_commits')[0]
+        #batch_size = tf.get_collection('batch_size', scope="Commits")[0]
         predictions = tf.get_collection('predictions', scope='Commits')[0]
 
         def preprocess(x, sequence_length):
@@ -105,10 +110,9 @@ def get_subnet_votes(batch):
         feed_dict = {
             input: list(map(lambda x: preprocess(x, sequence_length), batch)),
             dropout: 1,
-            batch_size: len(batch)
+            #batch_size: len(batch)
         }
         return session.run(predictions, feed_dict)
 
     # This just evaluates the input on both networks and concatenates the features extracted
     return np.column_stack((commits_eval(batch), readme_eval(batch)))
-

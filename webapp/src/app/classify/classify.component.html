@@ -1,6 +1,10 @@
 <div id='main'>
 <div id='input'>
-  <md-input id='repo' type='text' placeholder='{{input}}'></md-input>
-  <button id='submit' md-raised-button color='primary'>{{action}}</button>
+  <md-input [(ngModel)]="repo" id='repo' type='text' placeholder='{{input}}' [dividerColor]="repoValid() ? 'primary' : 'warn'"></md-input>
+  <button id='submit' md-raised-button color='primary' (click)='classify()' [disabled]='!repoValid()'>{{action}}</button>
 </div>
+<md-progress-spinner mode='indeterminate' *ngIf='fetching'></md-progress-spinner>
+<div #rating>
+</div>
+<app-repo  [repo]="result" [style.display]='fetching || (result | async) == null ? "none": "block"'></app-repo>
 </div>

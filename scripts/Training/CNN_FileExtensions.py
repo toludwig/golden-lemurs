@@ -4,15 +4,16 @@ from classification.Logger import Logger
 from classification.Data import GloveWrapper
 from classification.networks.TextCNN import TextCNN
 from classification.Training import train, validate, TrainingData
+import re
 
 
 TRAIN_ON_FULL_DATA = False
 
 SEQUENCE_LENGTH = 300
-FILTER_SIZES = [2, 3, 4, 6]
+FILTER_SIZES = [2, 3, 4]
 NUM_FILTERS = 120
 BATCH_SIZE = 200
-NUM_BATCHES = 150
+NUM_BATCHES = 200
 LEARNING_RATE = 1e-3
 NEURONS_HIDDEN = [100]
 EMBEDDING_SIZE = 300
@@ -30,7 +31,8 @@ COMMENT = """neurons_hidden=%s
 def preprocess(x, sequence_length=SEQUENCE_LENGTH):
     text = ""
     for i in x["Files"]:
-        text += ' ' + i
+        temp = re.sub('^.*/', '', i)
+        text += ' ' + temp
 
     return GloveWrapper().tokenize(text, sequence_length)
 

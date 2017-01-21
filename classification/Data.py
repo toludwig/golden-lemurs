@@ -14,9 +14,10 @@ logger = logging.getLogger(__name__)
 
 Word2Vec_PATH = join(DATA_DIR, 'GoogleNews-vectors-negative300.bin')
 
+
 class ExtensionVectorizer:
     """
-    Uses a list of extensions to create a bog of words vector from text
+    Uses a list of extensions to create a bag of words vector from text
     """
     def __init__(self):
         with open(join(DATA_DIR, 'extensions.json')) as f:
@@ -58,13 +59,13 @@ class GloveWrapper(object, metaclass=Singleton):
 
     def __init__(self):
         super(GloveWrapper, self).__init__()
-        print('Loading GloVe-Vectors. This will take a while...', end='', flush=True)
+        # print('Loading GloVe-Vectors. This will take a while...', end='', flush=True)
         try:
             self.data = Word2Vec.load_word2vec_format(Word2Vec_PATH, binary=True)
         except FileNotFoundError:
             logger.exception('Could not find Word2Vec data at %s' % Word2Vec_PATH)
             raise
-        print('done.')
+        # print('done.')
 
     def lookup_word(self, word):
         """

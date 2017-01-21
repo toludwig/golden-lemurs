@@ -5,27 +5,27 @@ from classification.Data import GloveWrapper
 from classification.networks.CLSTM import CLSTM
 from classification.Training import train, validate, TrainingData
 
-TRAIN_ON_FULL_DATA = True
+TRAIN_ON_FULL_DATA = False
 
 SEQUENCE_LENGTH = 300
-FILTER_SIZES = [3, 4, 5]
-NUM_FILTERS = 164
-BATCH_SIZE = 200
-NUM_BATCHES = 220
+FILTER_SIZE = 3
+NUM_FILTERS = 300
+BATCH_SIZE = 100
+NUM_BATCHES = 700
 LEARNING_RATE = 1e-3
-NEURONS_HIDDEN = 100
+NEURONS_HIDDEN = 300
 EMBEDDING_SIZE = 300
 L2_REG = 0.01
 
 TITLE = 'C-LSTM-Readme'
 COMMENT = """sequence_length=%d
-        filter_sizes=%s
+        filter_size=%s
         num_filters=%d
         num_batches=%d
         batch_size=%d
         learning rate=%f
         neurons_hidden=%s
-""" % (SEQUENCE_LENGTH, FILTER_SIZES, NUM_FILTERS, NUM_BATCHES, BATCH_SIZE, LEARNING_RATE, NEURONS_HIDDEN)
+""" % (SEQUENCE_LENGTH, FILTER_SIZE, NUM_FILTERS, NUM_BATCHES, BATCH_SIZE, LEARNING_RATE, NEURONS_HIDDEN)
 
 
 def preprocess(x, sequence_length=SEQUENCE_LENGTH):
@@ -35,9 +35,9 @@ def preprocess(x, sequence_length=SEQUENCE_LENGTH):
 def main():
     cnn = CLSTM(sequence_length=SEQUENCE_LENGTH,
                 num_classes=6,
-                filter_sizes=FILTER_SIZES,
+                filter_size=FILTER_SIZE,
                 num_filters=NUM_FILTERS,
-                neurons_hidden=NEURONS_HIDDEN,
+                lstm_size=NEURONS_HIDDEN,
                 learning_rate=LEARNING_RATE,
                 embedding_size=300,
                 reg_lambda=L2_REG)
@@ -50,7 +50,6 @@ def main():
         session.run(tf.initialize_all_variables())
 
         def collection_hook():
-            tf.add_to_collection('features', cnn.h_pool_flat)
             tf.add_to_collection('input', cnn.input_vect)
             tf.add_to_collection('dropout_keep_prop', cnn.dropout_keep_prob)
             tf.add_to_collection('readme_sequence_length', SEQUENCE_LENGTH)

@@ -8,6 +8,9 @@ class TextCNN:
     """
     A CNN for text classification.
     Uses an embedding layer, followed by a convolutional, max-pooling and softmax layer.
+    The convolutions extract salient local features of the text. The maxpool layer reduces dimensionality by
+    removing the information about the location of the detected features and leaves only a measure of saliency of
+    the feature in the entire document. Softmax layer then uses this for classification.
     """
 
     def __init__(self,
@@ -19,6 +22,17 @@ class TextCNN:
                  learning_rate,
                  embedding_size,
                  reg_lambda):
+        """
+        :param sequence_length: length of text sequence
+        :param num_classes: number of classes in the output layer
+        :param filter_sizes: size of the convolutional filters. for example [2, 3]
+               for a convolution of width 2 and one of width 3
+        :param num_filters: Number of filters of every size
+        :param neurons_hidden: number of hidden units and layers. list of form [num_layer1, num_layer2, ...]
+        :param learning_rate: learning rate
+        :param embedding_size: length of the embedding vector of every word
+        :param reg_lambda: L2 regularization lambda
+        """
 
         self.input_vect = tf.placeholder(tf.float32, [None, sequence_length, embedding_size], name='input')
         self.target_vect = tf.placeholder(tf.int64, [None], name='target')

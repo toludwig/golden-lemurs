@@ -1,5 +1,6 @@
 import json
 
+
 def text_to_json(name, out):
     repos = []
     with open(name, 'r') as file:

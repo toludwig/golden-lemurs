@@ -21,6 +21,7 @@ COPY data /home/app/data/
 COPY webapp /home/app/webapp/
 COPY docs /home/app/docs/
 COPY models /home/app/models/
+COPY scripts /home/app/scripts/
 
 # Word2Vec
 COPY "word2vec/GoogleNews-vectors-negative300.bin.gz" "/home/app/data/GoogleNews-vectors-negative300.bin.gz"
@@ -32,13 +33,15 @@ RUN ["npm", "install"]
 RUN ["npm", "install", "-g", "angular-cli"]
 
 WORKDIR /home/app
-COPY requirements.txt "/home/app/"
-# RUN ["pip3", "install", "-e", "."]
-# RUN ["pip3", "install", "--upgrade", "https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.11.0-cp34-cp34m-linux_x86_64.whl"]
+COPY setup.py "/home/app/"
+RUN ["pip3", "install", "-e", "."]
+RUN ["pip3", "install", "--upgrade", "https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.12.1-cp34-cp34m-linux_x86_64.whl"]
 
-
-EXPOSE 4200 4200
+EXPOSE 8080 8080
+EXPOSE 8081 8081
+EXPOSE 6006 6006
 
 COPY run.sh "/home/app/"
+COPY classify.sh "/home/app"
 
 CMD "./run.sh"

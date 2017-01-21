@@ -1,14 +1,15 @@
 import asyncio
 # import websockets
 import simplejson as json
-from .rate_url import download_fields, enrich_entry
 from .GitHelper import fetch_repo
 from .networks.Ensemble import rebuild_full, ensemble_eval
 import tensorflow as tf
 import time
 from flask import Flask
+from flask_cors import CORS
 import sys
 import logging
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -25,28 +26,26 @@ def start_eval_server():
     Starts an evaluation Server that waits to receive a Url and returns an populated json object
     """
     server = Flask(__name__)
+    CORS(server)
 
-    @server.route('rate/<path:repo>')
-    def rate(repo):
-        logger.info('downloading %s...' % repo)
-        data = fetch_repo(repo)
-        logger.info('evaluating %s...' % repo)
-        data["Category"] = ensemble_eval([data])[0].tolist()
-        logger.info('result for %s: %s' % (repo['Url'], repo["Category"]))
-        return json.dumps(repo)
-
-    async def consult(websocket, path):
-        message = await websocket.recv()
-        message = json.loads(message)
-        repo = enrich_entry(message, download_fields)
-        logger.info('evaluating %s...' % repo)
-        repo["Category"] = ensemble_eval([repo])[0].tolist()
-        logger.info('result for %s: %s' % (repo['Url'], repo["Category"]))
-        await websocket.send(json.dumps(repo))
+    @server.route('/rate/<name>/<title>/')
+    def rate(name, title):
+        logger.info('downloading %s/%s...' % (name, title))
+        data = fetch_repo(name, title)
+        logger.info('evaluating %s/%s...' % (name, title))
+        rating = ensemble_eval([data])[0].tolist()
+        data['Category'] = '%d' % (np.argmax(rating) + 1)
+        data['Rating'] = rating
+        logger.info('result for %s/%s: %s' % (name, title, rating))
+        res = server.make_response(json.dumps(data))
+        res.mimetype = 'application/json'
+        return res
 
     with tf.Session() as session:
         rebuild_full()
-        start_server = server.run()
+        print("Starting server...", end='\t')
+        server.run(host='0.0.0.0', port=8081)
+        print("Done.")
 
 
 if __name__ == '__main__':

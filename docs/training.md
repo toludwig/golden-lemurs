@@ -59,11 +59,13 @@ A good compromise is to use so-called **(mini) batches** that consist
 of a subset of samples, say e.g. a 10th of the whole dataset. Giving
 the feeback after each batch makes learning much more stable and efficient.
 Again, the size of the batches is a value that is individual for each
-classification and comes from experience. We use batch sizes of 200-300 samples. 
+classification and comes from experience. We use batch sizes of `200-300` samples. 
 
 Another preparation concerns ther order of the training samples. They should be
 learned in a way that each sample is independent from its predecessors,
-i.e. the network should not learn the order in which it is exposed to the samples.
+i.e. consequent samples should not be of the same category. Otherwise
+the network would specicialise into one category too much and does
+not generalize so easily.
 This can be prevented by **shuffling** the data before training.
 
 
@@ -95,7 +97,6 @@ Gradient descent and Backpropagation
 
 Now that we have an loss function, we want to minimize the error, i.e. we want
 to find a (hopefully) global minimum on its surface [[1]]:
-
 ![picture of gradient descent](/assets/docs/img/gradient_descent.png)
 
 This is done by adjusting the weights (in the image there are only two, depicted as $\theta_i$)
@@ -115,7 +116,6 @@ performed from the output layer backwards, again by differentiating.
 This envolves repeated use of the _chain-rule_ over all the activation functions
 until one arrives at the desired weight.
 Suppose, we have the following chain of neurons $i$, $j$ and $k$ in the net...
-
 ![picture of backpropagation](/assets/docs/img/backpropagation.png)
 
 In this situation, you would calculate the update $\Delta w_{i,j}$ by:
@@ -135,6 +135,7 @@ may end up jumping back and forth over a valley.
 The best of the two worlds is to make $\eta$ dependent on the training cycle, i.e.
 decrease it over time. This resembles the way humans would learn, namely beginning in big steps
 and later doing the fine tuning.
+In our implementation we use a starting $\eta_0$ of `0.001` and an exponential decay factor of `0.999`.
 
 Another way of optimizing gradient descent is to consider gradients from earlier training
 cycles. This is useful if you have sparse data and some of the inputs are very rare.
@@ -145,8 +146,8 @@ Both is done by the **ADAM** (Adaptive Moment Estimation) optimizer.
 For more information see [original paper](https://arxiv.org/abs/1412.6980).
 
 
-Further tricks
-==============
+Further tricks we use
+=====================
 
 Another method for tweaking gradients is so-called **gradient clipping**.
 It is a rather rigorous approach that cuts of gradients, that exceed an upper limit (in our case
@@ -156,7 +157,12 @@ Also we define a **dropout-probability**, that is a probability allowing
 the network to _ignore_ a neuron during training. The problem with large nets is that they
 tend to overfit and, in fact, only train parts of its structure. A dropout forces
 the net to use all neurons in order to maintain plasticity.
-We choose dropout-to-keep ratios of `0.5`
+We choose dropout-to-keep a ratio of `0.5`.
+
+Last but not least, we use so-called **L2 regularization**. This is another
+way to prevent overfitting and urging the network to have small weights.
+It uses the mean squared error of all current weights and substracts it
+from each weight as a penalty, independently from the loss function. 
 
 
 [1]: http://www.holehouse.org/mlclass/01_02_Introduction_regression_analysis_and_gr_files/Image%20[16].png

@@ -28,7 +28,7 @@ Further location invariance is added by Pooling where some feature
 information is thrown away again. For example take max-pooling: there you just take maximum
 of your neighbours at each pixel [[2]].
 
-![picture of pooling](/assets/docs/img/Max_pooling.png)
+![picture of pooling](assets/docs/img/Max_pooling.png)
 
 While these concepts are very vivid in the case of images, they are not yet for language, let us see...
 
@@ -43,7 +43,7 @@ However, what we want is a continuous vector space of words. Also, we want it to
 substantially less dimensions (note that _n_ is the size of a typical big data corpus).
 We want real-valued vectors, something like:
 
-![picture of vectors in space](./word_vector_space.png)
+![picture of vectors in space](assets/docs/img/word_vector_space.png)
 
 This reduction of dimensionality can be achieved using modern variants
 of the classical bag-of-words model called **word embeddings**.

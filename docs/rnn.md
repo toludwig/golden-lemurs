@@ -78,5 +78,3 @@ Now for the specific topology we are using.
 [1]: http://www.nature.com/nature/journal/v521/n7553/abs/nature14539.html
 
 [2]: http://colah.github.io/posts/2015-08-Understanding-LSTMs/
-In this Blog by Christopher Olah the data flow within LSTMs is very nicely captured.
-We refer to his post for further details.

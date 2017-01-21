@@ -36,7 +36,7 @@ more frequent updates.
 
 Classifiers we will use
 =======================
-We want to work with **Neural Networks**. They are very addaptive
+We decided to work with **Neural Networks**. They are very addaptive
 classifiers which have some biological, cognitive foundation.
 Also there are many possible architectures for such nets with state-of-the-art
 applications. To reflect the grouping we did above, we will use...
@@ -46,7 +46,7 @@ applications. To reflect the grouping we did above, we will use...
 * a **Convolutional Neural Network** (CNN) for text mining.
 
 In this way we employ networks of increasing complexity. Instead of
-having traditional expert systems, we demonstrate the applicability
+having traditional handcrafted systems, we demonstrate the applicability
 and variability of Neural Networks for parameters known to be working
 very well for the respective architectures. Hence, our nets are specialised
 each in its input group and yield independent, possible different
@@ -102,6 +102,9 @@ Note that the OTHER category does not need to be learned but rather serves
 as a uncertainty indicator for our later classifier.
 Thus we obtained JSON files 'dev.json', ..., 'data.json' containing repository URLs
 of the same class respectively.
+
+Note further that we will _NOT_ train on the repository names later,
+otherwise we would of course overfit with respect to this information.
 
 The next step was to download relevant data fields for each repository to learn upon.
 Our choice of features we want to train is described the next section.

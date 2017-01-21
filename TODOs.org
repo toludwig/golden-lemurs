@@ -28,13 +28,13 @@
 *** TODO stacking
 ** TODO Training
 *** DONE Initializing weights
-*** TODO Mini batches
+*** DONE Mini batches
 *** DONE Gradient descent
 *** DONE Loss function
-*** TODO Accuracy
-*** TODO Adam optimizer
-*** TODO Gradient clipping
-*** TODO Dropout
+*** DONE Adam optimizer
+*** DONE Further tricks
+**** DONE Gradient clipping
+**** DONE Dropout
 ** TODO Results
 *** TODO tensorboard
 ** TODO Discussion

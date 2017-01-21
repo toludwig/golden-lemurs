@@ -2,14 +2,14 @@
 
 if [ $# -eq 0 ]; then
     echo "No arguments provided"
-    exit 1
+    exit 0
 fi
 
 dir=$1
 
 if [[ ! -d $dir ]]; then
     echo "$dir is not a dirhectory..."
-    exit 1
+    exit 0
 fi
 
 cd $dir
@@ -23,7 +23,7 @@ done
 
 if [[ $logdirs == "" ]]; then
     echo "No summary dirs found in subfolders of $dir."
-    exit 1
+    exit 0
 fi
 
 tensorboard --logdir=$logdirs --reload_interval 30

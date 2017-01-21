@@ -11,6 +11,7 @@ export class AppComponent {
   subtitle = 'InformatiCup 2016';
 
   public constructor(private router: Router, private route: ActivatedRoute) {
+      // select tab according to current route
       this.router.events.subscribe( () => {
           let tab = this.tabs.find(tab => this.router.isActive(tab, false));
           this.tabIndex = this.tabs.indexOf(tab);
@@ -25,6 +26,7 @@ export class AppComponent {
   @Output() public tabIndex: number;
 
   public saveTab(tab: { index: number} ){
+      // change route according to selected tab
       this.tabIndex = tab.index;
       this.router.navigateByUrl(`/${this.entries[tab.index]}`);
   }

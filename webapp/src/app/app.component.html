@@ -1,6 +1,11 @@
 <md-toolbar color="primary">
-
-  <span style='position: relative; left: 30%;'> {{ title }} - {{ subtitle }} </span>
+    <div style='position: relative; left: 20%;'>
+  <span> GitHub Classifier </span>
+  <img src='favicon.ico' width='32' style='position: relative; top: 4px;'/>
+  <span>Golden Lemurs</span>
+  <img src='favicon.ico' width='32' style='position: relative; top: 4px;'/>
+  <span>InformatiCup 2017</span>
+  </div>
 </md-toolbar>
 <md-tab-group dynamicHeight="true" (selectChange)="saveTab($event)" [selectedIndex]="tabIndex">
   <md-tab label="Classifier">

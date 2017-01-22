@@ -7,9 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'Github classifier by golden lemurs';
-  subtitle = 'InformatiCup 2016';
-
+    
   public constructor(private router: Router, private route: ActivatedRoute) {
       // select tab according to current route
       this.router.events.subscribe( () => {

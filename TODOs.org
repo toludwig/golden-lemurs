@@ -12,13 +12,9 @@
 *** Word Vectors and the intuition behind them
 *** Data preprocessing
 *** TODO Our CNN for Word Vectors
-** TODO Recursive Neural Nets (RNNs)
+** Recursive Neural Nets (RNNs)
 *** The Long Short-Term Memory
-*** TODO Our LSTM for commit-time analysis
-**** TODO Data preprocessing
-***** TODO make graphs for each category!!
-**** TODO Topology
-** TODO The Ensemble Net
+*** Our LSTM for commit-time analysis
 ** Training
 *** Initializing weights
 *** Mini batches
@@ -28,6 +24,7 @@
 *** Further tricks
 **** Gradient clipping
 **** Dropout
+** TODO The Ensemble Net
 ** TODO Results
 *** TODO Data plotting
 *** TODO Accuracy

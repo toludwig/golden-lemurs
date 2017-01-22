@@ -1,3 +1,14 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="github-pandoc.css" type="text/css" />
+</head>
+<body>
 <h1 id="a-convolutional-net-cnn-for-text-analysis">A Convolutional Net (CNN) for text analysis</h1>
 <p>Convolutional neural networks are actually known to be very successful visual classifiers. However, they can also be applied in Computational Linguistics for semantic analysis of text. In our case, we want to learn the the topic of a Repository by 'reading' its README.</p>
 <h1 id="background-of-convolutions-in-computer-vision">Background of convolutions in Computer Vision</h1>
@@ -9,14 +20,14 @@
 </div>
 <p>By applying this with several filters you obtain multiple Convolutional Layers extracting different features of the image. Further location invariance is added by Pooling where some feature information is thrown away again. For example take max-pooling: there you just take maximum of your neighbours at each pixel [<a href="https://en.wikipedia.org/wiki/Convolutional_neural_network#/media/File:Max_pooling.png">2</a>].</p>
 <div class="figure">
-<img src="/assets/docs/img/Max_pooling.png" alt="picture of pooling" />
+<img src="assets/docs/img/Max_pooling.png" alt="picture of pooling" />
 <p class="caption">picture of pooling</p>
 </div>
 <p>While these concepts are very vivid in the case of images, they are not yet for language, let us see...</p>
 <h1 id="word-vectors-and-the-intuition-behind-them">Word Vectors and the intuition behind them</h1>
 <p>Linguists don't work with images but with corpuses, i.e. huge amounts of real world text. Why not think of words as vectors (coordinate lists) within the <em>n</em>-dimensional corpus space? Note that the space would be a discrete one, it contains only its words but nothing 'in between'. However, what we want is a continuous vector space of words. Also, we want it to have substantially less dimensions (note that <em>n</em> is the size of a typical big data corpus). We want real-valued vectors, something like:</p>
 <div class="figure">
-<img src="./word_vector_space.png" alt="picture of vectors in space" />
+<img src="assets/docs/img/word_vector_space.png" alt="picture of vectors in space" />
 <p class="caption">picture of vectors in space</p>
 </div>
 <p>This reduction of dimensionality can be achieved using modern variants of the classical bag-of-words model called <strong>word embeddings</strong>. What is done is basically a packing of cooccurring words in the same 'bag'. The so obtained vectors show very cool (vector-space) behaviour:</p>
@@ -32,9 +43,9 @@ dog + big + dangerous ~ bulldog</code></pre>
 <ul>
 <li>Solution: we provide an empty vector (filled with 300 zeros) as a dummy for classification.</li>
 </ul></li>
-<li>Second, texts are cluttered by punctuation signs and other 'text mess'. We don't want to have this in our learning input, because there are no representations in the database for them, and they don't carry semantic information.
+<li>Second, texts are cluttered by punctuation signs and other 'text mess'. After we applied a tokenizer to the README text, these are sticking at our learning input. However, there are word-vectors for those signs so we do not need/want to extract them entirely.
 <ul>
-<li>Solution: parse and extract those signs (see <code>classification.Data.clean_str</code>)</li>
+<li>Solution: parse and split those signs from the words (see <code>classification.Data.clean_str</code>)</li>
 </ul></li>
 </ol>
 <h1 id="our-cnn-for-word-vectors">Our CNN for Word Vectors</h1>
@@ -51,3 +62,6 @@ dog + big + dangerous ~ bulldog</code></pre>
 </div>
 <p>The strides with which the filters are sliding equal 1 for all filter sizes, hence they are of course overlapping.</p>
 <p>After we applied these convolutions one layer of pooling follows.</p>
+<h1 id="our-cnn-for-commit-messages">Our CNN for Commit messages</h1>
+</body>
+</html>

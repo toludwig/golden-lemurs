@@ -1,6 +1,9 @@
-Validation of the nets
-======================
+Testing the nets
+================
 
-After the training we want to know how well the nets
-perform on repositories it has never seen before.
+FFN Performance: 34%
+
+
+
+
 

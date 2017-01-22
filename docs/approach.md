@@ -12,7 +12,7 @@ numerical, textual and temporal ones:
   - number of subscribers
 * textual
   - README
-  - commits
+  - commit messages
 * temporal
   - times of commits
 
@@ -25,6 +25,7 @@ First of all the README obviously carries very much information.
 This is one of the first things you would check as a human after
 you have seen the repo name. We will use a classifier to extract
 not only keywords, but rather the real semantics using **topic modeling**.
+The same holds for the commit messages. We will see, how informative they are.
 
 The idea behind the analysis of commit times was, that there are
 probably certain time profiles (say within a week), that repeat over the
@@ -120,7 +121,8 @@ Thus we yield the following training sample format:
       {
         "Category":"1",
         "URL":"https://github.com/briantemple/homeworkr",
-        "NumberCommits":"703",
+        "Commits":"...",
+        "NumberOfCommits":"...",
         "...":"..."
       },
       {...}, ...

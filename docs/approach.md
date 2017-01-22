@@ -120,7 +120,7 @@ Thus we yield the following training sample format:
       {
         "Category":"1",
         "URL":"https://github.com/briantemple/homeworkr",
-        "NumberCommits":"7"
+        "NumberCommits":"703",
         "...":"..."
       },
       {...}, ...
@@ -132,3 +132,7 @@ Training design
 
 Note further that we will _NOT_ train on the repository names later,
 otherwise we would of course overfit with respect to this information.
+
+We split the data for each category into a 90% **training set** and a
+10% **test set**. The former is used for training obviously and the
+latter for later validation (see [the results](/docs/results)).

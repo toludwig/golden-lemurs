@@ -1,21 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title></title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <link rel="stylesheet" href="github-pandoc.css" type="text/css" />
-</head>
-<body>
 <h1 id="discussion">Discussion</h1>
 <h2 id="semantic-analysis">Semantic analysis</h2>
-<p>The word2vec approach we applied to the Commits and the Readme proved to be highly satisfactory. As a reminder: We achieved</p>
+<p>The word2vec approach we applied to the Commits and the Readme proved to be highly satisfactory. This is what we expected because we the CNN is clearly the most sofisticated net we use. We are not supprised by the bad performance of the FFN as we did no data preprocessing and it is in general difficult to learn on such variable numeric values.</p>
 <h2 id="choice-of-the-data">Choice of the Data</h2>
 <p>The approach of picking Github repos by searching for keywords in</p>
 <h2 id="data-query-times">Data query times</h2>
 <p>We experienced shortcomings in the data retrieval with</p>
 <p>Using a multi-threaded approach running on multiple computers took us (including debugging of our crawling algorithm) almost a week.</p>
-</body>
-</html>

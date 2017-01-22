@@ -1,4 +1,4 @@
-# A Convolutional Net (CNN) for text analysis
+# Convolutional Neural Networks
 
 Convolutional neural networks are actually known to be very successful
 visual classifiers. However, they can also be applied in Computational
@@ -70,15 +70,15 @@ enough, we fill the vector with padding words (`\pad\`).
 Now, if we want to apply this to extract (hopefully) the topic of the repository,
 we need to be aware of two things:
 
-1. First, the repo might not have a README at all (or, say it is empty). In this case classification
+First, the repo might not have a README at all (or, say it is empty). In this case classification
 seems to be futile, but nethertheless it tells us something. We observed for example that
 homework repos often lack a README (for obvious reasons).
-    * Solution: we provide an empty vector (filled with 300 pads) as a dummy for classification.
+_Solution_: we provide an empty vector (filled with 300 pads) as a dummy for classification.
 
-2. Second, texts are cluttered by punctuation signs and other 'text mess'. After we applied
+Second, texts are cluttered by punctuation signs and other 'text mess'. After we applied
 the word tokenizer to the texts, these are still sticking at the words. However,
 there are word-vectors for those signs so we do not need/want to extract them entirely.
-    * Solution: parse and split those signs from the words (see `classification.Data.clean_str`)
+_Solution_: parse and split those signs from the words (see `classification.Data.clean_str`)
 
 
 ## Our CNN for Word Vectors
@@ -88,25 +88,23 @@ convolutional and following pooling layer. Its topology looks like this [[3]]:
 
 ![picture of cnn topology](assets/docs/img/cnn_topology.png)
 
-The size of the input matrix is 300 words of the mentioned vector dimensionality 300.
+The size of the input matrix is `300` words of the mentioned vector dimensionality 300.
 
 For the convolutional layer, we use one-dimensional filters over multiple words
 with sizes of _k_ out of `[3, 4, 5]`.
-For each filter we have `200` instances of initially random weights which are learned in the training.
-
+For each filter we have `164` instances of initially random weights which are learned in the training.
 The strides with which the filters are sliding equal `1` for all filter sizes,
 hence they are of course overlapping.
-
 After we applied these convolutions one layer of max pooling follows.
 
-Then we have hopefully all the features extracted and can learn on those.
-This is done by the last two fully connected layers.
+Then we have all the features extracted and can learn on those.
+This is done by the last fully connected layer with `100` hidden units.
 
 
 ## Our CNN for Commit messages
 
 The CNN for Commit messages looks basically the same with the only difference
-that the input size is 400 words.
+that the input size is `400` words and we use `200` filters.
 
 
 [1]: http://deeplearning.stanford.edu/wiki/index.php/Feature_extraction_using_convolution

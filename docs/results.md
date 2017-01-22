@@ -24,11 +24,9 @@ the **test data**, the 10% of our data that the net has never seen before.
 
 Here we list the performance of all the networks on our own test data (not "Anhang B"!):
 
-| Network               | Performance |
-|-----------------------|-------------|
-| CNN (README)          |             |
-| CNN (Commit messages) |             |
-| Ensemble              |             |
-
-
+| Network      | Performance |
+|--------------|-------------|
+| CNN (README) |             |
+| CNN (Commit) |             |
+| Ensemble     |             |
 

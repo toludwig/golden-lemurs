@@ -1,7 +1,7 @@
 Training of the networks
 ========================
 
-Training of a network means basically adjusting its weights in order to 
+Training of a network means basically adjusting its weights in order to
 fit it to the function of the inputs to the desired outputs.
 This way the model _learns_ to predict the classes even for repositories
 it has never seen before. The only thing we have to do is show
@@ -13,8 +13,7 @@ This section describes the training of each network
 which is basically the same procedure for all.
 
 
-Initialising weights
-====================
+## Initialising weights
 
 The first thing one has to do to prepare a net for training
 is to initialize the weights. You could either say, they will
@@ -37,8 +36,7 @@ uniform distributions or a standard deviation of $\sqrt{3/(in, out)}$ for Gaussi
 That's how we do it.
 
 
-Overall training procedure and learning batches
-===============================================
+## Overall training procedure and learning batches
 
 After initialising the weigths, the network is able to propagate
 its input towards the output layer. It gets one input of our dataset
@@ -59,7 +57,7 @@ A good compromise is to use so-called **(mini) batches** that consist
 of a subset of samples, say e.g. a 10th of the whole dataset. Giving
 the feeback after each batch makes learning much more stable and efficient.
 Again, the size of the batches is a value that is individual for each
-classification and comes from experience. We use batch sizes of `200-300` samples. 
+classification and comes from experience. We use batch sizes of `200-300` samples.
 
 Another preparation concerns ther order of the training samples. They should be
 learned in a way that each sample is independent from its predecessors,
@@ -69,8 +67,7 @@ not generalize so easily.
 This can be prevented by **shuffling** the data before training.
 
 
-Defining a Loss function
-========================
+## Defining a Loss function
 
 As stated above, Supervised Learning is based on giving the network a feedback.
 This feedback is proportional to the _error_ it makes for each
@@ -92,8 +89,7 @@ in class $\hat{Y}$ while actually beeing in class $Y$ (here for one-hot encoded 
 $$H(Y, \hat{Y}) = - \sum_{y \in Y} y \log \hat{y}$$
 
 
-Gradient descent and Backpropagation
-====================================
+## Gradient descent and Backpropagation
 
 Now that we have an loss function, we want to minimize the error, i.e. we want
 to find a (hopefully) global minimum on its surface [[1]]:
@@ -124,8 +120,7 @@ $$\Delta w_{i,j} = \frac{\partial CEL}{\partial \sigma(k)} \cdot \frac{\partial 
 Luckily this is done by the Tensorflow framework for us ;)
 
 
-Learning rate decay and the ADAM optimizer
-==========================================
+## Learning rate decay and the ADAM optimizer
 
 The real difficulty with gradient descent approaches is to find a good global minimum.
 This does depend on your choice of the learning rate. If you choose it too small, gradients
@@ -146,8 +141,7 @@ Both is done by the **ADAM** (Adaptive Moment Estimation) optimizer.
 For more information see [original paper](https://arxiv.org/abs/1412.6980).
 
 
-Further tricks we use
-=====================
+## Further tricks we use
 
 Another method for tweaking gradients is so-called **gradient clipping**.
 It is a rather rigorous approach that cuts of gradients, that exceed an upper limit (in our case
@@ -162,7 +156,7 @@ We choose dropout-to-keep a ratio of `0.5`.
 Last but not least, we use so-called **L2 regularization**. This is another
 way to prevent overfitting and urging the network to have small weights.
 It uses the mean squared error of all current weights and substracts it
-from each weight as a penalty, independently from the loss function. 
+from each weight as a penalty, independently from the loss function.
 
 
 [1]: http://www.holehouse.org/mlclass/01_02_Introduction_regression_analysis_and_gr_files/Image%20[16].png

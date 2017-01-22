@@ -99,14 +99,17 @@ export class DataComponent implements AfterViewInit {
       .domain(yDomain)
       .range([this.screenStart[1], this.screenEnd[1]]);
 
+    // label values
     let xValues = xScale.ticks();
     if (xValues.length == 0) xValues = [xDomain[0]];
 
     let yValues = yScale.ticks();
     if (yValues.length == 0) yValues = [yDomain[0]];
 
+    // labels should not scale when zooming
     const fontSize = 10 * (1 / this.scale);
 
+    // render labels
     const xLabel = datapoints.selectAll('text.xLabel').data(xValues);
     xLabel.exit().remove();
     xLabel.enter()
@@ -134,16 +137,20 @@ export class DataComponent implements AfterViewInit {
       const tr = d3.zoomTransform(this);
       datapoints.attr('transform', tr.toString());
       self.scale = tr.k;
+      // compute coordinates visible on screen
       self.screenStart = tr.invert([0, 0]);
       self.screenEnd = tr.invert([self.width, self.height]);
+      // compute domain specified by these coordniates
       let domainStart = [self.normalXScale.invert(self.screenStart[0]), self.normalYScale.invert(self.screenStart[1])];
       let domainEnd = [self.normalXScale.invert(self.screenEnd[0]), self.normalYScale.invert(self.screenEnd[1])];
+      // save & redraw
       [self.xStart, self.yStart] = domainStart;
       [self.xEnd, self.yEnd] = domainEnd;
       self.draw();
     };
     const zoom = d3.zoom().on('zoom', zoomed);
     plot.call(zoom);
+    // render scatterplot
     const repos = datapoints.selectAll('g.repo').data(this.data);
 
     repos.exit().remove();

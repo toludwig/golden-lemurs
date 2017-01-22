@@ -1,14 +1,11 @@
-Convolutional Neural Networks (CNNs)
-====================================
+# A Convolutional Net (CNN) for text analysis
 
 Convolutional neural networks are actually known to be very successful
 visual classifiers. However, they can also be applied in Computational
 Linguistics for semantic analysis of text. In our case, we want to
 learn the the topic of a Repository by 'reading' its README.
 
-
-Background of convolutions in Computer Vision
----------------------------------------------
+## Background of convolutions in Computer Vision
 
 If you want to perform object recognition in visual images, probably
 you want to be __invariant__ with respect to the size, orientation and the location
@@ -23,7 +20,7 @@ following nice simulation [[1]]:
 ![picture of convolution](assets/docs/img/Convolution_schematic.gif)
 
 By applying this with several filters you obtain multiple Convolutional Layers
-extracting different features of the image. 
+extracting different features of the image.
 Further location invariance is added by Pooling where some feature
 information is thrown away again. For example take max-pooling: there you just take maximum
 of your neighbours at each pixel [[2]].
@@ -33,8 +30,7 @@ of your neighbours at each pixel [[2]].
 While these concepts are very vivid in the case of images, they are not yet for language, let us see...
 
 
-Word Vectors and the intuition behind them
-------------------------------------------
+## Word Vectors and the intuition behind them
 
 Linguists don't work with images but with corpuses, i.e. huge amounts of real world text.
 Why not think of words as vectors (coordinate lists) within the _n_-dimensional corpus space?
@@ -49,7 +45,7 @@ This reduction of dimensionality can be achieved using modern variants
 of the classical bag-of-words model called **word embeddings**.
 What is done is basically a packing of cooccurring words in the same 'bag'.
 The so obtained vectors show very cool (vector-space) behaviour:
-    
+
     king - man + woman ~ queen
     dog + big + dangerous ~ bulldog
 
@@ -59,14 +55,13 @@ It is trained on the whole **Google News** corpus (_n_=100 billion) and is [avai
 The model contains 300-dimensional vectors for 3 million words and phrases.
 This means, if you do a lookup for a word in the dataset you will get a list of 300 real numbers
 indicating the position of the word within the vector space.
-    
+
 For further theoretical explanation see [the original paper](http://arxiv.org/pdf/1310.4546.pdf)
 by Google's group around Thomas Mikolov.
 You may also want to check [this Blog post](http://www.foldl.me/2014/glove-python/) on GloVe,
 a similiar vector database (which we chose first, but failed to download).
 
-Data preprocessing
-------------------
+## Data preprocessing
 
 We work with the first `300` words of the README and the first `400` words of the
 commits (concatenated from multiple commits). If either of both texts is not long
@@ -86,8 +81,8 @@ there are word-vectors for those signs so we do not need/want to extract them en
     * Solution: parse and split those signs from the words (see `classification.Data.clean_str`)
 
 
-Our CNN for Word Vectors
-------------------------
+## Our CNN for Word Vectors
+
 Now for the actual neural net. We construct a Convolutional Neural Network of a single
 convolutional and following pooling layer. Its topology looks like this [[3]]:
 
@@ -108,8 +103,8 @@ Then we have hopefully all the features extracted and can learn on those.
 This is done by the last two fully connected layers.
 
 
-Our CNN for Commit messages
----------------------------
+## Our CNN for Commit messages
+
 The CNN for Commit messages looks basically the same with the only difference
 that the input size is 400 words.
 
@@ -119,3 +114,9 @@ that the input size is 400 words.
 [2]: https://en.wikipedia.org/wiki/Convolutional_neural_network#/media/File:Max_pooling.png
 
 [3]: http://www.wildml.com/2015/12/implementing-a-cnn-for-text-classification-in-tensorflow/
+
+## See also:
+
+* [Feed-forward networks](/docs/ffn)
+* [Our ensemble network](/docs/ensemble)
+* [Recurrent neural networks](/docs/rnn)

@@ -142,4 +142,4 @@ latter for later validation (see [the results](/docs/results)).
 
 [Previous page: Introduction](/docs/intro)\
 [Next page: Feed-forward network](/docs/ffn)\
-[Table of Contents](/docs/abstract)
+[Table of Contents](/docs/intro)

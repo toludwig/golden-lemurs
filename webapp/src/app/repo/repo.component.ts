@@ -92,7 +92,7 @@ export class RepoComponent implements OnInit {
       let elem = this.rating.nativeElement;
       while (elem.firstChild) elem.removeChild(elem.firstChild);
 
-      if (repo.Rating != null) {
+      if (repo && repo.Rating != null) {
         pieChart(repo.Rating, 100, 100, this.rating.nativeElement, +repo.Category - 1);
       }
     });

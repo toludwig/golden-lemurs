@@ -1,31 +1,32 @@
-https://github.com/ga-chicago/wdi5-homework
-https://github.com/Aggregates/MI_HW2
-https://github.com/datasciencelabs/2016
-https://github.com/githubteacher/intro-november-2015
-https://github.com/atom/atom
-https://github.com/jmcglone/jmcglone.github.io
-https://github.com/hpi-swt2-exercise/java-tdd-challenge
-https://github.com/alphagov/performanceplatform-documentation
-https://github.com/harvesthq/how-to-walkabout
+URL OUR_GUESS OUR_CLASSIFICATION MATCH
+https://github.com/ga-chicago/wdi5-homework HW HW T
+https://github.com/Aggregates/MI_HW2 HW EDU F
+https://github.com/datasciencelabs/2016 EDU EDU T
+https://github.com/githubteacher/intro-november-2015 EDU EDU T
+https://github.com/atom/atom DEV DEV T
+https://github.com/jmcglone/jmcglone.github.io WEB WEB T
+https://github.com/hpi-swt2-exercise/java-tdd-challenge HW HW T
+https://github.com/alphagov/performanceplatform-documentation DOCS DOCS T
+https://github.com/harvesthq/how-to-walkabout OTHER OTHER T
 https://github.com/vhf/free-programming-books
 https://github.com/d3/d3
-https://github.com/carlosmn/CoMa-II
-https://github.com/git/git-scm.com
-https://github.com/PowerDNS/pdns
-https://github.com/cmrberry/cs6300-git-practice
-https://github.com/Sefaria/Sefaria-Project
-https://github.com/mongodb/docs
-https://github.com/sindresorhus/eslint-config-xo
-https://github.com/e-books/backbone.en.douceur
-https://github.com/erikflowers/weather-icons
-https://github.com/tensorflow/tensorflow
-https://github.com/cs231n/cs231n.github.io
-https://github.com/m2mtech/smashtag-2015
-https://github.com/openaddresses/openaddresses
-https://github.com/benbalter/congressional-districts
-https://github.com/Chicago/food-inspections-evaluation
-https://github.com/OpenInstitute/OpenDuka
+https://github.com/carlosmn/CoMa-II HW EDU F
+https://github.com/git/git-scm.com WEB WEB T
+https://github.com/PowerDNS/pdns DEV DOCS F
+https://github.com/cmrberry/cs6300-git-practice HW EDU F
+https://github.com/Sefaria/Sefaria-Project DATA DATA T
+https://github.com/mongodb/docs DOCS DOCS T
+https://github.com/sindresorhus/eslint-config-xo DOCS DOCS T
+https://github.com/e-books/backbone.en.douceur DOCS DEV F
+https://github.com/erikflowers/weather-icons DEV DEV T
+https://github.com/tensorflow/tensorflow DEV DEV T
+https://github.com/cs231n/cs231n.github.io EDU EDU T
+https://github.com/m2mtech/smashtag-2015 EDU EDU T
+https://github.com/openaddresses/openaddresses DEV DEV T
+https://github.com/benbalter/congressional-districts DATA DATA T
+https://github.com/Chicago/food-inspections-evaluation DOCS DOCS T
+https://github.com/OpenInstitute/OpenDuka DATA DATA T
 https://github.com/torvalds/linux
-https://github.com/bhuga/bhuga.net
-https://github.com/macloo/just_enough_code
-https://github.com/hughperkins/howto-jenkins-ssl
+https://github.com/bhuga/bhuga.net WEB WEB T
+https://github.com/macloo/just_enough_code EDU EDU T
+https://github.com/hughperkins/howto-jenkins-ssl DOCS WEB F

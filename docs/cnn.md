@@ -88,7 +88,6 @@ there are word-vectors for those signs so we do not need/want to extract them en
 
 Our CNN for Word Vectors
 ------------------------
-
 Now for the actual neural net. We construct a Convolutional Neural Network of a single
 convolutional and following pooling layer. Its topology looks like this [[3]]:
 
@@ -97,21 +96,22 @@ convolutional and following pooling layer. Its topology looks like this [[3]]:
 The size of the input matrix is 300 words of the mentioned vector dimensionality 300.
 
 For the convolutional layer, we use one-dimensional filters over multiple words
-with sizes of _k_ out of `[3, 4, 5, 6]`.
-For each filter we have 164 instances of initially random weights which are learned in the training, depicted here for _k_=3:
-
-![picture of filter matrix](assets/docs/img/filter_matrix.png)
+with sizes of _k_ out of `[3, 4, 5]`.
+For each filter we have `200` instances of initially random weights which are learned in the training.
 
 The strides with which the filters are sliding equal `1` for all filter sizes,
 hence they are of course overlapping.
 
 After we applied these convolutions one layer of max pooling follows.
 
+Then we have hopefully all the features extracted and can learn on those.
+This is done by the last two fully connected layers.
+
 
 Our CNN for Commit messages
 ---------------------------
-
-
+The CNN for Commit messages looks basically the same with the only difference
+that the input size is 400 words.
 
 
 [1]: http://deeplearning.stanford.edu/wiki/index.php/Feature_extraction_using_convolution

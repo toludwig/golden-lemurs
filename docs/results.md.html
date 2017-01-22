@@ -9,7 +9,36 @@
   <link rel="stylesheet" href="github-pandoc.css" type="text/css" />
 </head>
 <body>
-<h1 id="validation-of-the-nets">Validation of the nets</h1>
-<p>After the training we want to know how well the nets perform on repositories it has never seen before.</p>
+<h1 id="testing-the-nets">Testing the nets</h1>
+<h2 id="recap-of-the-training">Recap of the training</h2>
+<p>The <strong>accuracy</strong> is defined as the ratio of rightly predicted categories to all the samples. During the training we plotted the current accuracy with respect to the training data to see when the network stops to make progress with learning.</p>
+<p>According to this we could decide, which networks to drop from our final classifier. These are the FFN which performed very low (accuracy of ~30%) and the LSTM which stoped at roughly ~50%.</p>
+<p>For illustration here are the training plots. One can see how fast the CNNs converge.</p>
+<p>TODO include graphs</p>
+<h2 id="testing-the-nets-1">Testing the nets</h2>
+<p>After training, of course we have to validate the networks against the <strong>test data</strong>, the 10% of our data that the net has never seen before.</p>
+<p>Here we list the performance of all the networks on our own test data (not &quot;Anhang B&quot;!):</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Network</th>
+<th align="left">Performance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CNN (README)</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">CNN (Commit messages)</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Ensemble</td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
 </body>
 </html>

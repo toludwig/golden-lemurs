@@ -1,7 +1,7 @@
 import asyncio
 # import websockets
 import simplejson as json
-from .GitHelper import fetch_repo
+from .GitHelper import get_all
 from .networks.Ensemble import rebuild_full, ensemble_eval
 import tensorflow as tf
 import time
@@ -12,13 +12,6 @@ import logging
 import numpy as np
 
 logger = logging.getLogger(__name__)
-
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.INFO)
-formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
 
 
 def start_eval_server():
@@ -50,7 +43,7 @@ def start_eval_server():
     @server.route('/rate/<name>/<title>/')
     def rate(name, title):
         logger.info('downloading %s/%s...' % (name, title))
-        data = fetch_repo(name, title)
+        data = get_all(name, title, True)
         logger.info('evaluating %s/%s...' % (name, title))
         rating = ensemble_eval([data])[0].tolist()
         data['Category'] = rating_to_category(rating)

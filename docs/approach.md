@@ -2,19 +2,20 @@ Features we consider important
 ==============================
 We decided to focus on the following data fields, which can be grouped into
 numerical, textual and temporal ones:
-* numerical
-  - number of commits
-  - number of contributors
-  - number of forks
-  - number of issues
-  - number of pulls
-  - number of stars
-  - number of subscribers
-* textual
-  - README
-  - commit messages
-* temporal
-  - times of commits
+
+* **numerical**
+    - number of commits
+    - number of contributors
+    - number of forks
+    - number of issues
+    - number of pulls
+    - number of stars
+    - number of subscribers
+* **textual**
+    - README
+    - commit messages
+* **temporal**
+    - times of commits
 
 Especially for the numerical fields, there is no real justification for each of these items yet.
 For now we take as much information as we can get and hope

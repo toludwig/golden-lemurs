@@ -32,6 +32,22 @@ Here we list the performance of all the networks on our own test data (not "Anha
 
 For further data, please have a look at our Tensorboard documentation.
 
+## Results on appendix B
+
+Total: 31
+Correct: 24
+Wrong: 7
+Yield: 77.4%
+Precision: 
+HW: 2 correct out of 5
+DEV: 5 correct out of 8
+EDU: 5 out of 5
+WEB: 4 out of 4
+DATA: 3 out of 3
+DOCS: 3 out of 6
+OTHER: 1 out of 1
+
+
 [Previous page: The ensemble](/docs/ensemble)\
 [Next page: Discussion](/docs/discussion)\
 [Table of Contents](/docs/intro)

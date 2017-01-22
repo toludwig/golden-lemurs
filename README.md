@@ -5,7 +5,7 @@
 Training should only be done natively (not in docker) and GPU-accelerated. GPUs used in training should possess at least 3GB VRAM. As we already deliver a trained model, this should not be necessary. In order to start the server for inference, you should have at least 8GB of available RAM, as our server already requires 5GB to load word embeddings and our model into memory. Our docker image takes up around 10GB of space on disk.
 
 We also need pretrained word embeddings; we used word2vec by Google.
-Download this from [https://drive.google.com/file/d/0ByJXV7reBQxTa3Zzbk4tVUE0UVE/view?usp=sharing](here).
+Download this from [here](https://drive.google.com/file/d/0ByJXV7reBQxTa3Zzbk4tVUE0UVE/view?usp=sharing) and save the _compressed_ file into the data directory.
 
 ## Usage
 
@@ -16,6 +16,8 @@ We wrote a wrapper script utilizing our classification server for the text files
 pip install requests
 ./eval.py INPUT OUTPUT
 ```
+
+Our classifaction of appendix B is in the file `classified`.
 
 ### Installation via docker
 

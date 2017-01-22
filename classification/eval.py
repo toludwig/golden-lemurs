@@ -40,10 +40,10 @@ def start_eval_server():
             category = '%d' % (np.argmax(rating) + 1)
             return category
 
-    @server.route('/rate/<name>/<title>/<int: minimal>')
+    @server.route('/rate/<name>/<title>/<int:minimal>')
     def rate(name, title, minimal):
         logger.info('downloading %s/%s...' % (name, title))
-        if minimal == 0:
+        if minimal == 1:
             data = get_all(name, title, True)
         else:
             data = fetch_repo(name, title)

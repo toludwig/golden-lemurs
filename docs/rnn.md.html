@@ -1,8 +1,16 @@
 <h1 id="recurrent-neural-networks">Recurrent Neural Networks</h1>
-<p>So far we were concerned with networks that get inputs of a fixed size. But sometimes we just don't know their size, mostly in cases of (temporal) sequences. That's what Recurrent Neural Networks (RNNs) are best suited for, data that exhibits patterns over time. They find applications in recognition of (handwritten) text and speech, or at the stock market. For this they have a special ability, they 'save' previous input. As the name suggests, they have recurrent 'synapses', i.e. edges going back in circles to the same cell. Here is how it looks if you unfold this circle three times [<a href="http://www.nature.com/nature/journal/v521/n7553/abs/nature14539.html">1</a>]: <img src="/assets/docs/img/rnn.jpg" alt="picture of RNN" /></p>
+<p>So far we were concerned with networks that get inputs of a fixed size. But sometimes we just don't know their size, mostly in cases of (temporal) sequences. That's what Recurrent Neural Networks (RNNs) are best suited for, data that exhibits patterns over time. They find applications in recognition of (handwritten) text and speech, or at the stock market. For this they have a special ability, they 'save' previous input. As the name suggests, they have recurrent 'synapses', i.e. edges going back in circles to the same cell. Here is how it looks if you unfold this circle three times [<a href="http://www.nature.com/nature/journal/v521/n7553/abs/nature14539.html">1</a>]:</p>
+<div class="figure">
+<img src="/assets/docs/img/rnn.jpg" />
+
+</div>
 <h1 id="the-long-short-term-memory-net">The Long Short-Term Memory net</h1>
 <p>However, the trouble with most types of RNNs is that they are essentially unable to remember things in long term, e.g. words that occurred sentences ago. This is due to the <em>vanishing gradients problem</em> and was first formerly proven by <a href="http://people.idsia.ch/~juergen/SeppHochreiter1991ThesisAdvisorSchmidhuber.pdf">Hochreiter in 1991</a>. In 1997 appeared an often-cited <a href="http://www.mitpressjournals.org/doi/10.1162/neco.1997.9.8.1735#.WH4Lg2c_3qM">followup paper</a>, also by Hochreiter and Schmidhuber, introducing the <strong>Long Short-Term Memory (LSTM)</strong> that is designed to tackle this shortcoming.</p>
-<p>Its nodes do no longer look like simple neurons, but rather like complex <strong>memory cells</strong>, here again unfolded [<a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/">2</a>]: <img src="/assets/docs/img/LSTM.png" alt="picture of LSTM" /></p>
+<p>Its nodes do no longer look like simple neurons, but rather like complex <strong>memory cells</strong>, here again unfolded [<a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/">2</a>]:</p>
+<div class="figure">
+<img src="/assets/docs/img/LSTM.png" />
+
+</div>
 <p>Each cell gets its memory <span class="math inline">\(C\)</span> from its earlier state, shown by the continuous horizontal line at the top. Further, this state can be influenced by new inputs <span class="math inline">\(x\)</span> which can be whole vectors. But they are weighted by certain gates, depicted by <span class="math inline">\(\sigma\)</span> or <span class="math inline">\(\tanh\)</span>. Internally these gates consist of a layer of neurons with sigmoid activation functions that squash the input values in ranges of [0, 1] or [-1, 1] respectively. The following list explains what is going on in the cell from left to right:</p>
 <ul>
 <li><p>The first filtering is done by the so-called <em>forget gate</em> on the very left. It decides how much information from the old state is being kept with respect to the current input.</p></li>
@@ -12,8 +20,13 @@
 <h1 id="our-lstm-for-commit-time-analysis">Our LSTM for commit-time analysis</h1>
 <p>In fact, this is only the main principle of how LSTMs are designed but in practice there are variable implementations. For example, we use a version called <strong>Bidirectional LSTM</strong> (BLSTM), which takes into account not only states from previous inputs but also looks ahead and considers 'future' input. This of course is possible because we have the whole sequence of commits given (no realtime analysis) which we can feed into the net from both directions, once forwards once backwards. The BLST actually consists of two separate LSTMS, one for each direction. These LSTM cells are independent from each other, they do not communicate, but only their outputs are concatenated.</p>
 <h2 id="data-preprocessing">Data preprocessing</h2>
-<p>From our <a href="/docs/approach">Training Data Mining</a> we have given a list of commit timestamps within the whole lifetime of each repo. The objective was to create a time profile for a period of a week or a month to see how commits are distributed, maybe even detect class-specific peaks. The function for the preprocessing basically does a binning of our list, it can be found here: <code>networks.Data.commit_time_profile</code>. It yields histograms like these, here for the classes DEV and HW: <img src="img/commit_time_profiles.png" alt="picture of commit profiles" /></p>
+<p>From our <a href="/docs/approach">Training Data Mining</a> we have given a list of commit timestamps within the whole lifetime of each repo. The objective was to create a time profile for a period of a week or a month to see how commits are distributed, maybe even detect class-specific peaks. The function for the preprocessing basically does a binning of our list, it can be found here: <code>networks.Data.commit_time_profile</code>. It yields histograms like these, here for the classes DEV and HW:</p>
+<div class="figure">
+<img src="/assets/docs/img/commit_time_profiles.png" />
+
+</div>
 <p>Unfortunately, as one might suspect from the graphs, there does not really seem to be that much information in the commit times with regard to the categories. Also there are many sparse profiles of repos with very few commits.</p>
 <p>In fact, we realized after training that the net did not perform particularly well and decided to drop the LSTM from our later classificator, it will not occur in the results.</p>
 <p><a href="/docs/cnn">Previous page: Convolutional networks</a><br />
-<a href="/docs/ensemble">Next page: Ensemble network</a></p>
+<a href="/docs/ensemble">Next page: Ensemble network</a><br />
+<a href="/docs/intro">Table of Contents</a></p>

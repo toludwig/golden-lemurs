@@ -14,10 +14,18 @@
 <p>The one we are using is a bit different because it does not make too much sense to substract class labels (even if we encoded them numerically). Instead we use the so-called <strong>Cross-entropy loss</strong> defined like this: <span class="math display">\[CEL(Y, \hat{Y}) = \frac{1}{N} \sum_{i=1}^N H(y_i, \hat{y}_i)\]</span></p>
 <p>where <span class="math inline">\(H\)</span> is the cross entropy which one can think of as the probability for a sample of beeing in class <span class="math inline">\(\hat{Y}\)</span> while actually beeing in class <span class="math inline">\(Y\)</span> (here for one-hot encoded outputs): <span class="math display">\[H(Y, \hat{Y}) = - \sum_{y \in Y} y \log \hat{y}\]</span></p>
 <h2 id="gradient-descent-and-backpropagation">Gradient descent and Backpropagation</h2>
-<p>Now that we have an loss function, we want to minimize the error, i.e. we want to find a (hopefully) global minimum on its surface [<a href="http://www.holehouse.org/mlclass/01_02_Introduction_regression_analysis_and_gr_files/Image%20%5B16%5D.png">1</a>]: <img src="/assets/docs/img/gradient_descent.png" alt="picture of gradient descent" /></p>
+<p>Now that we have an loss function, we want to minimize the error, i.e. we want to find a (hopefully) global minimum on its surface [<a href="http://www.holehouse.org/mlclass/01_02_Introduction_regression_analysis_and_gr_files/Image%20%5B16%5D.png">1</a>]:</p>
+<div class="figure">
+<img src="/assets/docs/img/gradient_descent.png" />
+
+</div>
 <p>This is done by adjusting the weights (in the image there are only two, depicted as <span class="math inline">\(\theta_i\)</span>) in a way that leads us to the valleys of the function. This in turn can be achieved by calculating the <strong>gradient</strong> of the loss function, i.e. the derivative with respect to each weigth. Intuitively, one can think of the gradient as a vector pointing to the steepest direction of the error surface. Because we want to 'go <em>down</em> the hill', we take the negative derivative: <span class="math display">\[w_{new} = w - \eta \cdot \frac{\partial CEL}{\partial w}\]</span></p>
 <p><span class="math inline">\(\eta\)</span> is a proportional factor called the <strong>learning rate</strong>, a value that we can think of as constant for now.</p>
-<p>We do this update for all the weights starting at the last weight layer. The layers before are a little bit more complex to update, but there is an algorithm for that: <strong>Backpropagation of Error</strong> or just BP. As the name suggests, the updates are performed from the output layer backwards, again by differentiating. This envolves repeated use of the <em>chain-rule</em> over all the activation functions until one arrives at the desired weight. Suppose, we have the following chain of neurons <span class="math inline">\(i\)</span>, <span class="math inline">\(j\)</span> and <span class="math inline">\(k\)</span> in the net... <img src="/assets/docs/img/backpropagation.png" alt="picture of backpropagation" /></p>
+<p>We do this update for all the weights starting at the last weight layer. The layers before are a little bit more complex to update, but there is an algorithm for that: <strong>Backpropagation of Error</strong> or just BP. As the name suggests, the updates are performed from the output layer backwards, again by differentiating. This envolves repeated use of the <em>chain-rule</em> over all the activation functions until one arrives at the desired weight. Suppose, we have the following chain of neurons <span class="math inline">\(i\)</span>, <span class="math inline">\(j\)</span> and <span class="math inline">\(k\)</span> in the net...</p>
+<div class="figure">
+<img src="/assets/docs/img/backpropagation.png" />
+
+</div>
 <p>In this situation, you would calculate the update <span class="math inline">\(\Delta w_{i,j}\)</span> by: <span class="math display">\[\Delta w_{i,j} = \frac{\partial CEL}{\partial \sigma(k)} \cdot \frac{\partial \sigma(k)}{\partial relu(j)} \cdot \frac{\partial relu(j)}{\partial relu(i)} \cdot \frac{\partial relu(i)}{\partial w_{i,j}}\]</span></p>
 <p>Luckily this is done by the Tensorflow framework for us ;)</p>
 <h2 id="learning-rate-decay-and-the-adam-optimizer">Learning rate decay and the ADAM optimizer</h2>
@@ -29,4 +37,5 @@
 <p>Also we define a <strong>dropout-probability</strong>, that is a probability allowing the network to <em>ignore</em> a neuron during training. The problem with large nets is that they tend to overfit and, in fact, only train parts of its structure. A dropout forces the net to use all neurons in order to maintain plasticity. We choose dropout-to-keep a ratio of <code>0.5</code>.</p>
 <p>Last but not least, we use so-called <strong>L2 regularization</strong>. This is another way to prevent overfitting and urging the network to have small weights. It uses the mean squared error of all current weights and substracts it from each weight as a penalty, independently from the loss function.</p>
 <p><a href="/docs/ensemble">Previous page: Ensemble network</a><br />
-<a href="/docs/results">Next page: Our results</a></p>
+<a href="/docs/results">Next page: Our results</a><br />
+<a href="/docs/intro">Table of Contents</a></p>

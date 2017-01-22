@@ -1,7 +1,12 @@
 <h1 id="the-ensemble-network">The Ensemble Network</h1>
 <p>After training of all the networks we needed to make a decision: Which networks are worthy to be integrated in the final classificator regarding accuracy but also regarding the amount of computation time.</p>
-<p>We choosed only the following two networks: * the CNN for README * and the CNN for the Commit times.</p>
+<p>We choosed only the following two networks:</p>
+<ul>
+<li>the CNN for README</li>
+<li>and the CNN for the Commit times.</li>
+</ul>
 <p>These give us their predictions and we feed them into our master net, the Ensemble Network.</p>
-<p>This is an easy</p>
+<p>This is an easy two-layer <em>feed forward</em> topology for learning non-linear weightings of the CNN predictions. For example it should learn to rely only on the Commits if the README is empty.</p>
 <p><a href="/docs/rnn">Previous page: Recurrent networks</a><br />
-<a href="/docs/training">Next page: Training our networks</a></p>
+<a href="/docs/training">Next page: Training our networks</a><br />
+<a href="/docs/intro">Table of Contents</a></p>

@@ -15,6 +15,7 @@
 ** Recursive Neural Nets (RNNs)
 *** The Long Short-Term Memory
 *** Our LSTM for commit-time analysis
+*** TODO Improvements
 ** Training
 *** Initializing weights
 *** Mini batches
@@ -24,14 +25,13 @@
 *** Further tricks
 **** Gradient clipping
 **** Dropout
-** TODO The Ensemble Net
-** TODO Results
-*** TODO Data plotting
-*** TODO Accuracy
-*** TODO Problems
-** TODO Discussion
-*** TODO Data
-*** TODO Improvements
+** The Ensemble Net
+** Results
+*** Learning progress
+*** Accuracy on test data
+** Discussion
+*** Resume
+*** Data
 ** TODO References
 *** papers
 *** blogs

@@ -30,3 +30,4 @@ Here we list the performance of all the networks on our own test data (not "Anha
 | CNN (Commit) |         60% |
 | Ensemble     |         90% |
 
+For further data, please have a look at our Tensorboard documentation.

@@ -12,9 +12,9 @@ These are the FFN which performed very low (accuracy of ~30%)
 and the LSTM which stoped at roughly ~50%.
 
 For illustration here are the training plots. One can see how fast the CNNs
-converge.
+converge. The upper graph is for the README and the one below for the commit CNN:
 
-TODO include graphs
+![picture of learning progress](/assets/docs/img/learning_progress.png)
 
 
 Testing the nets
@@ -24,12 +24,9 @@ the **test data**, the 10% of our data that the net has never seen before.
 
 Here we list the performance of all the networks on our own test data (not "Anhang B"!):
 
-| Network               | Performance |
-|-----------------------|-------------|
-| CNN (README)          |             |
-| CNN (Commit messages) |             |
-| Ensemble              |             |
+| Network      | Performance |
+|--------------|-------------|
+| CNN (README) |         83% |
+| CNN (Commit) |         60% |
+| Ensemble     |         90% |
 
-
-[Previous page: Training our network](/docs/training)\
-[Next page: Discussion](/docs/discussion)

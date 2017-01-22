@@ -33,6 +33,11 @@ logging.config.dictConfig({
 DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data'))
 MODEL_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'models'))
 OUT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'out'))
+TOKENS = [
+# INSERT GITHUB PERSONAL ACCESS TOKENS HERE
+# NECESSARY ACCESS RIGHTS: repo (full control of private repositories)
+# NEEDED FOR: GraphQL API & REST API
+]
 
 # DB_URI = ""
 # db = MongoClient(DB_URI).storage

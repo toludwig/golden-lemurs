@@ -17,7 +17,7 @@ All these are characteristic functions of **CNN**s  and are achieved by so-calle
 basically a filter (aka. kernel) sliding over a whole image, like in the
 following nice simulation [[1]]:
 
-![picture of convolution](assets/docs/img/Convolution_schematic.gif)
+![](assets/docs/img/Convolution_schematic.gif)
 
 By applying this with several filters you obtain multiple Convolutional Layers
 extracting different features of the image.
@@ -25,7 +25,7 @@ Further location invariance is added by Pooling where some feature
 information is thrown away again. For example take max-pooling: there you just take maximum
 of your neighbours at each pixel [[2]].
 
-![picture of pooling](assets/docs/img/Max_pooling.png)
+![](assets/docs/img/Max_pooling.png)
 
 While these concepts are very vivid in the case of images, they are not yet for language, let us see...
 
@@ -39,7 +39,7 @@ However, what we want is a continuous vector space of words. Also, we want it to
 substantially less dimensions (note that _n_ is the size of a typical big data corpus).
 We want real-valued vectors, something like:
 
-![picture of vectors in space](assets/docs/img/word_vector_space.png)
+![](assets/docs/img/word_vector_space.png)
 
 This reduction of dimensionality can be achieved using modern variants
 of the classical bag-of-words model called **word embeddings**.
@@ -86,7 +86,7 @@ _Solution_: parse and split those signs from the words (see `classification.Data
 Now for the actual neural net. We construct a Convolutional Neural Network of a single
 convolutional and following pooling layer. Its topology looks like this [[3]]:
 
-![picture of cnn topology](assets/docs/img/cnn_topology.png)
+![](assets/docs/img/cnn_topology.png)
 
 The size of the input matrix is `300` words of the mentioned vector dimensionality 300.
 

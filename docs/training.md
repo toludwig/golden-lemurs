@@ -93,7 +93,8 @@ $$H(Y, \hat{Y}) = - \sum_{y \in Y} y \log \hat{y}$$
 
 Now that we have an loss function, we want to minimize the error, i.e. we want
 to find a (hopefully) global minimum on its surface [[1]]:
-![picture of gradient descent](/assets/docs/img/gradient_descent.png)
+
+![](/assets/docs/img/gradient_descent.png)
 
 This is done by adjusting the weights (in the image there are only two, depicted as $\theta_i$)
 in a way that leads us to the valleys of the function. This in turn can be achieved
@@ -112,7 +113,8 @@ performed from the output layer backwards, again by differentiating.
 This envolves repeated use of the _chain-rule_ over all the activation functions
 until one arrives at the desired weight.
 Suppose, we have the following chain of neurons $i$, $j$ and $k$ in the net...
-![picture of backpropagation](/assets/docs/img/backpropagation.png)
+
+![](/assets/docs/img/backpropagation.png)
 
 In this situation, you would calculate the update $\Delta w_{i,j}$ by:
 $$\Delta w_{i,j} = \frac{\partial CEL}{\partial \sigma(k)} \cdot \frac{\partial \sigma(k)}{\partial relu(j)} \cdot \frac{\partial relu(j)}{\partial relu(i)} \cdot \frac{\partial relu(i)}{\partial w_{i,j}}$$
@@ -162,4 +164,5 @@ from each weight as a penalty, independently from the loss function.
 [1]: http://www.holehouse.org/mlclass/01_02_Introduction_regression_analysis_and_gr_files/Image%20[16].png
 
 [Previous page: Ensemble network](/docs/ensemble)\
-[Next page: Our results](/docs/results)
+[Next page: Our results](/docs/results)\
+[Table of Contents](/docs/intro)

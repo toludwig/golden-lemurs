@@ -141,4 +141,5 @@ We split the data for each category into a 90% **training set** and a
 latter for later validation (see [the results](/docs/results)).
 
 [Previous page: Introduction](/docs/intro)\
-[Next page: Feed-forward network](/docs/ffn)
+[Next page: Feed-forward network](/docs/ffn)\
+[Table of Contents](/docs/intro)

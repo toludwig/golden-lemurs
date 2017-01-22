@@ -71,7 +71,7 @@ to see how commits are distributed, maybe even detect class-specific peaks.
 The function for the preprocessing basically does a binning of our list, it
 can be found here: `networks.Data.commit_time_profile`. It yields histograms like
 these, here for the classes DEV and HW:
-![picture of commit profiles](img/commit_time_profiles.png)
+![picture of commit profiles](/assets/docs/img/commit_time_profiles.png)
 
 Unfortunately, as one might suspect from the graphs, there does not
 really seem to be that much information in the commit times with regard

@@ -221,7 +221,7 @@ def _get_all(user, title):
     repo["Stars"] = git.number_stars()
     repo["Pulls"] = git.number_pull_requests()
     repo["Subscribers"] = git.number_subscribers()
-    repo["NumberOfCommits"], repo["CommitTimes"], repo["CommitMessages"] = git.get_commits()
+    repo["NumberOfCommits"], repo["CommitTimes"], repo["CommitMessages"] = git.get_commits(limit=85)
     repo["Times"] = git.get_times()
     repo["Files"] = git.get_files()
     return repo

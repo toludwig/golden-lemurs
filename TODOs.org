@@ -1,5 +1,5 @@
 * TOC
-** TODO Abstract
+** Abstract
 ** Our Approach
 *** Features we consider important
 *** Classifiers we will use
@@ -7,11 +7,11 @@
 ** Feed forward Neural Nets (FFNs)
 *** Activation function
 *** Softmax
-** TODO Convolutional Neural Nets (CNNs)
+** Convolutional Neural Nets (CNNs)
 *** Background of convolutions in Computer Vision 
 *** Word Vectors and the intuition behind them
 *** Data preprocessing
-*** TODO Our CNN for Word Vectors
+*** Our CNN for Word Vectors
 ** Recursive Neural Nets (RNNs)
 *** The Long Short-Term Memory
 *** Our LSTM for commit-time analysis

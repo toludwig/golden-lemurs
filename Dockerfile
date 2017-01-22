@@ -49,6 +49,5 @@ EXPOSE 8081 8081
 EXPOSE 6006 6006
 
 COPY run.sh "/home/app/"
-COPY classify.sh "/home/app"
 
 CMD "./run.sh"

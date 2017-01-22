@@ -27,7 +27,9 @@ export class AppComponent {
 
   public saveTab(tab: { index: number} ){
       // change route according to selected tab
-      this.tabIndex = tab.index;
-      this.router.navigateByUrl(`/${this.entries[tab.index]}`);
+      if (this.tabIndex != tab.index){
+          this.tabIndex = tab.index;
+          this.router.navigateByUrl(`/${this.entries[tab.index]}`);
+      }
   }
 }

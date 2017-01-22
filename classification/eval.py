@@ -34,7 +34,7 @@ def start_eval_server():
         for file in ["data.json", "dev.json", "docs.json", "edu.json", "homework.json", "web.json"]:
             with open('data/%s' % file, 'r') as dataset:
                 repos += json.load(dataset)
-        data = np.random.choice(repos, limit)
+        data = np.random.choice(repos, limit).tolist()
         res = server.make_response(json.dumps(data))
         res.mimetype = 'application/json'
         return res

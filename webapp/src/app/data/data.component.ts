@@ -13,11 +13,11 @@ export class DataComponent implements AfterViewInit {
   @ViewChild('plot') plot;
   @ViewChild('data') datapoints;
 
-  public categories = ["NumberOfContributors", "Branches", "Forks", "Stars", "Pulls", "Subscribers", "NumberOfCommits", "Category"];
-  public categoryLabels = ["Contributors", "Branches", "Forks", "Stars", "Pulls", "Subscribers", "Commits", "Category"];
+  public categories = ["NumberOfContributors", "Forks", "Stars", "Pulls", "Subscribers", "NumberOfCommits", "Category"];
+  public categoryLabels = ["Contributors", "Forks", "Stars", "Pulls", "Subscribers", "Commits", "Category"];
 
   @Input() xAxis: string = 'Stars';
-  @Input() yAxis: string = 'Branches';
+  @Input() yAxis: string = 'Category';
   @Input() limit = 500;
 
   @Output() dataLoaded = false;
@@ -138,8 +138,6 @@ export class DataComponent implements AfterViewInit {
       self.screenEnd = tr.invert([self.width, self.height]);
       let domainStart = [self.normalXScale.invert(self.screenStart[0]), self.normalYScale.invert(self.screenStart[1])];
       let domainEnd = [self.normalXScale.invert(self.screenEnd[0]), self.normalYScale.invert(self.screenEnd[1])];
-      console.log(`screen: ${self.screenStart} - ${self.screenEnd}`);
-      console.log(`domain: ${domainStart} - ${domainEnd}`);
       [self.xStart, self.yStart] = domainStart;
       [self.xEnd, self.yEnd] = domainEnd;
       self.draw();
@@ -162,7 +160,7 @@ export class DataComponent implements AfterViewInit {
       .attr('cx', d => xScale(d[this.xAxis]))
       .attr('cy', d => yScale(d[this.yAxis]))
       .attr('r', () => this.size)
-      .attr('fill', (d: Repo) => this.colors(d.Category))
+      .attr('fill', (d: Repo) => this.colors(`${+d.Category - 1}`))
       .attr('stroke', 'black');
 
   }

@@ -8,7 +8,7 @@ fi
 dir=$1
 
 if [[ ! -d $dir ]]; then
-    echo "$dir is not a dirhectory..."
+    echo "$dir is not a directory..."
     exit 0
 fi
 
@@ -20,11 +20,6 @@ for entry in $(ls); do
         logdirs="$logdirs$entry:$entry/summary,"
     fi
 done
-
-if [[ $logdirs == "" ]]; then
-    echo "No summary dirs found in subfolders of $dir."
-    exit 0
-fi
 
 tensorboard --logdir=$logdirs --reload_interval 30
 exit 0

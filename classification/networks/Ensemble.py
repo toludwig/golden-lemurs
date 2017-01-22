@@ -7,7 +7,7 @@ Formally this is a special case of Ensemble Averaging, where we use a nonlinear 
 import numpy as np
 import tensorflow as tf
 
-from classification.Data import GloveWrapper, TrainingData
+from classification.Data import GloveWrapper
 from os.path import join
 from .. import MODEL_DIR
 
@@ -74,12 +74,9 @@ def get_subnet_votes(batch):
 
         # Get all variables/Tensors needed for operation
         input = tf.get_collection('input', scope='Readme')[0]
-        features = tf.get_collection('features', scope='Readme')[0]
         dropout = tf.get_collection("dropout_keep_prop", scope='Readme')[0]
-        scores = tf.get_collection("scores", scope='Readme')[0]
         sequence_length = tf.get_collection('sequence_length')[0]
         predictions = tf.get_collection('predictions', scope='Readme')[0]
-        #batch_size = tf.get_collection('batch_size', scope="Readme")[0]
 
         def preprocess(x, sequence_length):
             return GloveWrapper().tokenize(x['Readme'], sequence_length)
@@ -87,17 +84,13 @@ def get_subnet_votes(batch):
         feed_dict = {
             input: list(map(lambda x: preprocess(x, sequence_length), batch)),
             dropout: 1,
-            #batch_size: len(batch)
         }
         return session.run(predictions, feed_dict)
 
     def commits_eval(batch):
         input = tf.get_collection('input', scope='Commits')[0]
-        features = tf.get_collection('features', scope='Commits')[0]
         dropout = tf.get_collection("dropout_keep_prop", scope='Commits')[0]
-        scores = tf.get_collection("scores", scope='Commits')[0]
         sequence_length = tf.get_collection('sequence_length_commits')[0]
-        #batch_size = tf.get_collection('batch_size', scope="Commits")[0]
         predictions = tf.get_collection('predictions', scope='Commits')[0]
 
         def preprocess(x, sequence_length):
@@ -110,7 +103,6 @@ def get_subnet_votes(batch):
         feed_dict = {
             input: list(map(lambda x: preprocess(x, sequence_length), batch)),
             dropout: 1,
-            #batch_size: len(batch)
         }
         return session.run(predictions, feed_dict)
 

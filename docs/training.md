@@ -160,3 +160,6 @@ from each weight as a penalty, independently from the loss function.
 
 
 [1]: http://www.holehouse.org/mlclass/01_02_Introduction_regression_analysis_and_gr_files/Image%20[16].png
+
+[Previous page: Ensemble network](/docs/ensemble)\
+[Next page: Our results](/docs/results)

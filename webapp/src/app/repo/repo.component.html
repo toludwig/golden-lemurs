@@ -1,17 +1,17 @@
-<md-card>
+<md-card class='repo'>
   <md-card-header>
     <md-card-title>{{ (repo | async)?.Title }}</md-card-title>
     <md-card-subtitle>{{ (repo | async)?.User }}</md-card-subtitle>
   </md-card-header>
   <md-card-content>
      <md-chip-list>
-      <md-chip [style.background-color]="colors('0')" [style.opacity]="(repo | async)?.Category == '1' ? 1 : 0.5">DEV</md-chip>
-      <md-chip [style.background-color]="colors('1')" [style.opacity]="(repo | async)?.Category == '2' ? 1 : 0.5">HW</md-chip>
-      <md-chip [style.background-color]="colors('2')" [style.opacity]="(repo | async)?.Category == '3' ? 1 : 0.5">EDU</md-chip>
-      <md-chip [style.background-color]="colors('3')" [style.opacity]="(repo | async)?.Category == '4' ? 1 : 0.5">DOCS</md-chip>
-      <md-chip [style.background-color]="colors('4')" [style.opacity]="(repo | async)?.Category == '5' ? 1 : 0.5">WEB</md-chip>
-      <md-chip [style.background-color]="colors('5')" [style.opacity]="(repo | async)?.Category == '6' ? 1 : 0.5">DATA</md-chip>
-      <md-chip [disabled]="(repo | async)?.Category != '7'">OTHER</md-chip>
+      <md-chip [style.background-color]="colors('0')" [style.opacity]="(repo | async)?.Category == '1' ? 1 : 0.3">DEV</md-chip>
+      <md-chip [style.background-color]="colors('1')" [style.opacity]="(repo | async)?.Category == '2' ? 1 : 0.3">HW</md-chip>
+      <md-chip [style.background-color]="colors('2')" [style.opacity]="(repo | async)?.Category == '3' ? 1 : 0.3">EDU</md-chip>
+      <md-chip [style.background-color]="colors('3')" [style.opacity]="(repo | async)?.Category == '4' ? 1 : 0.3">DOCS</md-chip>
+      <md-chip [style.background-color]="colors('4')" [style.opacity]="(repo | async)?.Category == '5' ? 1 : 0.3">WEB</md-chip>
+      <md-chip [style.background-color]="colors('5')" [style.opacity]="(repo | async)?.Category == '6' ? 1 : 0.3">DATA</md-chip>
+      <md-chip [disabled]="(repo | async)?.Category != '7'" [style.background-color]="colors('6')" >OTHER</md-chip>
     </md-chip-list>
 
     <div id="rating" #rating>

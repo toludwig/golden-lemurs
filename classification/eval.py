@@ -40,8 +40,8 @@ def start_eval_server():
         return res
 
     def rating_to_category(rating):
-        confidence = np.min(rating)
-        if confidence < 0.3: # no clear winner -> probably OTHER
+        confidence = np.max(rating)
+        if confidence < 0.2813: # no clear winner -> probably OTHER
             return '7'
         else:
             category = '%d' % (np.argmax(rating) + 1)

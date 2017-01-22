@@ -1,20 +1,20 @@
-div#rating {
+.repo div#rating {
     position: absolute;
     top: 0px;
     right: 50px;
 }
-md-chip {
+.repo md-chip {
     color: white !important;
 }
 
-p img {
+.repo p img {
     max-width: 90%;
 }
 
- md-list {
+.repo md-list {
     width: 45%;
 }
-md-card-content > p {
+.repo md-card-content > p {
     position: relative;
     top: 35px;
     clear: both;

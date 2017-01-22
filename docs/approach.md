@@ -12,7 +12,6 @@ numerical, textual and temporal ones:
   - number of subscribers
 * textual
   - README
-  - filenames and extensions
   - commits
 * temporal
   - times of commits
@@ -88,38 +87,48 @@ and contents, in order to not overrepresent vastly forked repositories.
 To filter for informative samples for each category we look only at the repository names.
 Upon this we run a parsing script `repo_search.py` looking for keywords in their names:
 
-| No. | Category | Keywords           |
-|-----|----------|--------------------|
-|   1 | DEV      | app, api, lib      |
-|   2 | HW       | homework, exercise |
-|   3 | EDU      | lecture, teaching  |
-|   4 | DOCS     | docs               |
-|   5 | WEB      | website, homepage  |
-|   6 | DATA     | dataset, sample    |
-|   7 | OTHER    | _none_             |
+| No. | Category | Keywords           | # Repos |
+|-----|----------|--------------------|---------|
+|   1 | DEV      | app, api, lib      |    1368 |
+|   2 | HW       | homework, exercise |    5091 |
+|   3 | EDU      | lecture, teaching  |    1458 |
+|   4 | DOCS     | docs               |     836 |
+|   5 | WEB      | website, homepage  |    4513 |
+|   6 | DATA     | dataset, sample    |    1132 |
+|   7 | OTHER    | _none_             | ------- |
+| Sum |          |                    |   14398 |
 
 Note that the OTHER category does not need to be learned but rather serves
-as a uncertainty indicator for our later classifier.
+as an uncertainty indicator for our later classifier.
 Thus we obtained JSON files 'dev.json', ..., 'data.json' containing repository URLs
 of the same class respectively.
-
-Note further that we will _NOT_ train on the repository names later,
-otherwise we would of course overfit with respect to this information.
 
 The next step was to download relevant data fields for each repository to learn upon.
 Our choice of features we want to train is described the next section.
 
-To access Github repositories we use a Python wrapper for the Github API: [github3](https://github.com/sigmavirus24/github3.py).
+To query Github repositories we primarily use [GraphQL](http://graphql.org/)
+because of its efficient access to many fields at a time. However,
+because this has severe rate restrictions and it does not provide READMEs
+we also use a Python wrapper for the Github API:
+[github3](https://github.com/sigmavirus24/github3.py).
 This allows us to dump READMEs and all the data fields we specified above.
 
-With the downloaded data we extend our JSON files to 'dev_full.json' etc.
+With the downloaded data we extend our JSON files from above.
 Thus we yield the following training sample format:
+
     [ 
       {
         "Category":"1",
         "URL":"https://github.com/briantemple/homeworkr",
+        "NumberCommits":"7"
         "...":"..."
       },
       {...}, ...
     ]
 
+
+Training design
+---------------
+
+Note further that we will _NOT_ train on the repository names later,
+otherwise we would of course overfit with respect to this information.

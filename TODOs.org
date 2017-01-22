@@ -1,43 +1,46 @@
 * TOC
 ** TODO Abstract
-*** TODO idea
-*** TODO results
-** DONE Approach
+** Our Approach
 *** Features we consider important
 *** Classifiers we will use
 *** Training data mining
-** DONE FFN
-*** DONE Activation function
-*** TODO Bias Neurons
-*** DONE Softmax
-** TODO CNN
-*** DONE Background of convolutions in Computer Vision 
-*** DONE Word Vectors and the intuition behind them
-*** DONE Data preprocessing
+** Feed forward Neural Nets (FFNs)
+*** Activation function
+*** Softmax
+** TODO Convolutional Neural Nets (CNNs)
+*** Background of convolutions in Computer Vision 
+*** Word Vectors and the intuition behind them
+*** Data preprocessing
 *** TODO Our CNN for Word Vectors
-*** TODO Bag of Words for filenames
- extensions und filename+extensions
-** TODO RNN
-*** DONE The Long Short-Term Memory
+** TODO Recursive Neural Nets (RNNs)
+*** The Long Short-Term Memory
 *** TODO Our LSTM for commit-time analysis
 **** TODO Data preprocessing
 ***** TODO make graphs for each category!!
 **** TODO Topology
-*** TODO Our CLSTM
-** TODO Ensemble
-*** TODO stacking
-** TODO Training
-*** DONE Initializing weights
-*** DONE Mini batches
-*** DONE Gradient descent
-*** DONE Loss function
-*** DONE Adam optimizer
-*** DONE Further tricks
-**** DONE Gradient clipping
-**** DONE Dropout
+** TODO The Ensemble Net
+** Training
+*** Initializing weights
+*** Mini batches
+*** Gradient descent
+*** Loss function
+*** Adam optimizer
+*** Further tricks
+**** Gradient clipping
+**** Dropout
 ** TODO Results
-*** TODO tensorboard
+*** TODO Data plotting
+*** TODO Accuracy
+*** TODO Problems
 ** TODO Discussion
+*** TODO Data
+*** TODO Improvements
 ** TODO References
 *** papers
 *** blogs
+* TODO WEB
+** fix data plotting
+** check all files in upload
+** comments
+** pandoc
+** tensorboard logs

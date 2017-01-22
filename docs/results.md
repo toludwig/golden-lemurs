@@ -2,8 +2,5 @@ Validation of the nets
 ======================
 
 After the training we want to know how well the nets
-perform on the 
-Testing 
+perform on repositories it has never seen before.
 
-How to explore Tensorflow
-=========================

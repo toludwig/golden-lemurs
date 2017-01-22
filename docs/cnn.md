@@ -77,10 +77,10 @@ seems to be futile, but nethertheless it tells us something. We observed, for ex
 homework repos often lack a README (for obvious reasons).
     * Solution: we provide an empty vector (filled with 300 zeros) as a dummy for classification.
 
-2. Second, texts are cluttered by punctuation signs and other 'text mess'. We don't want to have
-this in our learning input, because there are no representations in the database for them,
-and they don't carry semantic information.
-    * Solution: parse and extract those signs (see `classification.Data.clean_str`)
+2. Second, texts are cluttered by punctuation signs and other 'text mess'. After we applied a
+tokenizer to the README text, these are sticking at our learning input. However,
+there are word-vectors for those signs so we do not need/want to extract them entirely.
+    * Solution: parse and split those signs from the words (see `classification.Data.clean_str`)
 
 
 Our CNN for Word Vectors
@@ -103,6 +103,12 @@ The strides with which the filters are sliding equal 1 for all filter sizes,
 hence they are of course overlapping.
 
 After we applied these convolutions one layer of pooling follows.
+
+
+Our CNN for Commit messages
+===========================
+
+
 
 
 [1]: http://deeplearning.stanford.edu/wiki/index.php/Feature_extraction_using_convolution

@@ -12,3 +12,4 @@ We choosed only the following two networks:
 These give us their predictions and we feed them into our master net,
 the Ensemble Network.
 
+This is an easy 

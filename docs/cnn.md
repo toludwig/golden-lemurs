@@ -8,7 +8,7 @@ learn the the topic of a Repository by 'reading' its README.
 
 
 Background of convolutions in Computer Vision
-=============================================
+---------------------------------------------
 
 If you want to perform object recognition in visual images, probably
 you want to be __invariant__ with respect to the size, orientation and the location
@@ -34,7 +34,7 @@ While these concepts are very vivid in the case of images, they are not yet for 
 
 
 Word Vectors and the intuition behind them
-==========================================
+------------------------------------------
 
 Linguists don't work with images but with corpuses, i.e. huge amounts of real world text.
 Why not think of words as vectors (coordinate lists) within the _n_-dimensional corpus space?
@@ -66,7 +66,7 @@ You may also want to check [this Blog post](http://www.foldl.me/2014/glove-pytho
 a similiar vector database (which we chose first, but failed to download).
 
 Data preprocessing
-==================
+------------------
 
 We work with the first `300` words of the README and the first `400` words of the
 commits (concatenated from multiple commits). If either of both texts is not long
@@ -87,7 +87,7 @@ there are word-vectors for those signs so we do not need/want to extract them en
 
 
 Our CNN for Word Vectors
-========================
+------------------------
 
 Now for the actual neural net. We construct a Convolutional Neural Network of a single
 convolutional and following pooling layer. Its topology looks like this [[3]]:
@@ -102,14 +102,14 @@ For each filter we have 164 instances of initially random weights which are lear
 
 ![picture of filter matrix](assets/docs/img/filter_matrix.png)
 
-The strides with which the filters are sliding equal 1 for all filter sizes,
+The strides with which the filters are sliding equal `1` for all filter sizes,
 hence they are of course overlapping.
 
-After we applied these convolutions one layer of pooling follows.
+After we applied these convolutions one layer of max pooling follows.
 
 
 Our CNN for Commit messages
-===========================
+---------------------------
 
 
 

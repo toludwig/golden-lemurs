@@ -1,7 +1,7 @@
 import asyncio
 # import websockets
 import simplejson as json
-from .GitHelper import get_all
+from .GitHelper import get_all, fetch_repo
 from .networks.Ensemble import rebuild_full, ensemble_eval
 import tensorflow as tf
 import time
@@ -40,10 +40,13 @@ def start_eval_server():
             category = '%d' % (np.argmax(rating) + 1)
             return category
 
-    @server.route('/rate/<name>/<title>/')
-    def rate(name, title):
+    @server.route('/rate/<name>/<title>/<int: minimal>')
+    def rate(name, title, minimal):
         logger.info('downloading %s/%s...' % (name, title))
-        data = get_all(name, title, True)
+        if minimal == 0:
+            data = get_all(name, title, True)
+        else:
+            data = fetch_repo(name, title)
         logger.info('evaluating %s/%s...' % (name, title))
         rating = ensemble_eval([data])[0].tolist()
         data['Category'] = rating_to_category(rating)

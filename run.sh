@@ -11,7 +11,7 @@ echo "starting server with webapp"
 cd /home/app/webapp
 exec ng serve --host 0.0.0.0 --port 8080 &
 
-#exec /home/app/scripts/tensorboard.sh --logdir=/home/app/models
+exec /home/app/scripts/tensorboard.sh --logdir=/home/app/out
 
 echo "Finished."
 wait

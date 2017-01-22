@@ -22,6 +22,7 @@ COPY webapp /home/app/webapp/
 COPY docs /home/app/docs/
 COPY models /home/app/models/
 COPY scripts /home/app/scripts/
+COPY out /home/app/out/
 
 # Word2Vec
 #COPY "word2vec/GoogleNews-vectors-negative300.bin.gz" "/home/app/data/GoogleNews-vectors-negative300.bin.gz"

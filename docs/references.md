@@ -16,6 +16,7 @@ List of useful Blogs
 * [__foldl__ on GloVe](http://www.foldl.me/2014/glove-python/)
 * [__Sebastian Ruder__ on gradient descent](http://sebastianruder.com/optimizing-gradient-descent/index.html)
 
+****
 
 [Previous page: Discussion](/docs/discussion)\
 [Table of Contents](/docs/intro)

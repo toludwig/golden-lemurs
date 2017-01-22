@@ -90,6 +90,8 @@ in the results.
 
 [2]: http://colah.github.io/posts/2015-08-Understanding-LSTMs/
 
+****
+
 [Previous page: Convolutional networks](/docs/cnn)\
 [Next page: Ensemble network](/docs/ensemble)\
 [Table of Contents](/docs/intro)

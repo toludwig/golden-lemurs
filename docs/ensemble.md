@@ -17,6 +17,8 @@ This is an easy two-layer _feed forward_ topology for learning
 non-linear weightings of the CNN predictions. For example it should
 learn to rely only on the Commits if the README is empty.
 
+****
+
 [Previous page: Recurrent networks](/docs/rnn)\
 [Next page: Training our networks](/docs/training)\
 [Table of Contents](/docs/intro)

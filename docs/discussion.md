@@ -31,14 +31,16 @@ are more likely to be rightly classified as DOCS by our classificator.
 ## 3 Examples of repos that our classificator is good at
 Here are three URLs on which our approach semantic approach should also perform well.
 
-1. [](https://github.com/MSchuwalow/StudDP)
-2. [](https://github.com/fabrichter/compling)
-3. [](https://github.com/petroav/6.828)
+1. <https://github.com/MSchuwalow/StudDP>
+2. <https://github.com/fabrichter/compling>
+3. <https://github.com/petroav/6.828>
 
 The 1. is a DEV but contains many references to courses. Anyway the net is very sure
-that this it is DEV.
-No. 2 is correctly classified as a HW repo although there is no README.
+that this it is DEV.\
+No. 2 is correctly classified as a HW repo although there is no README.\
 The last repo is a special HW, because it is very often forked and starred.
+
+*****
 
 [Previous page: Results](/docs/results)\
 [Next page: References](/docs/referencs)\

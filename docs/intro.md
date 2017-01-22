@@ -22,5 +22,6 @@ While some of these classifiers did not fulfill our expectations, we observed gr
 
 For training, we used automatically picked repositories chosen by a heuristic. Our classifier shows good performance and could also be applied to other text classification tasks, although it is hindered by our training dataset which only includes a narrow distribution of repositories.
 
+****
 
 [Next page: feed-forward network](/docs/ffn)

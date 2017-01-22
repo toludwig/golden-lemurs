@@ -201,7 +201,7 @@ def _retry_with_timeout(timeout):
     return class_decorator
 
 
-def _get_all(user, title):
+def get_all(user, title, minimal=False):
     """
     Small Wrapper around the _Git class that downloads all fields for a repository
     :param user: username belonging to the repository
@@ -215,15 +215,16 @@ def _get_all(user, title):
     repo["User"] = user
     repo["Title"] = title
     repo["Readme"] = git.get_readme()
-    repo["NumberOfContributors"] = git.number_contributors()
-    repo["Branches"] = git.number_branches()
-    repo["Forks"] = git.number_forks()
-    repo["Stars"] = git.number_stars()
-    repo["Pulls"] = git.number_pull_requests()
-    repo["Subscribers"] = git.number_subscribers()
     repo["NumberOfCommits"], repo["CommitTimes"], repo["CommitMessages"] = git.get_commits(limit=85)
-    repo["Times"] = git.get_times()
-    repo["Files"] = git.get_files()
+    if not minimal:
+        repo["NumberOfContributors"] = git.number_contributors()
+        repo["Branches"] = git.number_branches()
+        repo["Forks"] = git.number_forks()
+        repo["Stars"] = git.number_stars()
+        repo["Pulls"] = git.number_pull_requests()
+        repo["Subscribers"] = git.number_subscribers()
+        repo["Times"] = git.get_times()
+        repo["Files"] = git.get_files()
     return repo
 
 
@@ -239,7 +240,7 @@ def _graphql(api, data, token):
     return res
 
 
-@_fallback(_get_all)
+@_fallback(get_all)
 def fetch_repo(user, name, commit_limit=-1): #, issue_limit=-1):
     """
     query all relevant data for evaluation via graphql (faster, less queries)

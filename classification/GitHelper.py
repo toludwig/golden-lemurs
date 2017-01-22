@@ -215,7 +215,7 @@ def get_all(user, title, minimal=False):
     repo["User"] = user
     repo["Title"] = title
     repo["Readme"] = git.get_readme()
-    repo["NumberOfCommits"], repo["CommitTimes"], repo["CommitMessages"] = git.get_commits(limit=85)
+    repo["NumberOfCommits"], repo["CommitTimes"], repo["CommitMessages"] = git.get_commits(85 if minimal else -1)
     if not minimal:
         repo["NumberOfContributors"] = git.number_contributors()
         repo["Branches"] = git.number_branches()
@@ -448,9 +448,16 @@ class _Git:
     def number_subscribers(self):
         return len(list(self.repo.iter_subscribers()))
 
-    def get_commits(self, limit=400):
-        repo = list(self.repo.iter_commits())
-        temp = list(map(lambda x: _commit_info(x), repo))[:limit]
+    def get_commits(self, limit=-1):
+        if limit == -1:
+            repo = list(self.repo.iter_commits())
+        else:
+            repo = []
+            for i, value in enumerate(self.repo.iter_commits()):
+                repo.append(value)
+                if i > limit:
+                    break
+        temp = list(map(lambda x: _commit_info(x), repo))
         return len(repo), [commit[0] for commit in temp], [commit[1] for commit in temp]
 
     def get_issues(self):

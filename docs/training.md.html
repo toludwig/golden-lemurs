@@ -36,6 +36,7 @@
 <p>Another method for tweaking gradients is so-called <strong>gradient clipping</strong>. It is a rather rigorous approach that cuts of gradients, that exceed an upper limit (in our case a value of <code>5.0</code>). It has the purpose to prevent <em>exploding gradients</em>.</p>
 <p>Also we define a <strong>dropout-probability</strong>, that is a probability allowing the network to <em>ignore</em> a neuron during training. The problem with large nets is that they tend to overfit and, in fact, only train parts of its structure. A dropout forces the net to use all neurons in order to maintain plasticity. We choose dropout-to-keep a ratio of <code>0.5</code>.</p>
 <p>Last but not least, we use so-called <strong>L2 regularization</strong>. This is another way to prevent overfitting and urging the network to have small weights. It uses the mean squared error of all current weights and substracts it from each weight as a penalty, independently from the loss function.</p>
+<hr />
 <p><a href="/docs/ensemble">Previous page: Ensemble network</a><br />
 <a href="/docs/results">Next page: Our results</a><br />
 <a href="/docs/intro">Table of Contents</a></p>

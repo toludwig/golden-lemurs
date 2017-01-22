@@ -87,6 +87,10 @@ Precision (for each category):
 | DOCS     |     3 |     6 |
 | OTHER    |     1 |     1 |
 
+
+*****
+
+
 [Previous page: The ensemble](/docs/ensemble)\
 [Next page: Discussion](/docs/discussion)\
 [Table of Contents](/docs/intro)

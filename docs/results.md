@@ -69,12 +69,14 @@ For further data, please have a look at our Tensorboard documentation.
 | https://github.com/hughperkins/howto-jenkins-ssl              | DOCS      | WEB                | ✗     |
 
 Yield (for all categories):
+
 | Total   |    31 |
 | Correct |    24 |
 | Wrong   |     7 |
 | Yield   | 77.4% |
 
 Precision (for each category):
+
 | Category | RIGHT | TOTAL |
 |----------|-------|-------|
 | HW       |     2 |     5 |

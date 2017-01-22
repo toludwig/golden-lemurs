@@ -47,4 +47,5 @@ What it does is normalizing the inputs so that the outputs sum up to one
 and we get nice percentages.
 
 [Previous page: Introduction](/docs/intro)\
-[Next page: Convolutional network](/docs/cnn)
+[Next page: Convolutional network](/docs/cnn)\
+[Table of Contents](/docs/abstract)

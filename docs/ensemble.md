@@ -6,6 +6,7 @@ Which networks are worthy to be integrated in the final classificator
 regarding accuracy but also regarding the amount of computation time.
 
 We choosed only the following two networks:
+
 * the CNN for README
 * and the CNN for the Commit times.
 
@@ -17,4 +18,5 @@ non-linear weightings of the CNN predictions. For example it should
 learn to rely only on the Commits if the README is empty.
 
 [Previous page: Recurrent networks](/docs/rnn)\
-[Next page: Training our networks](/docs/training)
+[Next page: Training our networks](/docs/training)\
+[Table of Contents](/docs/abstract)

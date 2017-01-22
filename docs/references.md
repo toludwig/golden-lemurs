@@ -15,3 +15,7 @@ List of useful Blogs
 * [__WildML__ on CNNs for Text](http://www.wildml.com/2015/12/implementing-a-cnn-for-text-classification-in-tensorflow/)
 * [__foldl__ on GloVe](http://www.foldl.me/2014/glove-python/)
 * [__Sebastian Ruder__ on gradient descent](http://sebastianruder.com/optimizing-gradient-descent/index.html)
+
+
+[Previous page: Discussion](/docs/discussion)\
+[Table of Contents](/docs/abstract)

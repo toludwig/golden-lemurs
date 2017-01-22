@@ -11,7 +11,8 @@ For this they have a special ability, they 'save' previous input.
 As the name suggests, they have recurrent 'synapses', i.e. edges
 going back in circles to the same cell. Here is how it looks if
 you unfold this circle three times [[1]]:
-![picture of RNN](/assets/docs/img/rnn.jpg)
+
+![](/assets/docs/img/rnn.jpg)
 
 
 The Long Short-Term Memory net
@@ -27,7 +28,8 @@ Memory (LSTM)** that is designed to tackle this shortcoming.
 
 Its nodes do no longer look like simple neurons, but rather like complex
 **memory cells**, here again unfolded [[2]]:
-![picture of LSTM](/assets/docs/img/LSTM.png)
+
+![](/assets/docs/img/LSTM.png)
 
 Each cell gets its memory $C$ from its earlier state, shown by the continuous horizontal
 line at the top. Further, this state can be influenced by new inputs $x$ which can
@@ -71,7 +73,8 @@ to see how commits are distributed, maybe even detect class-specific peaks.
 The function for the preprocessing basically does a binning of our list, it
 can be found here: `networks.Data.commit_time_profile`. It yields histograms like
 these, here for the classes DEV and HW:
-![picture of commit profiles](/assets/docs/img/commit_time_profiles.png)
+
+![](/assets/docs/img/commit_time_profiles.png)
 
 Unfortunately, as one might suspect from the graphs, there does not
 really seem to be that much information in the commit times with regard
@@ -88,4 +91,5 @@ in the results.
 [2]: http://colah.github.io/posts/2015-08-Understanding-LSTMs/
 
 [Previous page: Convolutional networks](/docs/cnn)\
-[Next page: Ensemble network](/docs/ensemble)
+[Next page: Ensemble network](/docs/ensemble)\
+[Table of Contents](/docs/abstract)

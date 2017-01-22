@@ -54,11 +54,11 @@ class Singleton(type):
         return cls._instances[cls]
 
 
-class GloveWrapper(object, metaclass=Singleton):
+class Word2Wrap(object, metaclass=Singleton):
     """Loads and manages the Word2vec Data"""
 
     def __init__(self):
-        super(GloveWrapper, self).__init__()
+        super(Word2Wrap, self).__init__()
         # print('Loading GloVe-Vectors. This will take a while...', end='', flush=True)
         try:
             self.data = Word2Vec.load_word2vec_format(Word2Vec_PATH, binary=True)

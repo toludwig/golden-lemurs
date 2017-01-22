@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import tensorflow as tf
 from classification.Logger import Logger
-from classification.Data import GloveWrapper
+from classification.Data import Word2Wrap
 from classification.networks.TextCNN import TextCNN
 from classification.Training import train, validate, TrainingData
 
@@ -32,7 +32,7 @@ COMMENT = """sequence_length=%d
 
 
 def preprocess(x, sequence_length=SEQUENCE_LENGTH):
-    return GloveWrapper().tokenize(x['Readme'], sequence_length)
+    return Word2Wrap().tokenize(x['Readme'], sequence_length)
 
 
 def main():

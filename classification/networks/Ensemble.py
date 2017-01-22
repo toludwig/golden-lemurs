@@ -7,7 +7,7 @@ Formally this is a special case of Ensemble Averaging, where we use a nonlinear 
 import numpy as np
 import tensorflow as tf
 
-from classification.Data import GloveWrapper
+from classification.Data import Word2Wrap
 from os.path import join
 from .. import MODEL_DIR
 
@@ -37,7 +37,7 @@ def rebuild_full():
     session = tf.get_default_session()
     rebuild_subnets()
     tf.train.import_meta_graph(ENSEMBLE_PATH + '.meta').restore(session, ENSEMBLE_PATH)
-    GloveWrapper()
+    Word2Wrap()
 
 
 def ensemble_eval(repos):
@@ -79,7 +79,7 @@ def get_subnet_votes(batch):
         predictions = tf.get_collection('predictions', scope='Readme')[0]
 
         def preprocess(x, sequence_length):
-            return GloveWrapper().tokenize(x['Readme'], sequence_length)
+            return Word2Wrap().tokenize(x['Readme'], sequence_length)
 
         feed_dict = {
             input: list(map(lambda x: preprocess(x, sequence_length), batch)),
@@ -98,7 +98,7 @@ def get_subnet_votes(batch):
 
             for i in x['CommitMessages']:
                 commits += i
-            return GloveWrapper().tokenize(commits, sequence_length)
+            return Word2Wrap().tokenize(commits, sequence_length)
 
         feed_dict = {
             input: list(map(lambda x: preprocess(x, sequence_length), batch)),

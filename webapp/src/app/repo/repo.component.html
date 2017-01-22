@@ -11,7 +11,7 @@
       <md-chip [style.background-color]="colors('3')" [style.opacity]="(repo | async)?.Category == '4' ? 1 : 0.3">DOCS</md-chip>
       <md-chip [style.background-color]="colors('4')" [style.opacity]="(repo | async)?.Category == '5' ? 1 : 0.3">WEB</md-chip>
       <md-chip [style.background-color]="colors('5')" [style.opacity]="(repo | async)?.Category == '6' ? 1 : 0.3">DATA</md-chip>
-      <md-chip [disabled]="(repo | async)?.Category != '7'" [style.background-color]="colors('6')" >OTHER</md-chip>
+      <md-chip [style.background-color]="'#3e3e3e'" [style.opacity]="(repo | async)?.Category == '7' ? 1 : 0.3">OTHER</md-chip>
     </md-chip-list>
 
     <div id="rating" #rating>

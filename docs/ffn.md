@@ -10,9 +10,9 @@ In a way, this structure resembles neurons in the brain, connected by one-way sy
 
 The topology we use for this is the following:
 
-| input                                 | hidden #1 | hidden #2 | output                         |
-|---------------------------------------|-----------|-----------|--------------------------------|
-| 8 (as many as we have numeric inputs) |       100 |       100 | 6 (as many as we have classes) |
+| input | hidden #1 | hidden #2 | hidden #3 | output |
+|-------|-----------|-----------|-----------|--------|
+|     7 |       150 |        50 |        50 |      6 |
 
 
 Activation Function

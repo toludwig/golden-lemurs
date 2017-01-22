@@ -2,6 +2,7 @@
 <div id='input'>
   <md-input [(ngModel)]="repo" id='repo' type='text' placeholder='{{input}}' [dividerColor]="repoValid() ? 'primary' : 'warn'"></md-input>
   <button id='submit' md-raised-button color='primary' (click)='classify()' [disabled]='!repoValid()'>{{action}}</button>
+    <md-slide-toggle [(ngModel)]='minimal'>Minimal crawling</md-slide-toggle>
 </div>
 <md-progress-spinner mode='indeterminate' *ngIf='fetching'></md-progress-spinner>
 <div #rating>

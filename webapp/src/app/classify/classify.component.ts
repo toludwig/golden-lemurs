@@ -15,10 +15,11 @@ export class ClassifyComponent implements OnInit {
   action = 'Classify me!';
   @ViewChild('rating') rating;
   @Input() repo: string = 'https://github.com/InformatiCup/InformatiCup2017';
+  @Input() minimal: boolean;
   @Output() fetching = false;
   @Output() result = new EventEmitter<Repo>();
   regex = /^https?:\/\/github.com\/(.+)\/(.+)$/;
-  api = (name, title) => `http://localhost:8081/rate/${name}/${title}/`;
+  api = (name, title, min) => `http://localhost:8081/rate/${name}/${title}/${min ? 1 : 0}`;
   constructor(private repositories: RepositoryService) { }
 
   ngOnInit() {
@@ -26,11 +27,9 @@ export class ClassifyComponent implements OnInit {
 
   public classify() {
     let [name, title] = this.regex.exec(this.repo).slice(1);
-    console.log(`testing: ${this.api(name, title)}`);
     this.fetching = true;
-    d3.json(this.api(name, title), (response: Repo) => {
+    d3.json(this.api(name, title, this.minimal), (response: Repo) => {
       this.fetching = false;
-      this.repositories.save(`https://github.com/${name}/${title}`, response);
       this.result.emit(response);
     });
   }

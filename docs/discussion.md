@@ -40,4 +40,6 @@ that this it is DEV.
 No. 2 is correctly classified as a HW repo although there is no README.
 The last repo is a special HW, because it is very often forked and starred.
 
-[Previous page: Results](/docs/results)
+[Previous page: Results](/docs/results)\
+[Next page: References](/docs/referencs)\
+[Table of Contents](/docs/intro)

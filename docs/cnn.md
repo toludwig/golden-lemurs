@@ -114,4 +114,5 @@ that the input size is `400` words and we use `200` filters.
 [3]: http://www.wildml.com/2015/12/implementing-a-cnn-for-text-classification-in-tensorflow/
 
 [Previous page: Feed-forward network](/docs/ffn)\
-[Next page: Recurrent networks](/docs/rnn)
+[Next page: Recurrent networks](/docs/rnn)\
+[Table of Contents](/docs/intro)

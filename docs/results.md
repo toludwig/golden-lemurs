@@ -14,7 +14,7 @@ and the LSTM which stoped at roughly ~50%.
 For illustration here are the training plots. One can see how fast the CNNs
 converge. The upper graph is for the README and the one below for the commit CNN:
 
-![picture of learning progress](/assets/docs/img/learning_progress.png)
+![](/assets/docs/img/learning_progress.png)
 
 
 Testing the nets
@@ -33,4 +33,5 @@ Here we list the performance of all the networks on our own test data (not "Anha
 For further data, please have a look at our Tensorboard documentation.
 
 [Previous page: The ensemble](/docs/ensemble)\
-[Next page: Discussion](/docs/discussion)
+[Next page: Discussion](/docs/discussion)\
+[Table of Contents](/docs/intro)

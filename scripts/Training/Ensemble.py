@@ -9,9 +9,9 @@ from classification.Training import train, validate, TrainingData
 TRAIN_ON_FULL_DATA = False
 
 
-NEURONS_HIDDEN = [100, 100]
+NEURONS_HIDDEN = [100, 50]
 BATCH_SIZE = 300
-NUM_BATCHES = 100
+NUM_BATCHES = 150
 LEARNING_RATE = 1e-3
 NUM_FEATURES = 12
 L2_REG = 0.01

@@ -2,7 +2,6 @@
 data/*.json
 
 *.idea
-out/*
 !out/*.sh
 
 

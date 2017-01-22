@@ -5,13 +5,12 @@ from classification.networks.NumericFFN import NumericFFN
 from classification.Data import TrainingData
 from classification.Training import train, validate
 
-TRAIN_ON_FULL_DATA = True
+TRAIN_ON_FULL_DATA = False
 
-NEURONS_HIDDEN = [100, 600]
+NEURONS_HIDDEN = [100, 50, 50]
 BATCH_SIZE = 300
-NUM_BATCHES = 400
+NUM_BATCHES = 100
 LEARNING_RATE = 1e-3
-GRADIENT_NORM = 5
 L2_REG = 0.01
 
 # What features of the repositories to feed into the network

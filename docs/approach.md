@@ -138,3 +138,6 @@ otherwise we would of course overfit with respect to this information.
 We split the data for each category into a 90% **training set** and a
 10% **test set**. The former is used for training obviously and the
 latter for later validation (see [the results](/docs/results)).
+
+[Previous page: Introduction](/docs/intro)\
+[Next page: Feed-forward network](/docs/ffn)

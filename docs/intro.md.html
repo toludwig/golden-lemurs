@@ -1,27 +1,15 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title></title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <link rel="stylesheet" href="github-pandoc.css" type="text/css" />
-</head>
-<body>
-<p>This is our holy documentation.</p>
-<p>Make with: for file in *.md; pandoc --mathjax -c github-pandoc.css -o $file.html $file; end;</p>
-<h1 id="toc">TOC</h1>
-<ul>
-<li><a href="/docs/abstract">Abstract</a></li>
-<li><a href="/docs/approach">Approach</a></li>
-<li><a href="/docs/ffn">FFN</a></li>
-<li><a href="/docs/cnn">CNN</a></li>
-<li><a href="/docs/rnn">RNN</a></li>
-<li><a href="/docs/ensemble">Ensemble</a></li>
-<li><a href="/docs/training">Training</a></li>
-<li><a href="/docs/results">Results</a></li>
-<li><a href="/docs/discussion">Discussion</a></li>
-</ul>
-</body>
-</html>
+<h1 id="introduction">Introduction</h1>
+<h2 id="table-of-contents">Table of Contents</h2>
+<p><a href="/docs/approach"><strong>Approach</strong></a><br />
+<a href="/docs/ffn"><strong>FFN</strong></a><br />
+<a href="/docs/cnn"><strong>CNN</strong></a><br />
+<a href="/docs/rnn"><strong>RNN</strong></a><br />
+<a href="/docs/ensemble"><strong>Ensemble</strong></a><br />
+<a href="/docs/training"><strong>Training</strong></a><br />
+<a href="/docs/results"><strong>Results</strong></a><br />
+<a href="/docs/discussion"><strong>Discussion</strong></a></p>
+<h2 id="abstract">Abstract</h2>
+<p>When approaching this competition, we decided early on that various forms of neural networks could be an interesting and powerful solution to the task. We proceeded to seek out state-of-the-art designs of various kinds of neural networks fit to the various forms of data we could extract and developed classifiers building on that.</p>
+<p>While some of these classifiers did not fulfill our expectations, we observed great results with convolutional networks applied to word embeddings of READMEs and commit messages. On top of this, we used a deep feed-forward neural classifier to combine the predictions of our sub-nets into a final conclusion instead of using a linear classifier.</p>
+<p>For training, we used automatically picked repositories chosen by a heuristic. Our classifier shows good performance and could also be applied to other text classification tasks, although it is hindered by our training dataset which only includes a narrow distribution of repositories.</p>
+<p><a href="/docs/ffn">Next page: feed-forward network</a></p>

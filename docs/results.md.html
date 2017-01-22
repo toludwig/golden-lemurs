@@ -1,15 +1,33 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title></title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <link rel="stylesheet" href="github-pandoc.css" type="text/css" />
-</head>
-<body>
-<h1 id="validation-of-the-nets">Validation of the nets</h1>
-<p>After the training we want to know how well the nets perform on repositories it has never seen before.</p>
-</body>
-</html>
+<h1 id="testing-the-nets">Testing the nets</h1>
+<h2 id="recap-of-the-training">Recap of the training</h2>
+<p>The <strong>accuracy</strong> is defined as the ratio of rightly predicted categories to all the samples. During the training we plotted the current accuracy with respect to the training data to see when the network stops to make progress with learning.</p>
+<p>According to this we could decide, which networks to drop from our final classifier. These are the FFN which performed very low (accuracy of ~30%) and the LSTM which stoped at roughly ~50%.</p>
+<p>For illustration here are the training plots. One can see how fast the CNNs converge.</p>
+<p>TODO include graphs</p>
+<h2 id="testing-the-nets-1">Testing the nets</h2>
+<p>After training, of course we have to validate the networks against the <strong>test data</strong>, the 10% of our data that the net has never seen before.</p>
+<p>Here we list the performance of all the networks on our own test data (not &quot;Anhang B&quot;!):</p>
+<table>
+<thead>
+<tr class="header">
+<th>Network</th>
+<th>Performance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CNN (README)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>CNN (Commit messages)</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Ensemble</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a href="/docs/training">Previous page: Training our network</a><br />
+<a href="/docs/discussion">Next page: Discussion</a></p>

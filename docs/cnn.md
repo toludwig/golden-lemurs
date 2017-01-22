@@ -113,8 +113,5 @@ After we applied these convolutions one layer of max pooling follows.
 
 [3]: http://www.wildml.com/2015/12/implementing-a-cnn-for-text-classification-in-tensorflow/
 
-## See also:
-
-* [Feed-forward networks](/docs/ffn)
-* [Our ensemble network](/docs/ensemble)
-* [Recurrent neural networks](/docs/rnn)
+[Previous page: Feed-forward network](/docs/ffn)\
+[Next page: Recurrent networks](/docs/rnn)

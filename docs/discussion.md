@@ -21,3 +21,5 @@ We experienced shortcomings in the data retrieval with
 Using a multi-threaded approach running on multiple computers
 took us (including debugging of our crawling algorithm) almost
 a week.
+
+[Previous page: Results](/docs/results)\

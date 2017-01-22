@@ -5,8 +5,8 @@ import { html } from 'd3';
 @Component({
   selector: 'app-docs',
   templateUrl: './docs.component.html',
-  styleUrls: ['./docs.component.css', './github-pandoc.css'],
-  encapsulation: ViewEncapsulation.Native
+  styleUrls: ['./docs.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class DocsComponent {
   @ViewChild('docs') docs;
@@ -19,6 +19,10 @@ export class DocsComponent {
         let elem = this.docs.nativeElement;
         while (elem.firstChild) elem.removeChild(elem.firstChild);
         elem.appendChild(doc);
+        // var script = document.createElement("script");
+        // script.type = "text/javascript";
+        // script.src = "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+        // document.getElementsByTagName("head")[0].appendChild(script);
       });
     });
   }

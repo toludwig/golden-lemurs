@@ -31,4 +31,5 @@ Here we list the performance of all the networks on our own test data (not "Anha
 | Ensemble              |             |
 
 
-
+[Previous page: Training our network](/docs/training)\
+[Next page: Discussion](/docs/discussion)

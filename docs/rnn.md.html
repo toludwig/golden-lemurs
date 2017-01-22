@@ -1,15 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
-  <meta name="generator" content="pandoc" />
-  <title></title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <link rel="stylesheet" href="github-pandoc.css" type="text/css" />
-  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
-</head>
-<body>
 <h1 id="recurrent-neural-networks">Recurrent Neural Networks</h1>
 <p>So far we were concerned with networks that get inputs of a fixed size. But sometimes we just don't know their size, mostly in cases of (temporal) sequences. That's what Recurrent Neural Networks (RNNs) are best suited for, data that exhibits patterns over time. They find applications in recognition of (handwritten) text and speech, or at the stock market. For this they have a special ability, they 'save' previous input. As the name suggests, they have recurrent 'synapses', i.e. edges going back in circles to the same cell. Here is how it looks if you unfold this circle three times [<a href="http://www.nature.com/nature/journal/v521/n7553/abs/nature14539.html">1</a>]: <img src="/assets/docs/img/rnn.jpg" alt="picture of RNN" /></p>
 <h1 id="the-long-short-term-memory-net">The Long Short-Term Memory net</h1>
@@ -27,5 +15,5 @@
 <p>From our <a href="/docs/approach">Training Data Mining</a> we have given a list of commit timestamps within the whole lifetime of each repo. The objective was to create a time profile for a period of a week or a month to see how commits are distributed, maybe even detect class-specific peaks. The function for the preprocessing basically does a binning of our list, it can be found here: <code>networks.Data.commit_time_profile</code>. It yields histograms like these, here for the classes DEV and HW: <img src="img/commit_time_profiles.png" alt="picture of commit profiles" /></p>
 <p>Unfortunately, as one might suspect from the graphs, there does not really seem to be that much information in the commit times with regard to the categories. Also there are many sparse profiles of repos with very few commits.</p>
 <p>In fact, we realized after training that the net did not perform particularly well and decided to drop the LSTM from our later classificator, it will not occur in the results.</p>
-</body>
-</html>
+<p><a href="/docs/cnn">Previous page: Convolutional networks</a><br />
+<a href="/docs/ensemble">Next page: Ensemble network</a></p>

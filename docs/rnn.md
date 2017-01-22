@@ -86,3 +86,6 @@ in the results.
 [1]: http://www.nature.com/nature/journal/v521/n7553/abs/nature14539.html
 
 [2]: http://colah.github.io/posts/2015-08-Understanding-LSTMs/
+
+[Previous page: Convolutional networks](/docs/cnn)\
+[Next page: Ensemble network](/docs/ensemble)

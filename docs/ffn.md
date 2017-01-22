@@ -45,3 +45,6 @@ $$y_j = \frac{e^{x_j}}{\sum_{k=1}^K e^{x_k}}$$
 
 What it does is normalizing the inputs so that the outputs sum up to one
 and we get nice percentages.
+
+[Previous page: Introduction](/docs/intro)\
+[Next page: Convolutional network](/docs/cnn)

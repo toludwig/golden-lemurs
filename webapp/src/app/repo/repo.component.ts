@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 import * as MarkdownIt from 'markdown-it';
 
@@ -67,7 +67,8 @@ function pieChart(values: number[], w: number, h: number, element, selected) {
 @Component({
   selector: 'app-repo',
   templateUrl: './repo.component.html',
-  styleUrls: ['./repo.component.css']
+  styleUrls: ['./repo.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class RepoComponent implements OnInit {
 
@@ -90,7 +91,7 @@ export class RepoComponent implements OnInit {
     this.repo.subscribe((repo) => {
       let elem = this.rating.nativeElement;
       while (elem.firstChild) elem.removeChild(elem.firstChild);
-      
+
       if (repo.Rating != null) {
         pieChart(repo.Rating, 100, 100, this.rating.nativeElement, +repo.Category - 1);
       }

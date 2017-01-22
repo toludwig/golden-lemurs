@@ -5,3 +5,7 @@ md-sidenav-layout {
     left: 0px;
     right: 0px;
 }
+
+span {
+    font-size: 30px;
+}

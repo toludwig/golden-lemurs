@@ -36,45 +36,47 @@ For further data, please have a look at our Tensorboard documentation.
 
 | URL                                                           | OUR GUESS | OUR CLASSIFICATION | MATCH |
 |---------------------------------------------------------------|-----------|--------------------|-------|
-| https://github.com/ga-chicago/wdi5-homework                   | HW        | HW                 | T     |
-| https://github.com/Aggregates/MI_HW2                          | HW        | EDU                | F     |
-| https://github.com/datasciencelabs/2016                       | EDU       | EDU                | T     |
-| https://github.com/githubteacher/intro-november-2015          | EDU       | EDU                | T     |
-| https://github.com/atom/atom                                  | DEV       | DEV                | T     |
-| https://github.com/jmcglone/jmcglone.github.io                | WEB       | WEB                | T     |
-| https://github.com/hpi-swt2-exercise/java-tdd-challenge       | HW        | HW                 | T     |
-| https://github.com/alphagov/performanceplatform-documentation | DOCS      | DOCS               | T     |
-| https://github.com/harvesthq/how-to-walkabout                 | OTHER     | OTHER              | T     |
-| https://github.com/vhf/free-programming-books                 | WEB       | WEB                | T     |
-| https://github.com/d3/d3                                      | DEV       | DEV                | T     |
-| https://github.com/carlosmn/CoMa-II                           | HW        | EDU                | F     |
-| https://github.com/git/git-scm.com                            | WEB       | WEB                | T     |
-| https://github.com/PowerDNS/pdns                              | DEV       | DOCS               | F     |
-| https://github.com/cmrberry/cs6300-git-practice               | HW        | EDU                | F     |
-| https://github.com/Sefaria/Sefaria-Project                    | DATA      | DATA               | T     |
-| https://github.com/mongodb/docs                               | DOCS      | DOCS               | T     |
-| https://github.com/sindresorhus/eslint-config-xo              | DOCS      | DOCS               | T     |
-| https://github.com/e-books/backbone.en.douceur                | DOCS      | DEV                | F     |
-| https://github.com/erikflowers/weather-icons                  | DEV       | DEV                | T     |
-| https://github.com/tensorflow/tensorflow                      | DEV       | DEV                | T     |
-| https://github.com/cs231n/cs231n.github.io                    | EDU       | EDU                | T     |
-| https://github.com/m2mtech/smashtag-2015                      | EDU       | EDU                | T     |
-| https://github.com/openaddresses/openaddresses                | DEV       | DEV                | T     |
-| https://github.com/benbalter/congressional-districts          | DATA      | DATA               | T     |
-| https://github.com/Chicago/food-inspections-evaluation        | DOCS      | DOCS               | T     |
-| https://github.com/OpenInstitute/OpenDuka                     | DATA      | DATA               | T     |
-| https://github.com/torvalds/linux                             | DEV       | DOCS               | F     |
-| https://github.com/bhuga/bhuga.net                            | WEB       | WEB                | T     |
-| https://github.com/macloo/just_enough_code                    | EDU       | EDU                | T     |
-| https://github.com/hughperkins/howto-jenkins-ssl              | DOCS      | WEB                | F     |
+| https://github.com/ga-chicago/wdi5-homework                   | HW        | HW                 | ✓     |
+| https://github.com/Aggregates/MI_HW2                          | HW        | EDU                | ✗     |
+| https://github.com/datasciencelabs/2016                       | EDU       | EDU                | ✓     |
+| https://github.com/githubteacher/intro-november-2015          | EDU       | EDU                | ✓     |
+| https://github.com/atom/atom                                  | DEV       | DEV                | ✓     |
+| https://github.com/jmcglone/jmcglone.github.io                | WEB       | WEB                | ✓     |
+| https://github.com/hpi-swt2-exercise/java-tdd-challenge       | HW        | HW                 | ✓     |
+| https://github.com/alphagov/performanceplatform-documentation | DOCS      | DOCS               | ✓     |
+| https://github.com/harvesthq/how-to-walkabout                 | OTHER     | OTHER              | ✓     |
+| https://github.com/vhf/free-programming-books                 | WEB       | WEB                | ✓     |
+| https://github.com/d3/d3                                      | DEV       | DEV                | ✓     |
+| https://github.com/carlosmn/CoMa-II                           | HW        | EDU                | ✗     |
+| https://github.com/git/git-scm.com                            | WEB       | WEB                | ✓     |
+| https://github.com/PowerDNS/pdns                              | DEV       | DOCS               | ✗     |
+| https://github.com/cmrberry/cs6300-git-practice               | HW        | EDU                | ✗     |
+| https://github.com/Sefaria/Sefaria-Project                    | DATA      | DATA               | ✓     |
+| https://github.com/mongodb/docs                               | DOCS      | DOCS               | ✓     |
+| https://github.com/sindresorhus/eslint-config-xo              | DOCS      | DOCS               | ✓     |
+| https://github.com/e-books/backbone.en.douceur                | DOCS      | DEV                | ✗     |
+| https://github.com/erikflowers/weather-icons                  | DEV       | DEV                | ✓     |
+| https://github.com/tensorflow/tensorflow                      | DEV       | DEV                | ✓     |
+| https://github.com/cs231n/cs231n.github.io                    | EDU       | EDU                | ✓     |
+| https://github.com/m2mtech/smashtag-2015                      | EDU       | EDU                | ✓     |
+| https://github.com/openaddresses/openaddresses                | DEV       | DEV                | ✓     |
+| https://github.com/benbalter/congressional-districts          | DATA      | DATA               | ✓     |
+| https://github.com/Chicago/food-inspections-evaluation        | DOCS      | DOCS               | ✓     |
+| https://github.com/OpenInstitute/OpenDuka                     | DATA      | DATA               | ✓     |
+| https://github.com/torvalds/linux                             | DEV       | DOCS               | ✗     |
+| https://github.com/bhuga/bhuga.net                            | WEB       | WEB                | ✓     |
+| https://github.com/macloo/just_enough_code                    | EDU       | EDU                | ✓     |
+| https://github.com/hughperkins/howto-jenkins-ssl              | DOCS      | WEB                | ✗     |
 
 Yield (for all categories):
+
 | Total   |    31 |
 | Correct |    24 |
 | Wrong   |     7 |
 | Yield   | 77.4% |
 
 Precision (for each category):
+
 | Category | RIGHT | TOTAL |
 |----------|-------|-------|
 | HW       |     2 |     5 |

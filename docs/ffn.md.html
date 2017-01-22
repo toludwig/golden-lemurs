@@ -1,27 +1,27 @@
 <h1 id="feed-forward-neural-networks">Feed Forward Neural Networks</h1>
 <p>Feed Forward Neural Networks (FFNs) are simple networks of 'neurons' that take an input, <em>propagate</em> it through some hidden layers and give you an output for each individual class you specify. In a way, this structure resembles neurons in the brain, connected by one-way synapses.</p>
 <div class="figure">
-<img src="/assets/docs/img/ffn.png" alt="picture of FFN topology" />
-<p class="caption">picture of FFN topology</p>
+<img src="/assets/docs/img/ffn.png" />
+
 </div>
 <p>The topology we use for this is the following:</p>
 <table>
 <thead>
 <tr class="header">
-<th>input</th>
-<th>hidden #1</th>
-<th>hidden #2</th>
-<th>hidden #3</th>
-<th>output</th>
+<th align="left">input</th>
+<th align="left">hidden #1</th>
+<th align="left">hidden #2</th>
+<th align="left">hidden #3</th>
+<th align="left">output</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>7</td>
-<td>150</td>
-<td>50</td>
-<td>50</td>
-<td>6</td>
+<td align="left">7</td>
+<td align="left">150</td>
+<td align="left">50</td>
+<td align="left">50</td>
+<td align="left">6</td>
 </tr>
 </tbody>
 </table>
@@ -36,4 +36,5 @@
 <p><span class="math display">\[y_j = \frac{e^{x_j}}{\sum_{k=1}^K e^{x_k}}\]</span></p>
 <p>What it does is normalizing the inputs so that the outputs sum up to one and we get nice percentages.</p>
 <p><a href="/docs/intro">Previous page: Introduction</a><br />
-<a href="/docs/cnn">Next page: Convolutional network</a></p>
+<a href="/docs/cnn">Next page: Convolutional network</a><br />
+<a href="/docs/intro">Table of Contents</a></p>

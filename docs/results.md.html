@@ -2,32 +2,37 @@
 <h2 id="recap-of-the-training">Recap of the training</h2>
 <p>The <strong>accuracy</strong> is defined as the ratio of rightly predicted categories to all the samples. During the training we plotted the current accuracy with respect to the training data to see when the network stops to make progress with learning.</p>
 <p>According to this we could decide, which networks to drop from our final classifier. These are the FFN which performed very low (accuracy of ~30%) and the LSTM which stoped at roughly ~50%.</p>
-<p>For illustration here are the training plots. One can see how fast the CNNs converge.</p>
-<p>TODO include graphs</p>
+<p>For illustration here are the training plots. One can see how fast the CNNs converge. The upper graph is for the README and the one below for the commit CNN:</p>
+<div class="figure">
+<img src="/assets/docs/img/learning_progress.png" />
+
+</div>
 <h2 id="testing-the-nets-1">Testing the nets</h2>
 <p>After training, of course we have to validate the networks against the <strong>test data</strong>, the 10% of our data that the net has never seen before.</p>
 <p>Here we list the performance of all the networks on our own test data (not &quot;Anhang B&quot;!):</p>
 <table>
 <thead>
 <tr class="header">
-<th>Network</th>
-<th>Performance</th>
+<th align="left">Network</th>
+<th align="left">Performance</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>CNN (README)</td>
-<td></td>
+<td align="left">CNN (README)</td>
+<td align="left">83%</td>
 </tr>
 <tr class="even">
-<td>CNN (Commit messages)</td>
-<td></td>
+<td align="left">CNN (Commit)</td>
+<td align="left">60%</td>
 </tr>
 <tr class="odd">
-<td>Ensemble</td>
-<td></td>
+<td align="left">Ensemble</td>
+<td align="left">90%</td>
 </tr>
 </tbody>
 </table>
-<p><a href="/docs/training">Previous page: Training our network</a><br />
-<a href="/docs/discussion">Next page: Discussion</a></p>
+<p>For further data, please have a look at our Tensorboard documentation.</p>
+<p><a href="/docs/ensemble">Previous page: The ensemble</a><br />
+<a href="/docs/discussion">Next page: Discussion</a><br />
+<a href="/docs/intro">Table of Contents</a></p>

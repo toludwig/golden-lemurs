@@ -113,6 +113,7 @@ class TrainingData(object, metaclass=Singleton):
         self.total_length = 0
         self.factors = []
         for cat in [f1, f2, f3, f4, f5, f6]:
+            random.shuffle(cat)
             cut = int(len(cat) / 10)
             self.train += (cat[:-cut])
             self.val += cat[-cut:]

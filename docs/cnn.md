@@ -115,4 +115,4 @@ that the input size is `400` words and we use `200` filters.
 
 [Previous page: Feed-forward network](/docs/ffn)\
 [Next page: Recurrent networks](/docs/rnn)\
-[Table of Contents](/docs/abstract)
+[Table of Contents](/docs/intro)

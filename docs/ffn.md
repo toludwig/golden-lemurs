@@ -6,7 +6,7 @@ take an input, _propagate_ it through some hidden layers
 and give you an output for each individual class you specify.
 In a way, this structure resembles neurons in the brain, connected by one-way synapses.
 
-![picture of FFN topology](/assets/docs/img/ffn.png)
+![](/assets/docs/img/ffn.png)
 
 The topology we use for this is the following:
 
@@ -48,4 +48,4 @@ and we get nice percentages.
 
 [Previous page: Introduction](/docs/intro)\
 [Next page: Convolutional network](/docs/cnn)\
-[Table of Contents](/docs/abstract)
+[Table of Contents](/docs/intro)

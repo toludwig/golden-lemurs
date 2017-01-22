@@ -165,4 +165,4 @@ from each weight as a penalty, independently from the loss function.
 
 [Previous page: Ensemble network](/docs/ensemble)\
 [Next page: Our results](/docs/results)\
-[Table of Contents](/docs/abstract)
+[Table of Contents](/docs/intro)

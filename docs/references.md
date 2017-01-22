@@ -18,4 +18,4 @@ List of useful Blogs
 
 
 [Previous page: Discussion](/docs/discussion)\
-[Table of Contents](/docs/abstract)
+[Table of Contents](/docs/intro)

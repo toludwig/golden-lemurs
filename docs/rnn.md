@@ -92,4 +92,4 @@ in the results.
 
 [Previous page: Convolutional networks](/docs/cnn)\
 [Next page: Ensemble network](/docs/ensemble)\
-[Table of Contents](/docs/abstract)
+[Table of Contents](/docs/intro)

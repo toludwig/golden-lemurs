@@ -19,4 +19,4 @@ learn to rely only on the Commits if the README is empty.
 
 [Previous page: Recurrent networks](/docs/rnn)\
 [Next page: Training our networks](/docs/training)\
-[Table of Contents](/docs/abstract)
+[Table of Contents](/docs/intro)

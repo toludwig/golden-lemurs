@@ -18,7 +18,7 @@
 <li><p>At last, we have to filter the current state to produce an output <span class="math inline">\(h\)</span>. Again we apply a layer of <span class="math inline">\(\tanh\)</span> to normalize the state and <span class="math inline">\(\sigma\)</span> to select the relevant output with respect to the current input.</p></li>
 </ul>
 <h1 id="our-lstm-for-commit-time-analysis">Our LSTM for commit-time analysis</h1>
-<p>In fact, this is only the main principle of how LSTMs are designed but in practice there are variable implementations. For example, we use a version called <strong>Bidirectional LSTM</strong> (BLSTM), which takes into account not only states from previous inputs but also looks ahead and considers 'future' input. This of course is possible because we have the whole sequence of commits given (no realtime analysis) which we can feed into the net from both directions, once forwards once backwards. The BLST actually consists of two separate LSTMS, one for each direction. These LSTM cells are independent from each other, they do not communicate, but only their outputs are concatenated.</p>
+<p>In fact, this is only the main principle of how LSTMs are designed but in practice there are variable implementations. For example, we use a version called <strong>Bidirectional LSTM</strong> (BLSTM), which takes into account not only states from previous inputs but also looks ahead and considers 'future' input. This of course is possible because we have the whole sequence of commits given (no real-time analysis) which we can feed into the net from both directions, once forwards once backwards. The BLST actually consists of two separate LSTMS, one for each direction. These LSTM cells are independent from each other, they do not communicate, but only their outputs are concatenated.</p>
 <h2 id="data-preprocessing">Data preprocessing</h2>
 <p>From our <a href="/docs/approach">Training Data Mining</a> we have given a list of commit timestamps within the whole lifetime of each repo. The objective was to create a time profile for a period of a week or a month to see how commits are distributed, maybe even detect class-specific peaks. The function for the preprocessing basically does a binning of our list, it can be found here: <code>networks.Data.commit_time_profile</code>. It yields histograms like these, here for the classes DEV and HW:</p>
 <div class="figure">
@@ -26,7 +26,7 @@
 
 </div>
 <p>Unfortunately, as one might suspect from the graphs, there does not really seem to be that much information in the commit times with regard to the categories. Also there are many sparse profiles of repos with very few commits.</p>
-<p>In fact, we realized after training that the net did not perform particularly well and decided to drop the LSTM from our later classificator, it will not occur in the results.</p>
+<p>In fact, we realized after training that the net did not perform particularly well and decided to drop the LSTM from our later classifier, it will not occur in the results.</p>
 <hr />
 <p><a href="/docs/cnn">Previous page: Convolutional networks</a><br />
 <a href="/docs/ensemble">Next page: Ensemble network</a><br />

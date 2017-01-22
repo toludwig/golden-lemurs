@@ -13,13 +13,13 @@ This section describes the training of each network
 which is basically the same procedure for all.
 
 
-## Initialising weights
+## Initializing weights
 
 The first thing one has to do to prepare a net for training
 is to initialize the weights. You could either say, they will
 be trained anyhow, so let's just set assign them to a constant
 value ($\neq 0$, because 0-weights would propagate nothing).
-But the problem with this is that the backpropagated error
+But the problem with this is that the back-propagated error
 will be the same for each weight which makes the model unable
 to learn.
 
@@ -38,7 +38,7 @@ That's how we do it.
 
 ## Overall training procedure and learning batches
 
-After initialising the weigths, the network is able to propagate
+After initializing the weights, the network is able to propagate
 its input towards the output layer. It gets one input of our dataset
 at a time, one after the other. When the whole samples are seen once,
 we call this an **epoch**. However, for convergence to the global minimum
@@ -55,14 +55,14 @@ case, the learning will _fluctuate_ very much, in the latter it will
 be inflexible in terms of reacting differently to different inputs.
 A good compromise is to use so-called **(mini) batches** that consist
 of a subset of samples, say e.g. a 10th of the whole dataset. Giving
-the feeback after each batch makes learning much more stable and efficient.
+the feedback after each batch makes learning much more stable and efficient.
 Again, the size of the batches is a value that is individual for each
 classification and comes from experience. We use batch sizes of `200-300` samples.
 
-Another preparation concerns ther order of the training samples. They should be
+Another preparation concerns the order of the training samples. They should be
 learned in a way that each sample is independent from its predecessors,
 i.e. consequent samples should not be of the same category. Otherwise
-the network would specicialise into one category too much and does
+the network would specialize into one category too much and does
 not generalize so easily.
 This can be prevented by **shuffling** the data before training.
 
@@ -79,13 +79,13 @@ There are different measurements in use, for example the _root mean square error
 defined for numeric classes as follows:
 $$RMSE(Y, \hat{Y}) = \sqrt{\frac{1}{N} \sum_{i=1}^N (y_i - \hat{y}_i)^2}$$
 
-The one we are using is a bit different because it does not make too much sense to substract
+The one we are using is a bit different because it does not make too much sense to subtract
 class labels (even if we encoded them numerically). Instead we use the so-called
 **Cross-entropy loss** defined like this:
 $$CEL(Y, \hat{Y}) = \frac{1}{N} \sum_{i=1}^N H(y_i, \hat{y}_i)$$
 
-where $H$ is the cross entropy which one can think of as the probability for a sample of beeing
-in class $\hat{Y}$ while actually beeing in class $Y$ (here for one-hot encoded outputs):
+where $H$ is the cross entropy which one can think of as the probability for a sample of being
+in class $\hat{Y}$ while actually being in class $Y$ (here for one-hot encoded outputs):
 $$H(Y, \hat{Y}) = - \sum_{y \in Y} y \log \hat{y}$$
 
 
@@ -99,7 +99,7 @@ to find a (hopefully) global minimum on its surface [[1]]:
 This is done by adjusting the weights (in the image there are only two, depicted as $\theta_i$)
 in a way that leads us to the valleys of the function. This in turn can be achieved
 by calculating the **gradient** of the loss function, i.e. the derivative with respect to
-each weigth. Intuitively, one can think of the gradient as a vector pointing to the steepest
+each weight. Intuitively, one can think of the gradient as a vector pointing to the steepest
 direction of the error surface. Because we want to 'go _down_ the hill', we take the negative derivative:
 $$w_{new} = w - \eta \cdot \frac{\partial CEL}{\partial w}$$
 
@@ -110,7 +110,7 @@ We do this update for all the weights starting at the last weight layer.
 The layers before are a little bit more complex to update, but there is an algorithm for
 that: **Backpropagation of Error** or just BP. As the name suggests, the updates are
 performed from the output layer backwards, again by differentiating.
-This envolves repeated use of the _chain-rule_ over all the activation functions
+This involves repeated use of the _chain-rule_ over all the activation functions
 until one arrives at the desired weight.
 Suppose, we have the following chain of neurons $i$, $j$ and $k$ in the net...
 
@@ -156,8 +156,8 @@ the net to use all neurons in order to maintain plasticity.
 We choose dropout-to-keep a ratio of `0.5`.
 
 Last but not least, we use so-called **L2 regularization**. This is another
-way to prevent overfitting and urging the network to have small weights.
-It uses the mean squared error of all current weights and substracts it
+way to prevent over-fitting and urging the network to have small weights.
+It uses the mean squared error of all current weights and subs tracts it
 from each weight as a penalty, independently from the loss function.
 
 

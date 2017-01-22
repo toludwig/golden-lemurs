@@ -23,7 +23,7 @@ By applying this with several filters you obtain multiple Convolutional Layers
 extracting different features of the image.
 Further location invariance is added by Pooling where some feature
 information is thrown away again. For example take max-pooling: there you just take maximum
-of your neighbours at each pixel [[2]].
+of your neighbors at each pixel [[2]].
 
 ![](assets/docs/img/Max_pooling.png)
 
@@ -32,7 +32,7 @@ While these concepts are very vivid in the case of images, they are not yet for 
 
 ## Word Vectors and the intuition behind them
 
-Linguists don't work with images but with corpuses, i.e. huge amounts of real world text.
+Linguists don't work with images but with corpora, i.e. huge amounts of real world text.
 Why not think of words as vectors (coordinate lists) within the _n_-dimensional corpus space?
 Note that the space would be a discrete one, it contains only its words but nothing 'in between'.
 However, what we want is a continuous vector space of words. Also, we want it to have
@@ -43,13 +43,13 @@ We want real-valued vectors, something like:
 
 This reduction of dimensionality can be achieved using modern variants
 of the classical bag-of-words model called **word embeddings**.
-What is done is basically a packing of cooccurring words in the same 'bag'.
-The so obtained vectors show very cool (vector-space) behaviour:
+What is done is basically a packing of co-occurring words in the same 'bag'.
+The so obtained vectors show very cool (vector-space) behavior:
 
     king - man + woman ~ queen
     dog + big + dangerous ~ bulldog
 
-Here is another fancy picture that (produced by tSNE) showing the vector space [[3]]:
+Here is another fancy picture (produced by tSNE) showing the vector space [[3]]:
 
 ![](assets/docs/img/tsne.png)
 
@@ -75,7 +75,7 @@ Now, if we want to apply this to extract (hopefully) the topic of the repository
 we need to be aware of two things:
 
 First, the repo might not have a README at all (or, say it is empty). In this case classification
-seems to be futile, but nethertheless it tells us something. We observed for example that
+seems to be futile, but nevertheless it tells us something. We observed for example that
 homework repos often lack a README (for obvious reasons).
 _Solution_: we provide an empty vector (filled with 300 pads) as a dummy for classification.
 

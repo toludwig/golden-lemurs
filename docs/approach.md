@@ -31,13 +31,13 @@ The same holds for the commit messages. We will see, how informative they are.
 The idea behind the analysis of commit times was, that there are
 probably certain time profiles (say within a week), that repeat over the
 lifetime of the repository. This could be characteristic for each category,
-think of weekly homeworks, as opposed to development repos facing far
+think of weekly homework, as opposed to development repos facing far
 more frequent updates.
 
 
 Classifiers we will use
 =======================
-We decided to work with **Neural Networks**. They are very addaptive
+We decided to work with **Neural Networks**. They are very adaptive
 classifiers which have some biological, cognitive foundation.
 Also there are many possible architectures for such nets with state-of-the-art
 applications. To reflect the grouping we did above, we will try out...
@@ -49,9 +49,9 @@ applications. To reflect the grouping we did above, we will try out...
 In this way we employ networks of increasing complexity. Instead of
 having traditional handcrafted systems, we demonstrate the applicability
 and variability of Neural Networks for parameters known to be working
-very well for the respective architectures. Hence, our nets are specialised
+very well for the respective architectures. Hence, our nets are specialized
 each in its input group and yield independent, possible different
-category predicitons. To obtain a single prediction for a given repo,
+category predictions. To obtain a single prediction for a given repo,
 we use yet another network,
 
 * an [**ensemble network**](/docs/ensemble) that combines the output of the upper ones.
@@ -66,7 +66,7 @@ used is described separately in the following sections.
 In fact, we tried many different topologies for each architecture
 and obviously cannot report everything. Also, in the course of development
 certain nets (e.g. the FFN) proved not to show the expected performance.
-We decided to focus on adjusting the working ones, but nethertheless
+We decided to focus on adjusting the working ones, but nevertheless
 not to drop the others, but rather having them contribute a few percentages
 to the final accuracy.
 
@@ -74,17 +74,17 @@ Training data mining
 ====================
 We started off by writing a python script (`rate_url.py`) to interactively classify URLs,
 which we manually browsed for using Google in order to get representative
-amounts of samples for each class, e.g. by searching for 'github physics homeworks' explicitly.
+amounts of samples for each class, e.g. by searching for 'GitHub physics homework' explicitly.
 Soon we noticed that this is no satisfactory method to get large amounts of
 training data, so we automated the procedure.
 
 We used [GHTorrent](http://ghtorrent.org/) to dump a CSV database of **all (!)**
-Github repositories i.e. **39.7 million**, as of January 2017. This CSV
-contains all the metadata of every activity on Github, including of course the repository names.
+GitHub repositories i.e. **39.7 million**, as of January 2017. This CSV
+contains all the metadata of every activity on GitHub, including of course the repository names.
 However, we ignore the metadata here, and download only the relevant data later via the API (see below).
 
 Also we had to clean the repository list from forks that have the same READMEs
-and contents, in order to not overrepresent vastly forked repositories.
+and contents, in order to not over-represent vastly forked repositories.
 
 To filter for informative samples for each category we look only at the repository names.
 Upon this we run a parsing script `repo_search.py` looking for keywords in their names:
@@ -108,10 +108,10 @@ of the same class respectively.
 The next step was to download relevant data fields for each repository to learn upon.
 Our choice of features we want to train is described the next section.
 
-To query Github repositories we primarily use [GraphQL](http://graphql.org/)
+To query GitHub repositories we primarily use [GraphQL](http://graphql.org/)
 because of its efficient access to many fields at a time. However,
 because this has severe rate restrictions and it does not provide READMEs
-we also use a Python wrapper for the Github API:
+we also use a Python wrapper for the GitHub API:
 [github3](https://github.com/sigmavirus24/github3.py).
 This allows us to dump READMEs and all the data fields we specified above.
 

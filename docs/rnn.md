@@ -58,7 +58,7 @@ In fact, this is only the main principle of how LSTMs are designed but in practi
 there are variable implementations. For example, we use a version called
 **Bidirectional LSTM** (BLSTM), which takes into account not only states from previous inputs
 but also looks ahead and considers 'future' input. This of course is possible
-because we have the whole sequence of commits given (no realtime analysis)
+because we have the whole sequence of commits given (no real-time analysis)
 which we can feed into the net from both directions, once forwards once backwards.
 The BLST actually consists of two separate LSTMS, one for each direction.
 These LSTM cells are independent from each other, they do not communicate,
@@ -82,7 +82,7 @@ to the categories. Also there are many sparse profiles of repos with very
 few commits.
 
 In fact, we realized after training that the net did not perform particularly
-well and decided to drop the LSTM from our later classificator, it will not occur
+well and decided to drop the LSTM from our later classifier, it will not occur
 in the results.
 
 

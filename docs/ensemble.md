@@ -2,10 +2,10 @@ The Ensemble Network
 ====================
 
 After training of all the networks we needed to make a decision:
-Which networks are worthy to be integrated in the final classificator
+Which networks are worthy to be integrated in the final classifier
 regarding accuracy but also regarding the amount of computation time.
 
-We choosed only the following two networks:
+We choose only the following two networks:
 
 * the CNN for README
 * and the CNN for the Commit times.

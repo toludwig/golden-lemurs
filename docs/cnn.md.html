@@ -7,22 +7,22 @@
 <img src="assets/docs/img/Convolution_schematic.gif" />
 
 </div>
-<p>By applying this with several filters you obtain multiple Convolutional Layers extracting different features of the image. Further location invariance is added by Pooling where some feature information is thrown away again. For example take max-pooling: there you just take maximum of your neighbours at each pixel [<a href="https://en.wikipedia.org/wiki/Convolutional_neural_network#/media/File:Max_pooling.png">2</a>].</p>
+<p>By applying this with several filters you obtain multiple Convolutional Layers extracting different features of the image. Further location invariance is added by Pooling where some feature information is thrown away again. For example take max-pooling: there you just take maximum of your neighbors at each pixel [<a href="https://en.wikipedia.org/wiki/Convolutional_neural_network#/media/File:Max_pooling.png">2</a>].</p>
 <div class="figure">
 <img src="assets/docs/img/Max_pooling.png" />
 
 </div>
 <p>While these concepts are very vivid in the case of images, they are not yet for language, let us see...</p>
 <h2 id="word-vectors-and-the-intuition-behind-them">Word Vectors and the intuition behind them</h2>
-<p>Linguists don't work with images but with corpuses, i.e. huge amounts of real world text. Why not think of words as vectors (coordinate lists) within the <em>n</em>-dimensional corpus space? Note that the space would be a discrete one, it contains only its words but nothing 'in between'. However, what we want is a continuous vector space of words. Also, we want it to have substantially less dimensions (note that <em>n</em> is the size of a typical big data corpus). We want real-valued vectors, something like:</p>
+<p>Linguists don't work with images but with corpora, i.e. huge amounts of real world text. Why not think of words as vectors (coordinate lists) within the <em>n</em>-dimensional corpus space? Note that the space would be a discrete one, it contains only its words but nothing 'in between'. However, what we want is a continuous vector space of words. Also, we want it to have substantially less dimensions (note that <em>n</em> is the size of a typical big data corpus). We want real-valued vectors, something like:</p>
 <div class="figure">
 <img src="assets/docs/img/word_vector_space.png" />
 
 </div>
-<p>This reduction of dimensionality can be achieved using modern variants of the classical bag-of-words model called <strong>word embeddings</strong>. What is done is basically a packing of cooccurring words in the same 'bag'. The so obtained vectors show very cool (vector-space) behaviour:</p>
+<p>This reduction of dimensionality can be achieved using modern variants of the classical bag-of-words model called <strong>word embeddings</strong>. What is done is basically a packing of co-occurring words in the same 'bag'. The so obtained vectors show very cool (vector-space) behavior:</p>
 <pre><code>king - man + woman ~ queen
 dog + big + dangerous ~ bulldog</code></pre>
-<p>Here is another fancy picture that (produced by tSNE) showing the vector space [<a href="http://www.cs.toronto.edu/~nitish/csc321/tsne.png">3</a>]:</p>
+<p>Here is another fancy picture (produced by tSNE) showing the vector space [<a href="http://www.cs.toronto.edu/~nitish/csc321/tsne.png">3</a>]:</p>
 <div class="figure">
 <img src="assets/docs/img/tsne.png" />
 
@@ -32,7 +32,7 @@ dog + big + dangerous ~ bulldog</code></pre>
 <h2 id="data-preprocessing">Data preprocessing</h2>
 <p>We work with the first <code>300</code> words of the README and the first <code>400</code> words of the commits (concatenated from multiple commits). If either of both texts is not long enough, we fill the vector with padding words (<code>\pad\</code>).</p>
 <p>Now, if we want to apply this to extract (hopefully) the topic of the repository, we need to be aware of two things:</p>
-<p>First, the repo might not have a README at all (or, say it is empty). In this case classification seems to be futile, but nethertheless it tells us something. We observed for example that homework repos often lack a README (for obvious reasons). <em>Solution</em>: we provide an empty vector (filled with 300 pads) as a dummy for classification.</p>
+<p>First, the repo might not have a README at all (or, say it is empty). In this case classification seems to be futile, but nevertheless it tells us something. We observed for example that homework repos often lack a README (for obvious reasons). <em>Solution</em>: we provide an empty vector (filled with 300 pads) as a dummy for classification.</p>
 <p>Second, texts are cluttered by punctuation signs and other 'text mess'. After we applied the word tokenizer to the texts, these are still sticking at the words. However, there are word-vectors for those signs so we do not need/want to extract them entirely. <em>Solution</em>: parse and split those signs from the words (see <code>classification.Data.clean_str</code>)</p>
 <h2 id="our-cnn-for-word-vectors">Our CNN for Word Vectors</h2>
 <p>Now for the actual neural net. We construct a Convolutional Neural Network of a single convolutional and following pooling layer. Its topology looks like this [<a href="http://www.wildml.com/2015/12/implementing-a-cnn-for-text-classification-in-tensorflow/">4</a>]:</p>

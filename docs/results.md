@@ -68,17 +68,19 @@ For further data, please have a look at our Tensorboard documentation.
 | https://github.com/macloo/just_enough_code                    | EDU       | EDU                | ✓     |
 | https://github.com/hughperkins/howto-jenkins-ssl              | DOCS      | WEB                | ✗     |
 
-Yield (for all categories):
+### Yield (for all categories):
 
+| Value   | Amount|
+|---------+-------|
 | Total   |    31 |
 | Correct |    24 |
 | Wrong   |     7 |
 | Yield   | 77.4% |
 
-Precision (for each category):
+### Precision (for each category):
 
 | Category | RIGHT | TOTAL |
-|----------|-------|-------|
+|----------+-------+-------|
 | HW       |     2 |     5 |
 | DEV      |     5 |     8 |
 | EDU      |     5 |     5 |

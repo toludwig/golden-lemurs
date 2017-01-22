@@ -39,13 +39,21 @@ def start_eval_server():
         res.mimetype = 'application/json'
         return res
 
+    def rating_to_category(rating):
+        confidence = np.min(rating)
+        if confidence < 0.3: # no clear winner -> probably OTHER
+            return '7'
+        else:
+            category = '%d' % (np.argmax(rating) + 1)
+            return category
+
     @server.route('/rate/<name>/<title>/')
     def rate(name, title):
         logger.info('downloading %s/%s...' % (name, title))
         data = fetch_repo(name, title)
         logger.info('evaluating %s/%s...' % (name, title))
         rating = ensemble_eval([data])[0].tolist()
-        data['Category'] = '%d' % (np.argmax(rating) + 1)
+        data['Category'] = rating_to_category(rating)
         data['Rating'] = rating
         logger.info('result for %s/%s: %s' % (name, title, rating))
         res = server.make_response(json.dumps(data))

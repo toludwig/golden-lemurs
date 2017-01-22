@@ -1,6 +1,34 @@
-Validation of the nets
-======================
+Testing the nets
+================
 
-After the training we want to know how well the nets
-perform on repositories it has never seen before.
+Recap of the training
+---------------------
+The **accuracy** is defined as the ratio of rightly predicted categories to all the samples.
+During the training we plotted the current accuracy with respect to
+the training data to see when the network stops to make progress with learning.
+
+According to this we could decide, which networks to drop from our final classifier.
+These are the FFN which performed very low (accuracy of ~30%)
+and the LSTM which stoped at roughly ~50%.
+
+For illustration here are the training plots. One can see how fast the CNNs
+converge.
+
+TODO include graphs
+
+
+Testing the nets
+----------------
+After training, of course we have to validate the networks against
+the **test data**, the 10% of our data that the net has never seen before.
+
+Here we list the performance of all the networks on our own test data (not "Anhang B"!):
+
+| Network               | Performance |
+|-----------------------|-------------|
+| CNN (README)          |             |
+| CNN (Commit messages) |             |
+| Ensemble              |             |
+
+
 

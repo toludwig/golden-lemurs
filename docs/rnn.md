@@ -11,7 +11,6 @@ For this they have a special ability, they 'save' previous input.
 As the name suggests, they have recurrent 'synapses', i.e. edges
 going back in circles to the same cell. Here is how it looks if
 you unfold this circle three times [[1]]:
-
 ![picture of RNN](/assets/docs/img/rnn.jpg)
 
 
@@ -28,7 +27,6 @@ Memory (LSTM)** that is designed to tackle this shortcoming.
 
 Its nodes do no longer look like simple neurons, but rather like complex
 **memory cells**, here again unfolded [[2]]:
-
 ![picture of LSTM](/assets/docs/img/LSTM.png)
 
 Each cell gets its memory $C$ from its earlier state, shown by the continuous horizontal
@@ -56,24 +54,34 @@ Our LSTM for commit-time analysis
 
 In fact, this is only the main principle of how LSTMs are designed but in practice
 there are variable implementations. For example, we use a version called
-_Bidirectional LSTM_, which takes into account not only states from previous inputs
-but also looks ahead and considers 'future' input.
+**Bidirectional LSTM** (BLSTM), which takes into account not only states from previous inputs
+but also looks ahead and considers 'future' input. This of course is possible
+because we have the whole sequence of commits given (no realtime analysis)
+which we can feed into the net from both directions, once forwards once backwards.
+The BLST actually consists of two separate LSTMS, one for each direction.
+These LSTM cells are independent from each other, they do not communicate,
+but only their outputs are concatenated.
 
 Data preprocessing
 ------------------
 From our [Training Data Mining](/docs/approach) we have given a list of commit
-timestamps within the whole lifetime of each repo. (TODO: how many?)
+timestamps within the whole lifetime of each repo.
 The objective was to create a time profile for a period of a week or a month
 to see how commits are distributed, maybe even detect class-specific peaks.
 The function for the preprocessing basically does a binning of our list, it
 can be found here: `networks.Data.commit_time_profile`. It yields histograms like
-these for the classes DEV, and ... (TODO)
+these, here for the classes DEV and HW:
+![picture of commit profiles](img/commit_time_profiles.png)
 
-![picture of commit profiles](/assets/docs/img/commit_profiles.png)
+Unfortunately, as one might suspect from the graphs, there does not
+really seem to be that much information in the commit times with regard
+to the categories. Also there are many sparse profiles of repos with very
+few commits.
 
-Topology
---------
-Now for the specific topology we are using.
+In fact, we realized after training that the net did not perform particularly
+well and decided to drop the LSTM from our later classificator, it will not occur
+in the results.
+
 
 [1]: http://www.nature.com/nature/journal/v521/n7553/abs/nature14539.html
 

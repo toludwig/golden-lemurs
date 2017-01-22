@@ -12,7 +12,7 @@ numerical, textual and temporal ones:
   - number of subscribers
 * textual
   - README
-  - commits
+  - commit messages
 * temporal
   - times of commits
 
@@ -25,6 +25,7 @@ First of all the README obviously carries very much information.
 This is one of the first things you would check as a human after
 you have seen the repo name. We will use a classifier to extract
 not only keywords, but rather the real semantics using **topic modeling**.
+The same holds for the commit messages. We will see, how informative they are.
 
 The idea behind the analysis of commit times was, that there are
 probably certain time profiles (say within a week), that repeat over the
@@ -38,11 +39,11 @@ Classifiers we will use
 We decided to work with **Neural Networks**. They are very addaptive
 classifiers which have some biological, cognitive foundation.
 Also there are many possible architectures for such nets with state-of-the-art
-applications. To reflect the grouping we did above, we will use...
+applications. To reflect the grouping we did above, we will try out...
 
-* a simple **Feed Forward Network** (FFN) for the numerical data,
-* a **Recurrent Neural Network** (RNN) for temporal analysis of commit times, and
-* a **Convolutional Neural Network** (CNN) for text mining.
+* a simple **Feed Forward Network** ([FFN](/docs/ffn)) for the numerical data,
+* a **Recurrent Neural Network** ([RNN](/docs/rnn)) for temporal analysis of commit times, and
+* a **Convolutional Neural Network** ([CNN](/docs/cnn)) for text analysis.
 
 In this way we employ networks of increasing complexity. Instead of
 having traditional handcrafted systems, we demonstrate the applicability
@@ -52,7 +53,7 @@ each in its input group and yield independent, possible different
 category predicitons. To obtain a single prediction for a given repo,
 we use yet another network,
 
-* an **ensemble network** that combines the output of the upper ones.
+* an [**ensemble network**](/docs/ensemble) that combines the output of the upper ones.
 
 For the implementation we use the Python based **Tensorflow** Framework
 for Machine Learning. For a quick introduction, see the excellent
@@ -116,18 +117,19 @@ This allows us to dump READMEs and all the data fields we specified above.
 With the downloaded data we extend our JSON files from above.
 Thus we yield the following training sample format:
 
-    [ 
+    [
       {
         "Category":"1",
         "URL":"https://github.com/briantemple/homeworkr",
-        "NumberCommits":"703",
+        "Commits":"...",
+        "NumberOfCommits":"...",
         "...":"..."
       },
       {...}, ...
     ]
 
 
-Training design
+[Training design](/docs/training)
 ---------------
 
 Note further that we will _NOT_ train on the repository names later,

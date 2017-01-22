@@ -1,16 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="github-pandoc.css" type="text/css" />
+</head>
+<body>
 <h1 id="features-we-consider-important">Features we consider important</h1>
-<p>We decided to focus on the following data fields, which can be grouped into numerical, textual and temporal ones: * numerical - number of commits - number of contributors - number of forks - number of issues - number of pulls - number of stars - number of subscribers * textual - README - filenames and extensions - commits * temporal - times of commits</p>
+<p>We decided to focus on the following data fields, which can be grouped into numerical, textual and temporal ones: * numerical - number of commits - number of contributors - number of forks - number of issues - number of pulls - number of stars - number of subscribers * textual - README - commit messages * temporal - times of commits</p>
 <p>Especially for the numerical fields, there is no real justification for each of these items yet. For now we take as much information as we can get and hope that our classifiers selects the relevant ones. The other groups are more deliberately chosen...</p>
-<p>First of all the README obviously carries very much information. This is one of the first things you would check as a human after you have seen the repo name. We will use a classifier to extract not only keywords, but rather the real semantics using <strong>topic modeling</strong>.</p>
+<p>First of all the README obviously carries very much information. This is one of the first things you would check as a human after you have seen the repo name. We will use a classifier to extract not only keywords, but rather the real semantics using <strong>topic modeling</strong>. The same holds for the commit messages. We will see, how informative they are.</p>
 <p>The idea behind the analysis of commit times was, that there are probably certain time profiles (say within a week), that repeat over the lifetime of the repository. This could be characteristic for each category, think of weekly homeworks, as opposed to development repos facing far more frequent updates.</p>
 <h1 id="classifiers-we-will-use">Classifiers we will use</h1>
-<p>We want to work with <strong>Neural Networks</strong>. They are very addaptive classifiers which have some biological, cognitive foundation. Also there are many possible architectures for such nets with state-of-the-art applications. To reflect the grouping we did above, we will use...</p>
+<p>We decided to work with <strong>Neural Networks</strong>. They are very addaptive classifiers which have some biological, cognitive foundation. Also there are many possible architectures for such nets with state-of-the-art applications. To reflect the grouping we did above, we will use...</p>
 <ul>
 <li>a simple <strong>Feed Forward Network</strong> (FFN) for the numerical data,</li>
 <li>a <strong>Recurrent Neural Network</strong> (RNN) for temporal analysis of commit times, and</li>
 <li>a <strong>Convolutional Neural Network</strong> (CNN) for text mining.</li>
 </ul>
-<p>In this way we employ networks of increasing complexity. Instead of having traditional expert systems, we demonstrate the applicability and variability of Neural Networks for parameters known to be working very well for the respective architectures. Hence, our nets are specialised each in its input group and yield independent, possible different category predicitons. To obtain a single prediction for a given repo, we use yet another network,</p>
+<p>In this way we employ networks of increasing complexity. Instead of having traditional handcrafted systems, we demonstrate the applicability and variability of Neural Networks for parameters known to be working very well for the respective architectures. Hence, our nets are specialised each in its input group and yield independent, possible different category predicitons. To obtain a single prediction for a given repo, we use yet another network,</p>
 <ul>
 <li>an <strong>ensemble network</strong> that combines the output of the upper ones.</li>
 </ul>
@@ -24,50 +35,79 @@
 <table>
 <thead>
 <tr class="header">
-<th>No.</th>
-<th>Category</th>
-<th>Keywords</th>
+<th align="left">No.</th>
+<th align="left">Category</th>
+<th align="left">Keywords</th>
+<th align="left"># Repos</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>1</td>
-<td>DEV</td>
-<td>app, api, lib</td>
+<td align="left">1</td>
+<td align="left">DEV</td>
+<td align="left">app, api, lib</td>
+<td align="left">1368</td>
 </tr>
 <tr class="even">
-<td>2</td>
-<td>HW</td>
-<td>homework, exercise</td>
+<td align="left">2</td>
+<td align="left">HW</td>
+<td align="left">homework, exercise</td>
+<td align="left">5091</td>
 </tr>
 <tr class="odd">
-<td>3</td>
-<td>EDU</td>
-<td>lecture, teaching</td>
+<td align="left">3</td>
+<td align="left">EDU</td>
+<td align="left">lecture, teaching</td>
+<td align="left">1458</td>
 </tr>
 <tr class="even">
-<td>4</td>
-<td>DOCS</td>
-<td>docs</td>
+<td align="left">4</td>
+<td align="left">DOCS</td>
+<td align="left">docs</td>
+<td align="left">836</td>
 </tr>
 <tr class="odd">
-<td>5</td>
-<td>WEB</td>
-<td>website, homepage</td>
+<td align="left">5</td>
+<td align="left">WEB</td>
+<td align="left">website, homepage</td>
+<td align="left">4513</td>
 </tr>
 <tr class="even">
-<td>6</td>
-<td>DATA</td>
-<td>dataset, sample</td>
+<td align="left">6</td>
+<td align="left">DATA</td>
+<td align="left">dataset, sample</td>
+<td align="left">1132</td>
 </tr>
 <tr class="odd">
-<td>7</td>
-<td>OTHER</td>
-<td><em>none</em></td>
+<td align="left">7</td>
+<td align="left">OTHER</td>
+<td align="left"><em>none</em></td>
+<td align="left">-------</td>
+</tr>
+<tr class="even">
+<td align="left">Sum</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">14398</td>
 </tr>
 </tbody>
 </table>
-<p>Note that the OTHER category does not need to be learned but rather serves as a uncertainty indicator for our later classifier. Thus we obtained JSON files 'dev.json', ..., 'data.json' containing repository URLs of the same class respectively.</p>
+<p>Note that the OTHER category does not need to be learned but rather serves as an uncertainty indicator for our later classifier. Thus we obtained JSON files 'dev.json', ..., 'data.json' containing repository URLs of the same class respectively.</p>
 <p>The next step was to download relevant data fields for each repository to learn upon. Our choice of features we want to train is described the next section.</p>
-<p>To access Github repositories we use a Python wrapper for the Github API: <a href="https://github.com/sigmavirus24/github3.py">github3</a>. This allows us to dump READMEs and all the data fields we specified above.</p>
-<p>With the downloaded data we extend our JSON files to 'dev_full.json' etc. Thus we yield the following training sample format: [ { &quot;Category&quot;:&quot;1&quot;, &quot;URL&quot;:&quot;https://github.com/briantemple/homeworkr&quot;, &quot;...&quot;:&quot;...&quot; }, {...}, ... ]</p>
+<p>To query Github repositories we primarily use <a href="http://graphql.org/">GraphQL</a> because of its efficient access to many fields at a time. However, because this has severe rate restrictions and it does not provide READMEs we also use a Python wrapper for the Github API: <a href="https://github.com/sigmavirus24/github3.py">github3</a>. This allows us to dump READMEs and all the data fields we specified above.</p>
+<p>With the downloaded data we extend our JSON files from above. Thus we yield the following training sample format:</p>
+<pre><code>[ 
+  {
+    &quot;Category&quot;:&quot;1&quot;,
+    &quot;URL&quot;:&quot;https://github.com/briantemple/homeworkr&quot;,
+    &quot;Commits&quot;:&quot;...&quot;,
+    &quot;NumberOfCommits&quot;:&quot;...&quot;,
+    &quot;...&quot;:&quot;...&quot;
+  },
+  {...}, ...
+]</code></pre>
+<h2 id="training-design">Training design</h2>
+<p>Note further that we will <em>NOT</em> train on the repository names later, otherwise we would of course overfit with respect to this information.</p>
+<p>We split the data for each category into a 90% <strong>training set</strong> and a 10% <strong>test set</strong>. The former is used for training obviously and the latter for later validation (see <a href="/docs/results">the results</a>).</p>
+</body>
+</html>

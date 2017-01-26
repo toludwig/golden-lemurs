@@ -40,6 +40,13 @@ pip install -e .
 github-classify
 ```
 
+Additionally, you need to extract all the files in `data`.
+```
+cd data
+unzip *.zip
+gunzip *.gz
+```
+
 You get raw classifications and repository metadata in JSON at
 ```
 http://localhost:8081/rate/{username}/{reponame}
@@ -52,6 +59,7 @@ npm install -g angular-cli
 npm install
 ng serve
 ```
+
 Now, there is a webserver running at localhost:8080.
 
 

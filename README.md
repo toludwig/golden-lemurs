@@ -7,6 +7,9 @@ Training should only be done natively (not in docker) and GPU-accelerated. GPUs 
 We also need pretrained word embeddings; we used word2vec by Google.
 Download this from [here](https://drive.google.com/file/d/0ByJXV7reBQxTa3Zzbk4tVUE0UVE/view?usp=sharing) and save the _compressed_ file into the data directory.
 
+Furthermore, our crawler needs a personal access token with access rights `repo` (full rights, not only public\_repo because of GraphQL).
+Please insert this at the marked position in `classification/__init.py__`. GitHub does not allow publication of these.
+
 ## Usage
 
 ### Classification
@@ -22,7 +25,7 @@ Our classifaction of appendix B is in the file `classified`.
 ### Installation via docker
 
 We built a docker image to easily start up everything included.
-You can start it by executing run_demo.sh
+You can start it by executing run\_demo.sh
 ```
 ./run_demo.sh
 ```
@@ -37,6 +40,13 @@ pip install -e .
 github-classify
 ```
 
+Additionally, you need to extract all the files in `data`.
+```
+cd data
+unzip *.zip
+gunzip *.gz
+```
+
 You get raw classifications and repository metadata in JSON at
 ```
 http://localhost:8081/rate/{username}/{reponame}
@@ -49,6 +59,7 @@ npm install -g angular-cli
 npm install
 ng serve
 ```
+
 Now, there is a webserver running at localhost:8080.
 
 

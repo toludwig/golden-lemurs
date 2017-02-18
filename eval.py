@@ -25,9 +25,10 @@ def classify():
     with open(args[0], 'r') as urls:
         with open(args[1], 'w') as output:
             for url in urls:
-                url = url[:-1]
+                if url[-1] == '\n':
+                    url = url[:-1]
                 name, title = split_url(url)  # cut newline
-                rating = requests.get("http://localhost:8081/rate/%s/%s" % (name, title)).json()
+                rating = requests.get("http://localhost:8081/rate/%s/%s/0" % (name, title)).json()
                 tags = ["DEV", "HW", "EDU", "DOCS", "WEB", "DATA", "OTHER"]
                 i = int(rating["Category"])
                 print('%s %s' % (url, tags[i - 1]), file=output)

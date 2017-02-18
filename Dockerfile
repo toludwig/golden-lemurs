@@ -38,7 +38,6 @@ RUN ["unzip", "web.zip"]
 
 WORKDIR /home/app/webapp
 RUN ["npm", "install"]
-RUN ["npm", "install", "-g", "angular-cli"]
 
 WORKDIR /home/app
 COPY setup.py "/home/app/"

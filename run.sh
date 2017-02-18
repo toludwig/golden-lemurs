@@ -9,7 +9,7 @@ exec python3 -m "classification.eval" &
 
 echo "starting server with webapp"
 cd /home/app/webapp
-exec ng serve --host 0.0.0.0 --port 8080 &
+exec ./node_modules/angular-cli/bin/ng serve --host 0.0.0.0 --port 8080 &
 
 exec /home/app/scripts/tensorboard.sh /home/app/out
 

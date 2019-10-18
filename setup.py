@@ -28,7 +28,7 @@ setup(
                     'uritemplate.py==3.0.2',
                     # 'tensorflow == 0.12.1', not in pip for ubuntu
                     'more-itertools==2.5.0',
-                    'flask==0.12',
+                    'flask==1.0',
                     'flask-cors==3.0.2',
                     'urllib3==1.19.1'
     ],

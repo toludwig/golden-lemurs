@@ -20,7 +20,7 @@ setup(
                     'pymongo==3.4.0',
                     'pyperclip==1.5.27',
                     'pytz==2016.10',
-                    'requests==2.12.4',
+                    'requests==2.20.0',
                     'simplejson==3.10.0',
                     'six==1.10.0',
                     'smart-open==1.3.5',

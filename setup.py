@@ -29,7 +29,7 @@ setup(
                     # 'tensorflow == 0.12.1', not in pip for ubuntu
                     'more-itertools==2.5.0',
                     'flask==1.0',
-                    'flask-cors==3.0.2',
+                    'flask-cors==3.0.9',
                     'urllib3==1.24.2'
     ],
     zip_safe=False,

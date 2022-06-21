@@ -15,7 +15,7 @@ setup(
                     'gensim==0.13.4.1',
                     'github3.py==0.9.6',
                     'Markdown==2.6.7',
-                    'numpy==1.11.3',
+                    'numpy==1.22.0',
                     'protobuf==3.0.0',
                     'pymongo==3.4.0',
                     'pyperclip==1.5.27',

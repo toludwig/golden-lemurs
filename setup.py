@@ -16,7 +16,7 @@ setup(
                     'github3.py==0.9.6',
                     'Markdown==2.6.7',
                     'numpy==1.11.3',
-                    'protobuf==3.0.0',
+                    'protobuf==3.18.3',
                     'pymongo==3.4.0',
                     'pyperclip==1.5.27',
                     'pytz==2016.10',
